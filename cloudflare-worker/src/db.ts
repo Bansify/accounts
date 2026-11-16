@@ -3,11 +3,11 @@
  * D1 SCHEMA BOOTSTRAP & ERROR ISOLATION (`getDb`, `authQuery`, `oauthQuery`)
  * =============================================================================
  * Cold-start safe via WeakMap: initializes core/security tables + ecosystem seeds
- * automatically; the versioned first-party transition merges callbacks and makes
- * the seven requested registrations public (no legacy client secret).
+ * automatically. Migration-dependent native setup is isolated in native-db.ts
+ * so an optional OAuth schema upgrade cannot take browser authentication offline.
  */
 
-import { FIRST_PARTY_COLUMNS, FIRST_PARTY_CERT_SCHEMA, firstPartySeeds } from './first-party.ts';
+import { FIRST_PARTY_COLUMNS } from './first-party.ts';
 import type { D1Database, D1PreparedStatement, Env } from './types.ts';
 import { OAUTH_STATE_SCHEMA } from './oauth-schema.ts';
 import { PASSKEY_SCHEMA } from './passkey-schema.ts';
@@ -232,9 +232,7 @@ export async function getDb(env: Env): Promise<D1Database> {
       ...BOOTSTRAP_STATEMENTS.map((sql) => env.DB.prepare(sql)),
       ...GOOGLE_ACCOUNT_SCHEMA.map((sql) => env.DB.prepare(sql)),
       ...GOOGLE_METHOD_SCHEMA.map((sql) => env.DB.prepare(sql)),
-      ...FIRST_PARTY_CERT_SCHEMA.map((sql) => env.DB.prepare(sql)),
       ...buildDefaultCallbackSeedStatements(env.DB, env.APP_DOMAIN),
-      ...firstPartySeeds(env.DB, env.APP_DOMAIN),
     ];
     pending = env.DB.batch(statements)
       .then(() => undefined)

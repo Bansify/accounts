@@ -13,7 +13,9 @@ first-party/active/scope policy, public S256 clients, Turnstile-backed refresh c
 shared live-ledger bearer verification, narrow mobile APIs and signed release-key
 discovery. New modules: `first-party.ts`, `oauth-access.ts`, `turnstile.ts`,
 `routes/{mobile,oauth-native-revoke,trusted-apps}.ts`. Existing databases require the
-reviewed additive migration before rollout; no remote deployment is implied.
+reviewed additive migration before native rollout; `native-db.ts` isolates that setup
+from browser authentication so the latter works without migration 14. See
+[recovery details](AUTH_BOOTSTRAP_RECOVERY.md). No remote deployment is implied.
 
 ## 1. System Topology
 

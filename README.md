@@ -55,10 +55,11 @@ Use the authorized Arena preview panel, not a raw external sandbox link.
 Keep configured credentials private and out of code, committed docs and Cloudflare.
 `npm run preview:local` remains separate for actual Worker/local-database testing;
 the previous Arena cookie-transport problem is not a prerequisite for visual review.
-The current native backend change is local only: migration 14, Turnstile production
-keys and coordinated routing/release are required before deployment. Existing local
-SQLite databases need migration 14 before starting this Worker; empty databases
-bootstrap directly. See the [upgrade order](docs/NATIVE_ACCOUNTS.md#migration-order-and-exact-commands).
+The recovery Worker keeps browser authentication available on the pre-migration-14
+schema. Migration 14 is required only to enable native/OAuth features, which otherwise
+return migration_required. Empty databases bootstrap directly, and native clients
+initialize on the first native request. Turnstile keys remain required for configured
+interactive verification. See [browser-auth recovery](docs/AUTH_BOOTSTRAP_RECOVERY.md). See the [upgrade order](docs/NATIVE_ACCOUNTS.md#migration-order-and-exact-commands).
 
 All 110 scoped UI review items are addressed after explicit approval of all five
 phases, including Phases 3–5 together. 309 automated tests, build/types, extended

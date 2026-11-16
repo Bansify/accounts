@@ -17,6 +17,15 @@ handoff in [HANDOVER.md](HANDOVER.md), and design details in [architecture](docs
 
 ## Next work
 
+### Immediate browser-authentication recovery
+
+1. Review/publish the local `arena/eb8cd1f5-accounts` recovery only with authorization.
+   Native migration setup must not run in the core browser-auth initializer.
+2. Verify the effective Worker build/deploy command and the released Worker revision;
+   then verify username discovery, password/Google sign-in and existing sessions.
+3. Keep native endpoints fail-closed until authorized migration 14. Do not trade
+   authentication security or user data for availability. See [recovery guide](docs/AUTH_BOOTSTRAP_RECOVERY.md).
+
 ### Active native backend review gates
 
 1. Review [migration 14 and native contract](docs/NATIVE_ACCOUNTS.md), including

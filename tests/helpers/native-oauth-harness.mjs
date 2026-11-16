@@ -1,4 +1,5 @@
 /** Real Worker/SQLite native OAuth fixtures; all identities and credentials are synthetic. */
+import { getNativeDb } from '../../cloudflare-worker/src/native-db.ts';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import worker from '../../cloudflare-worker/src/index.ts';
@@ -10,6 +11,7 @@ export const fullScope = 'profile email offline_access drive.read account.read a
 export async function nativeFixture() {
   const env = makeEnv();
   const owner = await seedAccount(env, { username: 'nativeowner', firstName: 'Native', lastName: 'Owner' });
+  await getNativeDb(env);
   return { env, owner };
 }
 export function callback(client) {

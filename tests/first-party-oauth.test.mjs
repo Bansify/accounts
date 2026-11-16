@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { getDb } from '../cloudflare-worker/src/db.ts';
+import { getNativeDb } from '../cloudflare-worker/src/native-db.ts';
 import { createLocalD1 } from '../tools/local-d1.mjs';
 import { generateFirstPartySql } from '../tools/generate-first-party-sql.mjs';
 import { officialClients } from '../cloudflare-worker/src/first-party.ts';
@@ -24,7 +24,7 @@ test('migration 14 preserves old registrations/grants/disabled status, defaults 
     assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM ecosystem_apps WHERE first_party = 1').first()).n, 7);
     assert.equal((await db.prepare("SELECT first_party FROM ecosystem_apps WHERE id = 'gothwad-chat'").first()).first_party, 0);
     await db.prepare("UPDATE ecosystem_apps SET first_party = 0, active = 0, android_cert_sha256 = ? WHERE id = 'kiwi-store'").bind(JSON.stringify(['a'.repeat(64)])).run();
-    await getDb(makeEnv({ DB: db, APP_DOMAIN: 'example.com' }));
+    await getNativeDb(makeEnv({ DB: db, APP_DOMAIN: 'example.com' }));
     const updated = await db.prepare("SELECT * FROM ecosystem_apps WHERE id = 'kiwi-store'").first();
     assert.equal(updated.first_party, 0, 'runtime must not undo operator deapproval');
     assert.equal(updated.active, 0);
@@ -36,7 +36,7 @@ test('migration 14 preserves old registrations/grants/disabled status, defaults 
 test('all requested public clients have exact callbacks, packages and scoped capabilities on domain-agnostic bootstrap', async () => {
   const env = makeEnv({ APP_DOMAIN: 'example.com' });
   try {
-    await getDb(env);
+    await getNativeDb(env);
     for (const app of officialClients('example.com')) {
       const row = await env.DB.prepare('SELECT * FROM ecosystem_apps WHERE id = ?').bind(app.id).first();
       assert.equal(row.first_party, 1);
