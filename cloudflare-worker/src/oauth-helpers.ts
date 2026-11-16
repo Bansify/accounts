@@ -245,6 +245,7 @@ export function consentPageHtml(
 <script nonce="${nonce}">
   document.getElementById('brand-icon').addEventListener('error', (event) => { event.target.style.display = 'none'; });
   const data = ${JSON.stringify(data).replace(/</g, '\\u003c')};
+  const androidPkg = ${JSON.stringify(client.id === 'gothwad-accounts-android' ? String(client.android_package || '') : '').replace(/</g, '\\u003c')};
   async function decide(approved) {
     const btn = document.getElementById(approved ? 'allow' : 'deny');
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (approved ? 'Authorizing…' : 'Denying…');
@@ -256,6 +257,14 @@ export function consentPageHtml(
       });
       const out = await res.json();
       if (!res.ok || !out.redirect_url) throw new Error(out.error || 'Authorization failed');
+      if (androidPkg && out.redirect_url.startsWith('https://') && /Android/i.test(navigator.userAgent || '')) {
+        const u = new URL(out.redirect_url);
+        location.href = 'intent://' + u.host + u.pathname + u.search +
+          '#Intent;scheme=https;package=' + androidPkg +
+          ';action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE' +
+          ';S.browser_fallback_url=' + encodeURIComponent(out.redirect_url) + ';end';
+        return;
+      }
       location.href = out.redirect_url;
     } catch (e) {
       const err = document.getElementById('err');
