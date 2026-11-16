@@ -6,6 +6,15 @@
 
 ---
 
+## First-party native extension
+
+[Native Accounts contract and migration 14](NATIVE_ACCOUNTS.md) define the active
+first-party/active/scope policy, public S256 clients, Turnstile-backed refresh chains,
+shared live-ledger bearer verification, narrow mobile APIs and signed release-key
+discovery. New modules: `first-party.ts`, `oauth-access.ts`, `turnstile.ts`,
+`routes/{mobile,oauth-native-revoke,trusted-apps}.ts`. Existing databases require the
+reviewed additive migration before rollout; no remote deployment is implied.
+
 ## 1. System Topology
 
 ```text

@@ -11,7 +11,7 @@ const redirect = 'https://consumer.example/auth/callback';
 async function fixture() {
   const env = makeEnv();
   const owner = await seedAccount(env, { username: 'oauthowner', firstName: 'Oauth', lastName: 'Owner' });
-  await env.DB.prepare('INSERT INTO ecosystem_apps (id, client_id, name, redirect_uris) VALUES (?, ?, ?, ?)')
+  await env.DB.prepare(`INSERT INTO ecosystem_apps (id, client_id, name, redirect_uris, first_party, allowed_scopes) VALUES (?, ?, ?, ?, 1, '["profile","email","offline_access"]')`)
     .bind(client, client, 'Test consumer', JSON.stringify([redirect])).run();
   return { env, owner };
 }
@@ -79,6 +79,7 @@ test('OAuth userinfo checks issuer, audience, expiry and live ledger even with a
       { exp: undefined }, { iat: Date.now() / 1000 + 1000 }, { token_use: 'session' }]) {
       const forged = await signJwt({ ...payload, ...changes }, f.env.JWT_SECRET);
       await f.env.DB.prepare(`INSERT INTO oauth_credential_bindings
+        (credential_hash, kind, user_id, client_id, grant_id, password_snapshot, expires_at)
         SELECT ?, kind, user_id, client_id, grant_id, password_snapshot, expires_at
         FROM oauth_credential_bindings WHERE credential_hash = ?`)
         .bind(await sha256Hex(forged), originalHash).run();

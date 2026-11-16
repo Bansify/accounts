@@ -313,12 +313,12 @@ test('registry D1 error returns 503 temporarily_unavailable, not unknown-client'
   assert.equal((await res.json()).error, 'temporarily_unavailable');
 });
 
-test('a genuinely missing client still returns 400 Unknown client_id, not 503', async () => {
+test('a genuinely missing client returns 400 unauthorized_client, not 503', async () => {
   const { rawDb, authorize } = await createFixture();
   await rawDb.prepare("DELETE FROM ecosystem_apps WHERE id = 'kiwi-store'").run();
   const res = await authorize();
   assert.equal(res.status, 400);
-  assert.equal((await res.json()).error, 'Unknown client_id');
+  assert.equal((await res.json()).error, 'unauthorized_client');
 });
 
 test('failed authorization-code persistence never returns a fake callback code and preserves rotated cookies', async () => {

@@ -125,6 +125,8 @@ test('SQL 12 and runtime upgrade preserve legacy identity metadata and import it
   await db.prepare("INSERT INTO profiles (id, username, first_name, last_name) VALUES ('legacy-user', 'legacygoogle', 'Legacy', 'User')").run();
   await db.prepare(`INSERT INTO auth_external_identities (issuer, subject, user_id, provider_email, created_at, created_passwordless)
     VALUES (?, 'legacy-subject', 'legacy-user', 'legacy@gmail.com', '2020-01-01', 1)`).bind(GOOGLE_ISSUER).run();
+  await db.exec(readFileSync('sql/10_oauth_credential_bindings.sql', 'utf8'));
+  await db.exec(readFileSync('migrations/0014_first_party_native.sql', 'utf8'));
   await getDb(googleEnv({ DB: db }));
   const expected = await db.prepare('SELECT * FROM auth_external_identities').first();
   assert.deepEqual(await db.prepare('SELECT * FROM auth_external_account_links').first(), expected);

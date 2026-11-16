@@ -49,6 +49,6 @@ export function isUnsafeBrowserMutation(request: Request, env: Env): boolean {
   if (authenticatedProxy(request, env)) return false;
   // OAuth exchange uses PKCE/client authentication, never a browser session cookie.
   const path = new URL(request.url).pathname.replace(/^\/api(?=\/)/, '');
-  if (path === '/oauth/token' && !fetchSite) return false;
+  if (!fetchSite && (path === '/oauth/token' || ((path === '/oauth/revoke' || path.startsWith('/mobile/')) && /^Bearer [^\s]+$/i.test(request.headers.get('Authorization') || '')))) return false;
   return true;
 }

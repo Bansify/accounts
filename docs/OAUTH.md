@@ -1,6 +1,13 @@
 # 🔐 GOTHWAD OAUTH 2.0 PROVIDER — Technical Integration Guide
 
-> **Full OAuth 2.0 + S256 PKCE Provider:** First-party native apps (`Kiwi Store Android`) and external web/mobile apps (`GrixChat`, `PlusTube`, `Indogram`, etc.) integrate via standard Authorization Code + PKCE S256 flows. *(Note: First-party `.APP_DOMAIN` web apps such as `Mail` and `Kiwi Store Web` use silent `.APP_DOMAIN` `HttpOnly` cookie SSO instead of OAuth consent screens.)*
+> **Current policy:** OAuth is first-party-only with active/scope approval, exact
+> redirects and public S256. Existing databases require migration 14 before this
+> Worker; production Turnstile keys and routing must be configured before release.
+> [Native contract and migration order](NATIVE_ACCOUNTS.md) supersede older setup/
+> client-registration guidance below. No self-service registration or APK secrets.
+
+
+> **Full OAuth 2.0 + S256 PKCE Provider:** First-party native apps (`Kiwi Store Android`) and operator-approved web/mobile apps (`GrixChat`, `PlusTube`, `Indogram`, etc.) integrate via standard Authorization Code + PKCE S256 flows. *(Note: First-party `.APP_DOMAIN` web apps such as `Mail` and `Kiwi Store Web` use silent `.APP_DOMAIN` `HttpOnly` cookie SSO instead of OAuth consent screens.)*
 
 ---
 

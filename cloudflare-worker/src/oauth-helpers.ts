@@ -4,6 +4,7 @@
  * =============================================================================
  */
 
+import { customSchemesAllowed } from './first-party.ts';
 import type { D1Database, Env, SessionUser } from './types.ts';
 import { oauthQuery } from './db.ts';
 import { parseJsonStringArray } from './http.ts';
@@ -16,6 +17,9 @@ export const OAUTH_SCOPES: Record<string, string> = {
   'drive.read': 'View files in your Gothwad Drive',
   notes: 'Read & write your Gothwad Notes',
   chat: 'Access your Gothwad Chat messages',
+  mail: 'Access your Gothwad mailbox',
+  'account.read': 'View account security and device information',
+  'account.profile.write': 'Edit basic profile and manage account connections',
   offline_access: 'Keep you signed in to this app even when you are away',
 };
 
@@ -55,12 +59,9 @@ export function isRedirectUriAllowed(env: Env, client: Record<string, any>, redi
       return false;
     }
     const allowed: string[] = Array.isArray(client.redirect_uris) ? client.redirect_uris : [];
-    if (allowed.includes(redirectUri)) return true;
-    return (
-      env.DEV_MODE === 'true' &&
-      ['http:', 'https:'].includes(u.protocol) &&
-      (u.hostname === 'localhost' || u.hostname === '127.0.0.1')
-    );
+    if (u.protocol === 'http:' && !(env.DEV_MODE === 'true' && ['localhost', '127.0.0.1'].includes(u.hostname))) return false;
+    if (!['https:', 'http:'].includes(u.protocol) && !customSchemesAllowed(env)) return false;
+    return !redirectUri.includes('*') && allowed.includes(redirectUri);
   } catch {
     return false;
   }
@@ -234,6 +235,7 @@ export function consentPageHtml(
     <div class="note">Gothwad never shares your password with this app.
       You can remove access anytime from <b>My Account → Security</b>.</div>
 
+    ${env.TURNSTILE_REQUIRED === 'true' ? `<div class="cf-turnstile" data-sitekey="${esc(env.TURNSTILE_SITE_KEY || '')}" data-action="authorize"></div><script nonce="${nonce}" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>` : ''}
     <div class="err" id="err"></div>
     <div class="row">
       <button class="btn btn-ghost" id="deny">Cancel</button>
@@ -250,7 +252,7 @@ export function consentPageHtml(
       const res = await fetch('/api/oauth/decision', {
         method: 'POST', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ approved, ...data }),
+        body: JSON.stringify({ approved, ...data, turnstile_token: document.querySelector('[name="cf-turnstile-response"]')?.value || '' }),
       });
       const out = await res.json();
       if (!res.ok || !out.redirect_url) throw new Error(out.error || 'Authorization failed');
@@ -258,6 +260,7 @@ export function consentPageHtml(
     } catch (e) {
       const err = document.getElementById('err');
       err.textContent = e.message; err.style.display = 'block';
+      if (window.turnstile) window.turnstile.reset();
       btn.disabled = false; btn.textContent = approved ? 'Allow access' : 'Deny';
     }
   }
@@ -270,7 +273,7 @@ export function consentPageHtml(
     status: 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Content-Security-Policy': `default-src 'self'; script-src 'nonce-${nonce}'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`,
+      'Content-Security-Policy': `default-src 'self'; script-src 'nonce-${nonce}' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`,
       'X-Frame-Options': 'DENY',
     },
   });

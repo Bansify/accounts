@@ -112,7 +112,7 @@ test('unlink signs out other devices and invalidates OAuth bindings, pending Goo
   const { codes } = await enroll(env, owner);
   const oldHash = (await env.DB.prepare('SELECT password_hash FROM users WHERE id = ?').bind(owner.data.user.id).first()).password_hash;
   await env.DB.prepare("INSERT INTO app_authorizations (id, user_id, app_id) VALUES ('grant', ?, 'gothwad-mail')").bind(owner.data.user.id).run();
-  await env.DB.prepare(`INSERT INTO oauth_credential_bindings VALUES ('oauth-hash', 'access', ?, 'gothwad-mail', 'grant', ?, '2099-01-01')`)
+  await env.DB.prepare(`INSERT INTO oauth_credential_bindings (credential_hash, kind, user_id, client_id, grant_id, password_snapshot, expires_at) VALUES ('oauth-hash', 'access', ?, 'gothwad-mail', 'grant', ?, '2099-01-01')`)
     .bind(owner.data.user.id, oldHash).run();
   assert.ok(await currentOAuthBinding(env.DB, 'oauth-hash', 'access'));
   const remote = await signIn(env, owner.data.user.id);
@@ -238,6 +238,8 @@ test('migration 13 preserves legacy methods, origin, IDs and sessions and never 
   await db.prepare("INSERT INTO profiles (id, username, first_name, last_name) VALUES ('old-user', 'olduser', 'Old', 'User')").run();
   await db.prepare("INSERT INTO user_sessions (id, user_id) VALUES ('old-session', 'old-user')").run();
   await db.prepare(`INSERT INTO auth_external_account_links VALUES ('https://accounts.google.com', 'old-subject', 'old-user', 'old@gmail.com', '2020-01-01', 1)`).run();
+  await db.exec(readFileSync('sql/10_oauth_credential_bindings.sql', 'utf8'));
+  await db.exec(readFileSync('migrations/0014_first_party_native.sql', 'utf8'));
   await getDb(googleEnv({ DB: db }));
   const first = await db.prepare('SELECT * FROM auth_google_methods').first(); assert.equal(first.provider_email, 'old@gmail.com');
   assert.equal(first.created_at, '2020-01-01');

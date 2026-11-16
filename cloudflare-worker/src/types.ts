@@ -56,6 +56,13 @@ export interface Env {
   DEV_MODE: string;
   ALLOWED_ORIGINS?: string;
   JWT_SECRET: string;
+  TURNSTILE_REQUIRED?: string;
+  TURNSTILE_SITE_KEY?: string;
+  TURNSTILE_SECRET_KEY?: string;
+  OAUTH_CUSTOM_SCHEMES?: string;
+  ANDROID_ASSETLINKS_JSON?: string;
+  TRUSTED_APPS_SIGNING_JWK?: string;
+  TRUSTED_APPS_KEY_ID?: string;
   RESEND_API_KEY?: string;
   MFA_ENCRYPTION_KEY?: string;
   GOOGLE_CLIENT_ID?: string;

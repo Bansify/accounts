@@ -50,3 +50,7 @@ changes outside Accounts or establish current production failures.
 Superseded Mail bootstrap/session-repair instructions have been removed; use the
 Mail contract above. The old founding roadmap and duplicate hybrid-cloud plan
 have been consolidated into PLAN.md and the architecture/migration guides.
+
+- [First-party OAuth and Android Accounts backend](NATIVE_ACCOUNTS.md): migration 14, native API contract, bot controls, release keys and review-only operations.
+
+- [Accounts Android agent prompt](ACCOUNTS_ANDROID_AGENT_PROMPT.md): copy-paste native integration task with secure OAuth/storage and a separate cross-app broker research gate.

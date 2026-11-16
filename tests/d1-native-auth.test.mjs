@@ -240,7 +240,7 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
   // Mint an `oauth_access` token for `gothwad-chat` via real PKCE flow and verify:
   //   - `/oauth/userinfo` succeeds
   //   - `/api/auth/me` and `/api/auth/delete-account` REJECT the OAuth access token!
-  await env.DB.prepare("UPDATE ecosystem_apps SET redirect_uris = ? WHERE id = 'gothwad-chat'")
+  await env.DB.prepare("UPDATE ecosystem_apps SET first_party = 1, allowed_scopes = '[\"profile\",\"email\",\"offline_access\"]', redirect_uris = ? WHERE id = 'gothwad-chat'")
     .bind(JSON.stringify(['https://grixchat.gothwadtech.com/auth/callback']))
     .run();
   const verifier = 'k'.repeat(48);

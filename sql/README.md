@@ -1,5 +1,12 @@
 # 🗄️ `sql/` — Cloudflare D1 Database Schema & Migrations
 
+> **Current policy:** OAuth is first-party-only with active/scope approval, exact
+> redirects and public S256. Existing databases require migration 14 before this
+> Worker; production Turnstile keys and routing must be configured before release.
+> [Native contract and migration order](../docs/NATIVE_ACCOUNTS.md) supersede older setup/
+> client-registration guidance below. No self-service registration or APK secrets.
+
+
 All database tables live inside the dedicated **Cloudflare D1** database (`accounts`).
 - **Automatic Bootstrap:** The Cloudflare Worker automatically executes idempotent schema setup (`ensureSchema()`) on cold start, so an empty database initializes cleanly with zero manual intervention.
 - **Manual Console Inspection & Re-Run:** Every SQL file in this folder uses `IF NOT EXISTS` / `ON CONFLICT DO UPDATE` so you can paste or execute them anytime in **Cloudflare Dashboard → Workers & Pages → D1 → `accounts` → Console**.

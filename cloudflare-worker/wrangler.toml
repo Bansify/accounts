@@ -24,6 +24,7 @@ preview_urls = true
 [[d1_databases]]
 binding = "DB"
 database_name = "accounts"
+migrations_dir = "../migrations"
 database_id = "392aacf8-1b43-490a-9519-ced4daf5a40f"
 
 # -----------------------------------------------------------------------------
@@ -56,6 +57,13 @@ RESEND_FROM = "Gothwad Accounts <security@noreply.gothwadtech.com>"
 
 # ⚠️ MUST stay "false" in production! ("true" only in local `.dev.vars`)
 DEV_MODE = "false"
+
+# Fail closed until the operator supplies a production site key and secret.
+TURNSTILE_REQUIRED = "true"
+# TURNSTILE_SITE_KEY = "<public production site key>"
+# TURNSTILE_SECRET_KEY must be a Worker secret, never a public var.
+# Native custom-scheme redirects can be disabled after verified HTTPS App Links ship.
+OAUTH_CUSTOM_SCHEMES = "true"
 
 # Optional extra CORS origins (comma-separated, e.g. preview domains)
 # ALLOWED_ORIGINS = ""

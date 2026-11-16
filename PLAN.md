@@ -1,6 +1,6 @@
 # Accounts Plan
 
-Updated 2026-11-06. Implementation history belongs in [TASK.md](TASK.md), operational
+Current local scope: first-party OAuth and native Accounts backend. Implementation history belongs in [TASK.md](TASK.md), operational
 handoff in [HANDOVER.md](HANDOVER.md), and design details in [architecture](docs/ARCHITECTURE.md).
 
 ## Scope and architecture
@@ -17,7 +17,20 @@ handoff in [HANDOVER.md](HANDOVER.md), and design details in [architecture](docs
 
 ## Next work
 
-### Required owner review gates — latest instruction
+### Active native backend review gates
+
+1. Review [migration 14 and native contract](docs/NATIVE_ACCOUNTS.md), including
+   restricted existing clients, public-client secret removal and fresh bot-verified consent.
+2. Supply actual release signing fingerprints and configure Turnstile privately; review
+   Accounts App Links routing and equivalent sibling-host associations without editing
+   sibling repositories in this task. Pin manifest verification keys in Android consumers.
+3. After separate authorization only, rehearse/backup schema 00–13 → 14, coordinate
+   Pages/Worker rollout and test real provider/Android behavior. No remote action now.
+4. Prove independent Android account discovery/authenticator ownership/uninstall/failover
+   before implementing any broker or optional PKCE-bound handoff. A shared UI library
+   and public client allowlist do not establish shared sandbox state or APK provenance.
+
+### Historical UI review gates (not new deployment authorization)
 
 1. **Latest owner direction:** use visual simulation, not actual sandbox authentication.
    `npm run preview:ui` serves the shared UI on port 3002 with simulated login/data,
@@ -38,7 +51,7 @@ handoff in [HANDOVER.md](HANDOVER.md), and design details in [architecture](docs
    decoded; scoped axe-core A/AA scans pass. Manual accessibility, actual provider,
    ownership/MFA/revocation and production authentication validation remain separate.
 
-The review gates above take precedence over the older suggestions below.
+The active native backend review gates take precedence over older suggestions below.
 
 
 0. Review many-to-many Google settings: three-method cap, passwordless/native

@@ -13,13 +13,17 @@ export async function currentOAuthBinding(db: D1Database, hash: string, kind: st
 const liveBindingSql = `EXISTS (SELECT 1 FROM oauth_credential_bindings b
   JOIN app_authorizations a ON a.id = b.grant_id AND a.user_id = b.user_id AND a.app_id = b.client_id
   JOIN users u ON u.id = b.user_id AND u.password_hash = b.password_snapshot
-  WHERE b.credential_hash = ? AND b.kind = ? AND b.expires_at > ? AND a.scopes = ?)`;
+  JOIN ecosystem_apps c ON c.id = b.client_id AND c.first_party = 1 AND c.active = 1
+  WHERE b.credential_hash = ? AND b.kind = ? AND b.expires_at > ? AND a.scopes = ?
+  AND NOT EXISTS (SELECT 1 FROM json_each(?) s WHERE NOT EXISTS (
+    SELECT 1 FROM json_each(c.allowed_scopes) permitted WHERE permitted.value = s.value)))`;
 
 export async function exchangeOAuthCredential(db: D1Database, env: Env,
   kind: 'code' | 'refresh', raw: string, row: Record<string, any>) {
   const oldHash = await sha256Hex(raw);
   const binding = await currentOAuthBinding(db, oldHash, kind);
   if (!binding || binding.user_id !== row.user_id || binding.client_id !== row.client_id) return null;
+  if (env.TURNSTILE_REQUIRED === 'true' && Number(binding.bot_verified) !== 1) return null;
   const scopes = parseJsonStringArray(row.scopes);
   const granted = parseJsonStringArray(binding.granted_scopes);
   if (!scopes.every(scope => granted.includes(scope))) return null;
@@ -41,14 +45,14 @@ export async function exchangeOAuthCredential(db: D1Database, env: Env,
     db.prepare(`UPDATE oauth_credential_bindings SET kind = ?
       WHERE credential_hash = ? AND kind = ? AND (${liveBindingSql})
       AND EXISTS (SELECT 1 FROM ${table} WHERE ${key} = ? AND ${flag} = 0 AND expires_at > ?) RETURNING user_id`)
-      .bind(marker, oldHash, kind, oldHash, kind, now, binding.granted_scopes, kind === 'code' ? raw : oldHash, now),
+      .bind(marker, oldHash, kind, oldHash, kind, now, binding.granted_scopes, JSON.stringify(scopes), kind === 'code' ? raw : oldHash, now),
     db.prepare(`UPDATE ${table} SET ${flag} = 1 WHERE ${key} = ? AND ${flag} = 0 AND expires_at > ?
       AND EXISTS (SELECT 1 FROM oauth_credential_bindings WHERE credential_hash = ? AND kind = ?)`)
       .bind(kind === 'code' ? raw : oldHash, now, oldHash, marker),
   ];
   const insertBinding = (hash: string, type: string, expiry: string) => db.prepare(`INSERT INTO oauth_credential_bindings
-    (credential_hash, kind, user_id, client_id, grant_id, password_snapshot, expires_at)
-    SELECT ?, ?, user_id, client_id, grant_id, password_snapshot, ? FROM oauth_credential_bindings
+    (credential_hash, kind, user_id, client_id, grant_id, password_snapshot, expires_at, bot_verified, source_session_id)
+    SELECT ?, ?, user_id, client_id, grant_id, password_snapshot, ?, bot_verified, source_session_id FROM oauth_credential_bindings
     WHERE credential_hash = ? AND kind = ?`)
     .bind(hash, type, expiry, oldHash, marker);
   statements.push(insertBinding(accessHash, 'access', new Date(Date.now() + ACCESS_TOKEN_TTL_SECONDS * 1000).toISOString()));
