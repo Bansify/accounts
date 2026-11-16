@@ -3,9 +3,11 @@
  * D1 SCHEMA BOOTSTRAP & ERROR ISOLATION (`getDb`, `authQuery`, `oauthQuery`)
  * =============================================================================
  * Cold-start safe via WeakMap: initializes core/security tables + ecosystem seeds
- * automatically without ever overwriting existing `redirect_uris` or `secret_hash`.
+ * automatically; the versioned first-party transition merges callbacks and makes
+ * the seven requested registrations public (no legacy client secret).
  */
 
+import { FIRST_PARTY_COLUMNS, FIRST_PARTY_CERT_SCHEMA, firstPartySeeds } from './first-party.ts';
 import type { D1Database, D1PreparedStatement, Env } from './types.ts';
 import { OAUTH_STATE_SCHEMA } from './oauth-schema.ts';
 import { PASSKEY_SCHEMA } from './passkey-schema.ts';
@@ -102,6 +104,7 @@ const BOOTSTRAP_STATEMENTS: string[] = [
     secret_hash   TEXT,
     homepage_url  TEXT,
     is_core       INTEGER NOT NULL DEFAULT 0,
+    ${FIRST_PARTY_COLUMNS},
     created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   )`,
   `INSERT INTO ecosystem_apps (id, client_id, name, description, icon, is_verified, is_core) VALUES
@@ -229,7 +232,9 @@ export async function getDb(env: Env): Promise<D1Database> {
       ...BOOTSTRAP_STATEMENTS.map((sql) => env.DB.prepare(sql)),
       ...GOOGLE_ACCOUNT_SCHEMA.map((sql) => env.DB.prepare(sql)),
       ...GOOGLE_METHOD_SCHEMA.map((sql) => env.DB.prepare(sql)),
+      ...FIRST_PARTY_CERT_SCHEMA.map((sql) => env.DB.prepare(sql)),
       ...buildDefaultCallbackSeedStatements(env.DB, env.APP_DOMAIN),
+      ...firstPartySeeds(env.DB, env.APP_DOMAIN),
     ];
     pending = env.DB.batch(statements)
       .then(() => undefined)

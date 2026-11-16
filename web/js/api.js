@@ -12,6 +12,7 @@
  * =============================================================================
  */
 
+import { botToken } from './bot-check.js';
 import { apiUrl } from './config.js';
 import { parsePageAuthuser } from './authuser.js';
 
@@ -98,7 +99,14 @@ export async function apiCall(path, { method = 'GET', body = null, token = null 
     body: body ? JSON.stringify(body) : undefined,
   };
 
+  let verificationPending = false;
   try {
+    if (['/auth/signin', '/auth/signup'].includes(path.split('?')[0])) {
+      verificationPending = true;
+      const proof = await botToken(path.split('?')[0]);
+      verificationPending = false;
+      if (proof) opts.body = JSON.stringify({ ...(body || {}), turnstile_token: proof });
+    }
     let res = await fetch(apiUrl(path), opts);
     let data = await parseJson(res);
 
@@ -116,12 +124,12 @@ export async function apiCall(path, { method = 'GET', body = null, token = null 
       data,
       error: res.ok ? null : (data && (data.message || data.error)) || `Request failed (${res.status})`,
     };
-  } catch {
+  } catch (error) {
     return {
       ok: false,
       status: 0,
       data: null,
-      error: 'Cannot reach Accounts. Check your connection and try again.',
+      error: (verificationPending && error?.message) || 'Cannot reach Accounts. Check your connection and try again.',
     };
   }
 }

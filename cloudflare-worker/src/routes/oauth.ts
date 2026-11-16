@@ -1,6 +1,8 @@
 import { oauthDecision } from './oauth-decision.ts';
 import { oauthToken } from './oauth-token.ts';
-import { currentOAuthBinding } from '../oauth-state.ts';
+import { oauthAccess } from '../oauth-access.ts';
+import { firstPartyAllowed, requestedScopes } from '../first-party.ts';
+import { nativeRevoke } from './oauth-native-revoke.ts';
 /**
  * =============================================================================
  * OAUTH 2.0 PROVIDER ROUTES ("Sign in with Gothwad")
@@ -16,11 +18,6 @@ import {
   parseJsonStringArray,
   readJson,
 } from '../http.ts';
-import {
-  getSigningSecret,
-  sha256Hex,
-  verifyJwt,
-} from '../crypto.ts';
 import { fetchProfile, logActivity, resolveAvatarUrl } from '../users.ts';
 import { resolveSession } from '../sessions.ts';
 import {
@@ -28,7 +25,6 @@ import {
   findOAuthClient,
   isRedirectUriAllowed,
   OAUTH_SCOPES,
-  parseScopes,
   pkceRequestError,
 } from '../oauth-helpers.ts';
 
@@ -44,14 +40,14 @@ export async function handleOAuthRoute(
   if (route === '/oauth/app-info' && request.method === 'GET') {
     const clientId = url.searchParams.get('client_id') || '';
     const client = await findOAuthClient(db, clientId);
-    if (!client) return withCors(apiError('Unknown OAuth client', 404));
+    if (!firstPartyAllowed(client)) return withCors(json({ error: 'unauthorized_client' }, 400));
     return withCors(
       json({
         id: client.id,
         name: client.name,
         icon: client.icon,
         is_verified: !!client.is_verified,
-        scopes_supported: Object.keys(OAUTH_SCOPES),
+        scopes_supported: parseJsonStringArray(client.allowed_scopes),
       }),
     );
   }
@@ -60,15 +56,15 @@ export async function handleOAuthRoute(
     const clientId = url.searchParams.get('client_id') || '';
     const redirectUri = url.searchParams.get('redirect_uri') || '';
     const responseType = url.searchParams.get('response_type') || '';
-    const scopes = parseScopes(url.searchParams.get('scope') || '');
 
     const client = await findOAuthClient(db, clientId);
-    if (!client) return withCors(apiError('Unknown client_id', 400));
+    if (!firstPartyAllowed(client)) return withCors(json({ error: 'unauthorized_client' }, 400));
+    const scopes = requestedScopes(client, url.searchParams.get('scope') || '', OAUTH_SCOPES);
     if (responseType !== 'code') return withCors(apiError('Only response_type=code is supported', 400));
     if (!isRedirectUriAllowed(env, client, redirectUri)) {
       return withCors(apiError('redirect_uri is not registered for this app', 400));
     }
-    if (scopes.length === 0) return withCors(apiError('At least one valid scope is required', 400));
+    if (!scopes) return withCors(json({ error: 'invalid_scope' }, 400));
 
     const pkceError = pkceRequestError(
       client,
@@ -99,26 +95,9 @@ export async function handleOAuthRoute(
   }
 
   if (route === '/oauth/userinfo' && request.method === 'GET') {
-    const authHeader = request.headers.get('Authorization') || '';
-    const token = authHeader.replace('Bearer ', '').trim();
-    if (!token) return withCors(json({ error: 'invalid_token' }, 401));
-
-    const payload = await verifyJwt(token, getSigningSecret(env));
-    if (!payload || payload.token_use !== 'oauth_access' || payload.iss !== env.AUTH_HUB_URL ||
-      !payload.client_id || payload.aud !== payload.client_id || !Number.isFinite(payload.exp) ||
-      payload.exp <= Date.now() / 1000 || !Number.isFinite(payload.iat) || payload.iat > Date.now() / 1000 + 30) {
-      return withCors(json({ error: 'invalid_token' }, 401));
-    }
-
-    const scopes: string[] = String(payload.scope || '')
-      .split(' ')
-      .filter(Boolean);
-    const tokenHash = await sha256Hex(token);
-    const binding = await oauthQuery(() => currentOAuthBinding(db, tokenHash, 'access'));
-    if (!binding || binding.user_id !== payload.sub || binding.client_id !== payload.client_id ||
-      !scopes.every(scope => parseJsonStringArray(binding.granted_scopes).includes(scope))) {
-      return withCors(json({ error: 'invalid_token' }, 401));
-    }
+    const ctx = await oauthQuery(() => oauthAccess(request, db, env));
+    if (!ctx) return withCors(json({ error: 'invalid_token' }, 401));
+    const { payload, scopes } = ctx;
     const profile = await fetchProfile(db, String(payload.sub));
     if (!profile) {
       return withCors(json({ error: 'invalid_token' }, 401));
@@ -131,6 +110,9 @@ export async function handleOAuthRoute(
       info.preferred_username = profile.username || payload.username;
       info.picture = resolveAvatarUrl(profile.avatar_url, env);
       info.updated_at = profile.updated_at || null;
+      info.created_at = profile.created_at || null;
+      info.given_name = profile.first_name || '';
+      info.family_name = profile.last_name || '';
     }
     if (scopes.includes('email')) {
       info.email = `${profile.username || payload.username}@${env.APP_DOMAIN}`;
@@ -142,6 +124,23 @@ export async function handleOAuthRoute(
         limit_bytes: Number(profile.storage_limit_bytes || 0),
         write_access: scopes.includes('drive'),
       };
+    }
+    if (firstPartyAllowed(ctx.client) && scopes.includes('account.read')) {
+      info.phone_number = profile.phone_number || null;
+      // No verified-phone ledger exists; presence is never reported as verification.
+      info.phone_number_verified = false;
+      info.recovery_email = profile.recovery_email || null;
+      info.recovery_email_verified = !!profile.recovery_email_verified;
+      info.date_of_birth = profile.date_of_birth || null;
+      info.gender = profile.gender || null;
+      const security = await db.prepare(`SELECT
+        (SELECT COUNT(*) FROM user_sessions WHERE user_id = ?) AS session_count,
+        (SELECT COUNT(*) FROM app_authorizations WHERE user_id = ?) AS authorization_count,
+        (SELECT COUNT(*) FROM auth_passkeys WHERE user_id = ?) AS passkey_count,
+        EXISTS (SELECT 1 FROM auth_mfa_factors WHERE user_id = ? AND enabled = 1) AS mfa_enabled`)
+        .bind(ctx.uid, ctx.uid, ctx.uid, ctx.uid).first();
+      info.security = { session_count: security?.session_count || 0, authorization_count: security?.authorization_count || 0,
+        passkey_count: security?.passkey_count || 0, has_password: !!profile.has_password, password_changed_at: profile.password_changed_at || null, mfa_enabled: !!security?.mfa_enabled };
     }
     return withCors(json(info));
   }
@@ -185,6 +184,7 @@ export async function handleOAuthRoute(
   }
 
   if (route === '/oauth/revoke' && request.method === 'POST') {
+    if (request.headers.has('Authorization')) return withCors(await oauthQuery(() => nativeRevoke(request, db, env)));
     const session = await resolveSession(request, db, env);
     if (!session.ok || !session.authUser) return withCors(apiError('Please sign in first', 401));
 

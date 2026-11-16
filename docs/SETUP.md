@@ -1,5 +1,12 @@
 # 🛠️ Cloudflare Dashboard Setup Guide — Gothwad Accounts (Native D1)
 
+> **Current policy:** OAuth is first-party-only with active/scope approval, exact
+> redirects and public S256. Existing databases require migration 14 before this
+> Worker; production Turnstile keys and routing must be configured before release.
+> [Native contract and migration order](NATIVE_ACCOUNTS.md) supersede older setup/
+> client-registration guidance below. No self-service registration or APK secrets.
+
+
 > **Status:** Your **`accounts`** Cloudflare D1 database (`392aacf8-1b43-490a-9519-ced4daf5a40f`) is pre-configured in `cloudflare-worker/wrangler.toml`! ✅
 > **0 Credit Card Required · 0 Supabase Keys · 100% Free Tier Native**
 

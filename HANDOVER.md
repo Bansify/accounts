@@ -1,19 +1,28 @@
 # Accounts Handover
 
-Updated 2026-11-06. Current branch: `arena/1be12b88-accounts`.
+Current branch: `arena/dbdb9048-accounts` (base `885aeef`).
 Read [AGENTS.md](AGENTS.md) for constraints and [TASK.md](TASK.md) for session history.
 
 ## Current state
 
-- **Latest merge authorization:** the owner permits committing, pushing and merging
-  the reviewed UI batch if checks are clean. Remote CI must be inspected first;
-  this is not permission to bypass failures or run manual production operations.
-  **PR #30 is open and NOT merged.** Implementation commit 735138b passed fresh
-  build/types and 309 tests; Cloudflare Pages passed, but Workers Builds failed.
-  GitHub exposes no cause/annotations, only build ade77f2b-b4ba-44c9-96b1-b3eb77bbc9cb.
-  Inspect that Cloudflare log before merging; do not assume an infrastructure cause.
+- **Active scope:** first-party OAuth and Android Accounts backend, local only.
+  Complete contract, migration 14, production prerequisites and review-only Wrangler
+  commands: [NATIVE_ACCOUNTS.md](docs/NATIVE_ACCOUNTS.md). Owner now requests PR publication/merge; remote D1/secrets/manual deployment remain unauthorized. Confirm migration/Turnstile readiness before an automatic production rollout.
+- Implemented approved/active clients and scope allowlists, exact redirects/S256,
+  Turnstile-backed authorization chains, scoped userinfo/mobile management, atomic
+  bearer/form revocation, App Links and signed trusted-app discovery. Optional handoff
+  and consent auto-skip are deliberately not implemented. No Android broker was built.
+- Production DEV_MODE remains false; Turnstile is required and fails closed until
+  keys are configured. Release certificates are unconfigured, not debug placeholders.
+  Apply migration 14 after schema 00–13 and before deploying this Worker. Its one-time
+  public-client transition clears the seven registered clients' legacy secret hashes.
+- PR #30 was previously merged as the current base `885aeef`; its historical Worker
+  deployment failure was disclosed and is not resolved or redeployed by this task.
+- Fresh build, Worker types, **327/327 tests**, dry-run bundle, local Wrangler migration/reapply, production dependency audits and whitespace checks pass. Full file list and evidence: [verification report](docs/NATIVE_ACCOUNTS_VERIFICATION.md). The implementation checkpoint had no publication; this follow-up prepares the owner-requested current-branch PR. See TASK.md for the latest publication/merge status. No remote migration, cloud setting or sibling repository edit is authorized.
 
-- **Latest owner direction: visuals only; stop trying to prove real login in Arena.**
+## Historical UI handoff (not the active backend scope)
+
+- **Earlier visual-review direction: visuals only; stop trying to prove real login in Arena.**
   Run **`npm run preview:ui`**, labelled **Accounts visual preview — login and dashboard**,
   on port **3002**. This separate simulator serves shared real UI files with no strip,
   preview buttons or alternate page design. It privately reads local credentials for

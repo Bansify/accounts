@@ -81,7 +81,7 @@ test('trusted browser requests and authenticated headerless proxies retain compa
 test('static CSP disallows inline script execution and static HTML has no inline scripts/handlers', () => {
   const headers = readFileSync(new URL('../web/_headers', import.meta.url), 'utf8');
   assert.match(headers, /X-Frame-Options: DENY/);
-  assert.match(headers, /script-src 'self';/);
+  assert.match(headers, /script-src 'self' https:\/\/challenges\.cloudflare\.com;/);
   assert.doesNotMatch(headers, /script-src[^;]*(?:unsafe-inline|unsafe-eval)/);
   assert.match(headers, /frame-ancestors 'none'/);
   assert.match(headers, /object-src 'none'/);

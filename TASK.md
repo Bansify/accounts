@@ -7,7 +7,7 @@
 >
 > Engineering guide: [`AGENTS.md`](AGENTS.md) · Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · Session archive (`1–30`): [`docs/TASK_HISTORY.md`](docs/TASK_HISTORY.md)
 
-**Last updated:** 2026-11-06 (Session 79 — Owner-Authorized UI Merge Verification)
+**Last updated:** 2026-10-20 — First-party OAuth and native Accounts backend (local implementation)
 
 ---
 
@@ -23,11 +23,32 @@
 | 2.8 | **Universal Google-Style Shadow-DOM Account Menu (`v2.4`) + 100% Pure-English Codebase & Hygiene Gate** | ✅ **DONE (2026-10-22)** |
 | 3 | Roll out central `account-menu.js` + automatic silent SSO in `GothwadTech/store` & `GothwadTech/mail` | 🔜 NEXT |
 
-**Current state in one line:** All 110 UI review IDs are addressed. Owner conditionally authorized merge if checks are clean. PR #30 is OPEN, NOT merged: fresh local build/types and 309 tests pass; Cloudflare Pages passed but Workers Builds failed on implementation commit 735138b. No failure bypass authorized. Investigate the Cloudflare build log before merging; no manual production operations. See docs/UI_REVIEW_PHASES.md.
+**Current state in one line:** First-party/native backend implemented locally on `arena/dbdb9048-accounts`. Migration 14, production Turnstile keys, release fingerprints and coordinated App Links/Pages/Worker rollout need owner review. The owner now authorizes PR publication and merge, but no remote D1, secret or manual deployment operations. Merge readiness must account for automatic deployments. PR #30 was previously merged as base `885aeef`; its historical Worker deployment failure is not resolved here.
 
 ---
 
-## ✅ DONE (Newest First — Sessions 31 to 79)
+## ✅ DONE (Newest First)
+
+### Android Handoff and Owner-Requested PR Preparation
+- Added [the Accounts Android integration prompt](docs/ACCOUNTS_ANDROID_AGENT_PROMPT.md), covering browser S256/state, scoped native APIs, secure refresh rotation, release App Links and explicit broker research gates. Android source has not been reviewed or modified in this task.
+- Fresh follow-up verification: restored ignored dependencies with `npm ci`; build, strict Worker types, **327/327 tests** and whitespace checks pass.
+- Owner requested basic rollout instructions and PR merge. No PR existed for this branch at inspection; preparing a commit/push and PR from this branch only, followed by check inspection.
+- Merge safety gate: confirm production migration 14 and Turnstile keys before an automatic production rollout. Missing migration can break DB-backed routes; missing Turnstile keys intentionally block signin/signup/authorization. Remote migration/secrets changes remain unauthorized.
+
+### First-Party OAuth and Android Accounts Backend — Local Only
+- Added one-time ledger-managed `migrations/0014_first_party_native.sql`, matching empty-DB bootstrap and domain-configured generator; seven public clients, explicit first-party/active/scope checks, exact redirects and public S256. Existing callbacks/grants/release certs/disabled status are retained; requested public-client rows shed legacy secret hashes.
+- Added Turnstile signin/signup/Add-account and consent checks, inherited durable bot proof for unattended refresh, persistent authorize/revoke/mobile limits, and production fail-closed configuration with DEV_MODE false. No APK secrets or invented release fingerprints.
+- Added shared live-ledger bearer verification, gated account.read userinfo, audience/scope-limited mobile sessions/activity/grants/safe profile endpoints, transactional form/bearer grant revocation and release-key discovery with optional Ed25519/ECDSA JWS.
+- Preserved browser slot/chooser/SSO, cookie revoke and fresh web security flows. Optional handoff/consent auto-skip deferred. No Android broker/account discovery or production APK provenance claim.
+- Verification: `npm run build`, strict Worker TypeScript, **327/327 tests**, Wrangler 4.162.0 dry-run bundle, root/Worker production dependency audits (zero advisories), and `git diff --check` passed. An isolated Wrangler local D1 migration rehearsal applied 14 successfully; repeating apply reported no migrations. No dedicated lint script exists. New tests cover policy/PKCE, native ownership/reuse/races/rollback, sensitive scope gating, profile validation, signed discovery, bot proof inheritance, Add-account query paths and rate limits.
+- Operational guide and exact review-only migration/deployment commands: [docs/NATIVE_ACCOUNTS.md](docs/NATIVE_ACCOUNTS.md). No commit/push/merge, remote migration/deploy/secrets/DNS change, sibling edit or live provider test performed.
+
+### Read-Only Android/API Security Review — 2026-10-20
+- Reviewed GitHub source snapshots: storeapp bdfe34cb, store c41d95ae, mailapp 07c2c9b2, mail 7764dcea, plus this Accounts checkout. No application code, sibling repository, cloud configuration, or production data changed.
+- Store Android is native Kotlin/Compose with Retrofit/OkHttp, Custom Tabs/PKCE, DataStore and opt-in privileged installers. Current Store backend uses Worker/D1; older Android handover storage descriptions are stale.
+- High-priority source findings: unscoped bearer interceptor on direct external APK requests; Store/Mail accept identity-only userinfo without service-specific OAuth authorization. Synthetic local resolver checks reproduced identity-only acceptance and rejected unauthenticated/invalid fixtures; all fetches were mocked, not production-tested.
+- Additional findings: Store tokens in ordinary private preferences and local-only logout; Mail Android is a seeded Room prototype without network permission and configures release signing with its debug key.
+- NEXT UP: Owner review and separate authorization for fixes in the relevant repositories. Verify service audience/scopes, isolate unauthenticated downloads/token refresh, protect/revoke native credentials, then implement real Mail integration and release signing. No security certification or live exploit claim.
 
 ### Session 79 — 2026-11-06 — Owner-Authorized Merge Verification
 - Owner authorized committing, pushing and merging this reviewed UI implementation if checks are clean. This does not authorize manual production operations or bypassing failed checks.
@@ -378,6 +399,12 @@
 ---
 
 ## 🔜 NEXT UP
+
+- **Owner-requested merge:** publish the current-branch PR and inspect checks. Confirm migration/Turnstile readiness before merging into an automatically deployed production branch; report any blocker clearly.
+
+- **Active backend gate:** review migration 14 and native contract; supply real release fingerprints, configure production Turnstile, pin trusted-app verification keys, and coordinate App Links/frontend/Worker routing. Obtain separate authorization before any remote migration/deploy. See [native operations guide](docs/NATIVE_ACCOUNTS.md).
+- Android AccountManager/broker ownership, independently installed app discovery and uninstall/failover remain research/physical-device work, not backend completion claims. Optional handoff is deferred.
+- The following UI/provider suggestions are historical and do not authorize remote operations for this branch.
 
 - **Current review gate:** all 110 scoped UI items are addressed after explicit approval of Phases 3–5 together. Stop for owner visual review. Real Cloudflare/provider/security and manual accessibility validation remain separate; do not resume sandbox cookie debugging as a visual prerequisite.
 

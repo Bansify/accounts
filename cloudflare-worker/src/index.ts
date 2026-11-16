@@ -23,11 +23,14 @@
  * =============================================================================
  */
 
+import { handleMobileRoute } from './routes/mobile.ts';
+import { trustedApps, assetLinks } from './routes/trusted-apps.ts';
+import { verifyBot } from './turnstile.ts';
 import type { Env } from './types.ts';
 import { isUnsafeBrowserMutation } from './origins.ts';
 import { enforceAuthRateLimit } from './auth-rate-limit.ts';
 import { DatabaseUnavailableError, getDb, OAuthDatabaseError, oauthQuery } from './db.ts';
-import { apiError, buildCorsHeaders, json } from './http.ts';
+import { apiError, buildCorsHeaders, json, readJson } from './http.ts';
 import { handleInternalRoute, handlePublicRoute } from './routes/public-internal.ts';
 import { handleAuthEntryRoute } from './routes/auth-entry.ts';
 import { handleAuthSessionRoute } from './routes/auth-session.ts';
@@ -91,7 +94,7 @@ export default {
         res.headers.set('Content-Security-Policy', "object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
       }
       for (const cookie of newCookies) res.headers.append('Set-Cookie', cookie);
-      if (route.startsWith('/auth/') || route.startsWith('/oauth/')) {
+      if (route.startsWith('/auth/') || route.startsWith('/oauth/') || route.startsWith('/mobile/')) {
         res.headers.set('Cache-Control', 'no-store');
         res.headers.set('Pragma', 'no-cache');
       }
@@ -99,7 +102,7 @@ export default {
     };
 
     try {
-      if ((route.startsWith('/auth/') || route.startsWith('/oauth/')) && isUnsafeBrowserMutation(request, env)) {
+      if ((route.startsWith('/auth/') || route.startsWith('/oauth/') || route.startsWith('/mobile/')) && isUnsafeBrowserMutation(request, env)) {
         return withCors(json({ error: 'csrf_rejected', message: 'Untrusted request origin' }, 403));
       }
       // 2. Public Avatars & Health Check
@@ -113,8 +116,19 @@ export default {
       const limited = await enforceAuthRateLimit(request, db, env, route);
       if (limited) return withCors(limited);
 
+      if (route === '/.well-known/assetlinks.json' && request.method === 'GET') return withCors(await assetLinks(db, env));
+      if (route === '/apps/trusted' && request.method === 'GET') return withCors(await trustedApps(db, env));
+      if (route === '/auth/bot-config' && request.method === 'GET') return withCors(json({
+        required: env.TURNSTILE_REQUIRED === 'true', site_key: env.TURNSTILE_SITE_KEY || '',
+      }));
+      if (request.method === 'POST' && ['/auth/signin', '/auth/signup'].includes(route)) {
+        const body = await readJson(request.clone());
+        const botError = await verifyBot(request, env, body.turnstile_token, route.slice(6));
+        if (botError) return withCors(botError);
+      }
       // 3. Auth Entry, Session, Multi-Account Switcher, Profile & OAuth 2.0 Routes
       return (
+        (await handleMobileRoute(request, db, env, route, withCors)) ??
         (await handleGoogleRoute(request, db, env, route, withCors)) ??
         (await handleAuthEntryRoute(request, url, db, env, route, withCors)) ??
         (await handleAuthSessionRoute(request, url, db, env, route, withCors)) ??

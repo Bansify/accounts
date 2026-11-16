@@ -1,5 +1,12 @@
 # Store Sign-In: Android + Web Callback Setup (Cloudflare D1 Native)
 
+> **Current policy:** OAuth is first-party-only with active/scope approval, exact
+> redirects and public S256. Existing databases require migration 14 before this
+> Worker; production Turnstile keys and routing must be configured before release.
+> [Native contract and migration order](NATIVE_ACCOUNTS.md) supersede older setup/
+> client-registration guidance below. No self-service registration or APK secrets.
+
+
 > **100% Cloudflare D1 Native:** OAuth client registry (`ecosystem_apps`) lives inside the **`gothwad-accounts-db`** D1 SQLite database on Cloudflare Workers (NOT in Kiwi Store's database, and NO Supabase is used anywhere).
 
 **Handoff prompts for sibling repos:**
