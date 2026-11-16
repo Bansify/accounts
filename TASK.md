@@ -23,11 +23,22 @@
 | 2.8 | **Universal Google-Style Shadow-DOM Account Menu (`v2.4`) + 100% Pure-English Codebase & Hygiene Gate** | ✅ **DONE (2026-10-22)** |
 | 3 | Roll out central `account-menu.js` + automatic silent SSO in `GothwadTech/store` & `GothwadTech/mail` | 🔜 NEXT |
 
-**Current state in one line:** Browser authentication outage investigated on `arena/eb8cd1f5-accounts` (base PR #31 merge `74ed2e9`). Reproduced the legacy-schema 503 locally and isolated migration-14 setup from shared browser authentication. Recovery patch passes fresh 333 tests/build/types/dry-run. The owner now explicitly authorizes publishing and merging this recovery branch; preparing the PR and inspecting automatic deployments. No remote SQL or secret changes authorized. Production recovery is not yet verified.
+**Current state in one line:** On `arena/bd9d6d9d-accounts`, based on merged recovery PR #32 (`26b9efc`). Owner now reports explicit `migration_required` when Android opens Sign in with Gothwad. Source inspection confirms the OAuth schema guard, not a Custom Tab failure. Migration 14 rollout remains outstanding; no remote SQL or Android edits performed.
 
 ---
 
 ## ✅ DONE (Newest First)
+
+### OAuth Sign-In Follow-Up & Read-Only `GothwadTech/accountsapp` Verification
+- Owner reports `migration_required` JSON after Android opens Sign in with Gothwad in a Custom Tab and asked for an exact in-chat migration walkthrough plus a read-only check of `GothwadTech/accountsapp`.
+- Inspected `GothwadTech/accountsapp` snapshot `402e44a99b334bfbad4a3c45dd0e188c6fe34cbe` read-only (`AccountsApplication.kt`, `GothwadConfig.kt`, `GothwadAccounts.kt`, `OAuthClient.kt`, `MobileAccountClient.kt`, `AndroidManifest.xml`, `docs/SERVER_CHANGES.md`):
+  - `clientId`: `gothwad-accounts-android` (`com.gothwad.accounts`) and sample flavors `gothwad-accounts-sample-alpha` / `gothwad-accounts-sample-beta` match `migrations/0014_first_party_native.sql` exactly.
+  - `scopes`: `profile email offline_access drive.read account.read account.profile.write` and mandatory `S256` PKCE (`response_type=code`) match the Accounts Worker contract.
+  - `redirectUri`: Debug builds use `com.gothwad.accounts:/oauth/callback` (works immediately after migration 14); Release builds (`BuildConfig.DEBUG == false`) use `https://accounts.gothwadtech.com/oauth/callback` (`allowCustomSchemeRedirect = false`), which additionally requires Android App Links verification (`/.well-known/assetlinks.json` routed to the `accounts` Worker + release certificate SHA-256 in `ecosystem_apps.android_cert_sha256`).
+- Owner confirmed migration 14 was executed and supplied the release certificate SHA-256 fingerprint (`50:4E:2F:C7:8A:B6:8E:01:8B:84:8F:C1:02:76:2E:44:99:A0:88:03:41:2E:66:A4:0B:2B:09:40:3C:61:49:B6` / lowercase hex `504e2fc78ab68e018b848fc102762e4499a08803412e66a40b2b09403c6149b6`).
+- Owner confirmed migration 14 succeeded: Android Sign in with Gothwad opened the consent screen and passed Cloudflare Turnstile, but tapping Continue opened the web dashboard inside Chrome Custom Tabs instead of returning to the native Android app.
+- Root cause: (1) Chrome Custom Tabs treats same-domain `https://accounts.gothwadtech.com/oauth/callback` navigation from `https://accounts.gothwadtech.com/api/oauth/authorize` as staying inside the browser tab unless handed off via an Android `intent://` URI or verified App Link, and (2) `/oauth/callback` and `/.well-known/assetlinks.json` did not exist on Cloudflare Pages (`web/`), causing Cloudflare Pages to fall back to the web dashboard.
+- Fix: updated `consentPageHtml` (`cloudflare-worker/src/oauth-helpers.ts`) to trigger an explicit `intent://` handoff (`scheme=https;package=com.gothwad.accounts`) on Android for `gothwad-accounts-android` HTTPS callbacks, added `web/oauth/callback/index.html` + `web/oauth/callback/callback.js` fallback bridge, and published `web/.well-known/assetlinks.json` with the owner's release certificate SHA-256 (`50:4E:2F:C7:8A:B6:8E:01:8B:84:8F:C1:02:76:2E:44:99:A0:88:03:41:2E:66:A4:0B:2B:09:40:3C:61:49:B6`).
 
 ### Browser Authentication Outage — Local Recovery Patch
 - Owner reports username discovery returns service unavailable and Google returns Database temporarily unavailable after PR #31. Reproduced the same 503 using the owner-supplied old table shapes: shared `getDb()` ran first-party seeds referencing absent migration-14 columns, so every browser-auth route failed before its own logic. This is a code coupling defect, not evidence of deleted accounts.
