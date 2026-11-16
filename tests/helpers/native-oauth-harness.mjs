@@ -16,6 +16,7 @@ export async function nativeFixture() {
 }
 export function callback(client) {
   return client === accountsClient ? 'com.gothwad.accounts:/oauth/callback' :
+    client === 'gothwad-mail' ? 'com.gothwad.mail:/oauth/callback' :
     client === 'kiwi-store' ? 'com.gothwad.store:/oauth/callback' : `com.gothwad.accounts.sample.${client.endsWith('beta') ? 'beta' : 'alpha'}:/oauth/callback`;
 }
 export const decisionBody = (client = accountsClient, scope = fullScope) => ({

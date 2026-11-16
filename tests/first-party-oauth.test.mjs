@@ -97,8 +97,17 @@ test('userinfo uses live first-party/scoped grants: sensitive security gated, no
     const basic = await nativeTokens(f, { scope: 'profile email offline_access' });
     const ordinary = await (await nativeRequest(f, '/oauth/userinfo', basic.access_token)).json();
     assert.equal(ordinary.preferred_username, 'nativeowner');
+    assert.equal(ordinary.client_id, accountsClient);
+    assert.equal(ordinary.aud, accountsClient);
+    assert.deepEqual(ordinary.scopes, ['profile', 'email', 'offline_access']);
     assert.ok(ordinary.created_at);
     for (const key of ['security', 'phone_number', 'recovery_email', 'drive']) assert.ok(!(key in ordinary), key);
+    const mailTokens = await nativeTokens(f, { client: 'gothwad-mail', scope: 'profile email offline_access mail' });
+    const mailInfo = await (await nativeRequest(f, '/oauth/userinfo', mailTokens.access_token)).json();
+    assert.equal(mailInfo.client_id, 'gothwad-mail');
+    assert.equal(mailInfo.aud, 'gothwad-mail');
+    assert.equal(mailInfo.preferred_username, 'nativeowner');
+    assert.ok(mailInfo.scopes.includes('mail'));
     const full = await nativeTokens(f);
     const r = await nativeRequest(f, '/oauth/userinfo', full.access_token);
     const info = await r.json();

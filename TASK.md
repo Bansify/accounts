@@ -23,11 +23,17 @@
 | 2.8 | **Universal Google-Style Shadow-DOM Account Menu (`v2.4`) + 100% Pure-English Codebase & Hygiene Gate** | ✅ **DONE (2026-10-22)** |
 | 3 | Roll out central `account-menu.js` + automatic silent SSO in `GothwadTech/store` & `GothwadTech/mail` | 🔜 NEXT |
 
-**Current state in one line:** On `arena/bd9d6d9d-accounts`, based on merged recovery PR #32 (`26b9efc`). Owner now reports explicit `migration_required` when Android opens Sign in with Gothwad. Source inspection confirms the OAuth schema guard, not a Custom Tab failure. Migration 14 rollout remains outstanding; no remote SQL or Android edits performed.
+**Current state in one line:** On `arena/05adc3d3-accounts`, based on merged PR #33 (`3368ac21`). Added `client_id`, `aud`, `scope`, and `scopes` claims to `GET /oauth/userinfo` for `GothwadTech/mail` Bearer verification, extended first-party Android `intent://` handoff, and added copy-paste implementation prompts for `GothwadTech/mail` and `GothwadTech/mailapp`.
 
 ---
 
 ## ✅ DONE (Newest First)
+
+### `GothwadTech/mail` & `GothwadTech/mailapp` Integration Prompts + `/oauth/userinfo` Scope Claims
+- Inspected `GothwadTech/mail` (`AGENTS.md`, `sql/01_mail_schema.sql`, `worker/wrangler.toml`, `worker/src/index.ts`, `worker/src/session.ts`, `worker/src/sessionPayload.ts`, `worker/src/mail-types.ts`, `worker/src/mail-read.ts`, `worker/src/mail-write.ts`, `worker/src/retention.ts`, `src/services/mailApi.ts`) and `GothwadTech/mailapp` (`app/build.gradle.kts`, `AndroidManifest.xml`, `MailModels.kt`, `MailDao.kt`, `MailDatabase.kt`, `SeedData.kt`, `MailRepository.kt`, `MailViewModel.kt`, `AccountSwitcherDialog.kt`) read-only.
+- Updated `GET /oauth/userinfo` (`cloudflare-worker/src/routes/oauth.ts`) to include `client_id`, `aud`, `scope`, and `scopes` (plus `preferred_username` when `mail` scope is granted) so `GothwadTech/mail` (`worker/src/session.ts` -> `resolveBearer`) can strictly verify `client_id === 'gothwad-mail'` and `scopes.includes('mail')` without needing `JWT_SECRET`.
+- Updated `consentPageHtml` (`cloudflare-worker/src/oauth-helpers.ts`) with scope icons for `mail`, `account.read`, and `account.profile.write` and extended Android `intent://` callback handoff to all official first-party Android packages.
+- Created [`docs/MAIL_BACKEND_AGENT_PROMPT.md`](docs/MAIL_BACKEND_AGENT_PROMPT.md) and [`docs/MAIL_ANDROID_AGENT_PROMPT.md`](docs/MAIL_ANDROID_AGENT_PROMPT.md) with complete implementation prompts for `GothwadTech/mail` and `GothwadTech/mailapp`.
 
 ### OAuth Sign-In Follow-Up & Read-Only `GothwadTech/accountsapp` Verification
 - Owner reports `migration_required` JSON after Android opens Sign in with Gothwad in a Custom Tab and asked for an exact in-chat migration walkthrough plus a read-only check of `GothwadTech/accountsapp`.

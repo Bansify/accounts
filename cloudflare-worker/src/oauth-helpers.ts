@@ -132,7 +132,8 @@ export function consentPageHtml(
 
   const scopeIcons: Record<string, string> = {
     profile: '🪪', email: '📧', drive: '☁️', 'drive.read': '☁️',
-    notes: '📝', chat: '💬', offline_access: '🕐',
+    notes: '📝', chat: '💬', mail: '✉️', 'account.read': '🛡️',
+    'account.profile.write': '⚙️', offline_access: '🕐',
   };
   const scopes = parseScopes(params.get('scope') || '');
   const scopeItems = scopes
@@ -245,7 +246,7 @@ export function consentPageHtml(
 <script nonce="${nonce}">
   document.getElementById('brand-icon').addEventListener('error', (event) => { event.target.style.display = 'none'; });
   const data = ${JSON.stringify(data).replace(/</g, '\\u003c')};
-  const androidPkg = ${JSON.stringify(client.id === 'gothwad-accounts-android' ? String(client.android_package || '') : '').replace(/</g, '\\u003c')};
+  const androidPkg = ${JSON.stringify(Number(client.first_party) === 1 ? String(client.android_package || '') : '').replace(/</g, '\\u003c')};
   async function decide(approved) {
     const btn = document.getElementById(approved ? 'allow' : 'deny');
     btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (approved ? 'Authorizing…' : 'Denying…');
