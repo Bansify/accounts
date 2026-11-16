@@ -23,11 +23,18 @@
 | 2.8 | **Universal Google-Style Shadow-DOM Account Menu (`v2.4`) + 100% Pure-English Codebase & Hygiene Gate** | ✅ **DONE (2026-10-22)** |
 | 3 | Roll out central `account-menu.js` + automatic silent SSO in `GothwadTech/store` & `GothwadTech/mail` | 🔜 NEXT |
 
-**Current state in one line:** First-party/native backend implemented locally on `arena/dbdb9048-accounts`. Migration 14, production Turnstile keys, release fingerprints and coordinated App Links/Pages/Worker rollout need owner review. The owner now authorizes PR publication and merge, but no remote D1, secret or manual deployment operations. Merge readiness must account for automatic deployments. PR #30 was previously merged as base `885aeef`; its historical Worker deployment failure is not resolved here.
+**Current state in one line:** Browser authentication outage investigated on `arena/eb8cd1f5-accounts` (base PR #31 merge `74ed2e9`). Reproduced the legacy-schema 503 locally and isolated migration-14 setup from shared browser authentication. Recovery patch passes fresh 333 tests/build/types/dry-run. The owner now explicitly authorizes publishing and merging this recovery branch; preparing the PR and inspecting automatic deployments. No remote SQL or secret changes authorized. Production recovery is not yet verified.
 
 ---
 
 ## ✅ DONE (Newest First)
+
+### Browser Authentication Outage — Local Recovery Patch
+- Owner reports username discovery returns service unavailable and Google returns Database temporarily unavailable after PR #31. Reproduced the same 503 using the owner-supplied old table shapes: shared `getDb()` ran first-party seeds referencing absent migration-14 columns, so every browser-auth route failed before its own logic. This is a code coupling defect, not evidence of deleted accounts.
+- Moved native trigger/client initialization into `native-db.ts`, invoked only for OAuth/mobile/trusted-app/App Links routes. Browser auth no longer depends on migration 14. Native routes fail closed with 503 migration_required until both table shapes are ready; failures are not cached, and no runtime ALTER/PRAGMA or production SQL is used.
+- Six new real-SQLite regressions cover legacy password discovery/login/session, Google start/full mocked-provider callback and account selection, native isolation, partial migration, same-isolate migration recovery and native setup persistence failures. Existing OAuth fixtures now initialize native state explicitly.
+- Verification: **333/333 tests**, frontend build, strict Worker TypeScript, Wrangler 4.162.0 dry-run and whitespace checks pass. No browser credentials, Turnstile keys or production data were inspected. [Recovery explanation and operational boundaries](docs/AUTH_BOOTSTRAP_RECOVERY.md).
+- Owner now explicitly requests publishing/merging the fix. Fresh build/types and 333/333 tests pass; no direct deployment, remote migration or secret/settings changes performed. Rechecked the prior PR #31 merge commit: its production Worker and Pages builds passed, consistent with the regression reaching deployment (not independent live endpoint verification). Preparing a recovery PR from this branch only; automatic production deployment and actual sign-in recovery must still be verified.
 
 ### Android Handoff and Owner-Requested PR Preparation
 - Added [the Accounts Android integration prompt](docs/ACCOUNTS_ANDROID_AGENT_PROMPT.md), covering browser S256/state, scoped native APIs, secure refresh rotation, release App Links and explicit broker research gates. Android source has not been reviewed or modified in this task.
@@ -399,6 +406,8 @@
 ---
 
 ## 🔜 NEXT UP
+
+- **Priority: restore browser authentication.** Obtain authorization to publish/release the recovery fix from `arena/eb8cd1f5-accounts`; verify the real Worker deployment revision and username/password/Google/session behavior. Do not apply random SQL or reset users to resolve bootstrap coupling. Native migration/release work is secondary until browser recovery is confirmed.
 
 - **Owner-requested merge:** publish the current-branch PR and inspect checks. Confirm migration/Turnstile readiness before merging into an automatically deployed production branch; report any blocker clearly.
 

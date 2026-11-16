@@ -1,9 +1,20 @@
 # Accounts Handover
 
-Current branch: `arena/dbdb9048-accounts` (base `885aeef`).
+Current branch: `arena/eb8cd1f5-accounts` (base PR #31 merge `74ed2e9`).
 Read [AGENTS.md](AGENTS.md) for constraints and [TASK.md](TASK.md) for session history.
 
 ## Current state
+
+- **Active priority: browser authentication recovery.** The owner reports a live outage.
+  Legacy-schema SQLite reproduction confirmed migration-14 setup in shared `getDb()`
+  could fail all auth routes. Local fix moves that setup to native-only `getNativeDb()`;
+  browser login works without migration 14 and native routes remain fail-closed.
+- **333/333 tests**, build/types and Wrangler dry-run pass. No production action,
+  commit/push/merge or deployment was performed for this fix. See
+  [recovery details](docs/AUTH_BOOTSTRAP_RECOVERY.md). Production is not verified restored.
+- The following native implementation/release notes are historical context; the
+  original migration-before-Worker requirement is now scoped to native features,
+  not browser authentication in the recovery Worker.
 
 - **Active scope:** first-party OAuth and Android Accounts backend, local only.
   Complete contract, migration 14, production prerequisites and review-only Wrangler

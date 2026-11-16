@@ -2,6 +2,7 @@
  * Offline OAuth redirect regressions against real SQLite D1 (`LocalD1Database`).
  * Run: node --experimental-strip-types --test tools/test-oauth-redirects.mjs
  */
+import { getNativeDb } from '../cloudflare-worker/src/native-db.ts';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -23,6 +24,7 @@ async function makeEnv(callbacks) {
     DEV_MODE: 'false',
   };
   await worker.fetch(new Request('https://accounts.example.com/api/health'), env);
+  await getNativeDb(env);
 
   const pwHash = await hashPassword('Password123!');
   await db

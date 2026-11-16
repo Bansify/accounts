@@ -3,6 +3,16 @@
 Local implementation on `arena/dbdb9048-accounts`. No remote migration, deployment,
 secret change, DNS change, sibling repository edit or Android APK build was performed.
 
+## Browser-authentication recovery update
+
+The recovery Worker separates native schema setup from browser authentication.
+Existing pre-14 databases can serve username discovery, password/Google sign-in and
+sessions without migration 14. Native/OAuth/discovery endpoints remain blocked with
+503 migration_required until their schema is ready. Official client runtime seeds
+now run on the first native request, not on browser login. See [the recovery guide](AUTH_BOOTSTRAP_RECOVERY.md).
+The rollout prerequisites below concern native features; they must not be interpreted
+as permission for a missing optional migration to take browser sign-in offline.
+
 ## Trust boundary
 
 OAuth is restricted to operator-approved `ecosystem_apps.first_party = 1` and
@@ -73,7 +83,8 @@ Runtime seeds run only once, recorded as `14_first_party_native` in
 
 **These are review instructions, not permission to run remote operations.**
 Existing databases must have schema 00–13 before applying migration 14, **before**
-deploying this Worker. Older databases are not silently altered by runtime PRAGMA,
+enabling native/OAuth features. The recovery Worker can serve browser authentication
+without migration 14. Older databases are not silently altered by runtime PRAGMA,
 introspection or opportunistic ALTER TABLE. `sql/00`–`05` remain unchanged/idempotent.
 Wrangler now uses `migrations_dir = "../migrations"`; this directory starts at 14
 and does not replace the historical SQL setup instructions for 00–13.

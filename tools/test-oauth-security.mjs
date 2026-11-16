@@ -2,6 +2,7 @@
  * Provider-side OAuth security regressions against real SQLite D1 + fault injection.
  * Run: node --experimental-strip-types --test tools/test-oauth-security.mjs
  */
+import { getNativeDb } from '../cloudflare-worker/src/native-db.ts';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
@@ -93,6 +94,7 @@ async function createFixture({ callback = native, secret = null, failSql, raceSq
     DEV_MODE: 'false',
   };
   await worker.fetch(new Request('https://accounts.example.com/api/health'), baseEnv);
+  await getNativeDb(baseEnv);
 
   const pwHash = await hashPassword('Password123!');
   const nowIso = new Date().toISOString();

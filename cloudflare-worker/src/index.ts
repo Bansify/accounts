@@ -23,13 +23,14 @@
  * =============================================================================
  */
 
+import { getNativeDb, NativeMigrationRequiredError } from './native-db.ts';
 import { handleMobileRoute } from './routes/mobile.ts';
 import { trustedApps, assetLinks } from './routes/trusted-apps.ts';
 import { verifyBot } from './turnstile.ts';
 import type { Env } from './types.ts';
 import { isUnsafeBrowserMutation } from './origins.ts';
 import { enforceAuthRateLimit } from './auth-rate-limit.ts';
-import { DatabaseUnavailableError, getDb, OAuthDatabaseError, oauthQuery } from './db.ts';
+import { DatabaseUnavailableError, getDb, OAuthDatabaseError } from './db.ts';
 import { apiError, buildCorsHeaders, json, readJson } from './http.ts';
 import { handleInternalRoute, handlePublicRoute } from './routes/public-internal.ts';
 import { handleAuthEntryRoute } from './routes/auth-entry.ts';
@@ -109,9 +110,9 @@ export default {
       const publicRes = await handlePublicRoute(request, url, env, route, withCors);
       if (publicRes) return publicRes;
 
-      const db = route.startsWith('/oauth/')
-        ? await oauthQuery(() => getDb(env))
-        : await getDb(env);
+      const native = route.startsWith('/oauth/') || route.startsWith('/mobile/') ||
+        route === '/apps/trusted' || route === '/.well-known/assetlinks.json';
+      const db = native ? await getNativeDb(env) : await getDb(env);
 
       const limited = await enforceAuthRateLimit(request, db, env, route);
       if (limited) return withCors(limited);
@@ -144,6 +145,11 @@ export default {
         withCors(apiError('Endpoint not found', 404))
       );
     } catch (err: any) {
+      if (err instanceof NativeMigrationRequiredError) {
+        return withCors(json({ error: 'migration_required',
+          message: 'OAuth and mobile features require database migration 14. Browser sign-in remains available.' },
+          503, { 'Cache-Control': 'no-store' }));
+      }
       if (err instanceof OAuthDatabaseError) {
         return withCors(
           json(
