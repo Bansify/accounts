@@ -103,11 +103,19 @@ export async function handleOAuthRoute(
       return withCors(json({ error: 'invalid_token' }, 401));
     }
 
-    const info: Record<string, any> = { sub: payload.sub };
+    const info: Record<string, any> = {
+      sub: payload.sub,
+      client_id: ctx.client.id,
+      aud: ctx.client.id,
+      scope: scopes.join(' '),
+      scopes,
+    };
 
+    if (scopes.includes('profile') || scopes.includes('mail')) {
+      info.preferred_username = profile.username || payload.username;
+    }
     if (scopes.includes('profile')) {
       info.name = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
-      info.preferred_username = profile.username || payload.username;
       info.picture = resolveAvatarUrl(profile.avatar_url, env);
       info.updated_at = profile.updated_at || null;
       info.created_at = profile.created_at || null;
