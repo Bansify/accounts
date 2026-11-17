@@ -12,7 +12,7 @@ export function authRateLimitPolicy(method: string, route: string): Policy | nul
   }
   if (method === 'GET' && route === '/auth/google/callback') return { group: 'google-callback', limit: 60, seconds: 600 };
   if (['GET', 'POST'].includes(method) && ['/oauth/authorize', '/oauth/decision', '/oauth/authorize/decision'].includes(route)) return { group: 'oauth-authorize', limit: 30, seconds: 60 };
-  if (route.startsWith('/mobile/') && ['GET', 'POST', 'PATCH'].includes(method)) return { group: 'mobile', limit: 60, seconds: 60 };
+  if (route.startsWith('/mobile/') && ['GET', 'POST', 'PATCH', 'DELETE'].includes(method)) return { group: 'mobile', limit: 60, seconds: 60 };
   if (method === 'POST' && route === '/oauth/revoke') return { group: 'oauth-revoke', limit: 30, seconds: 60 };
   if (method !== 'POST') return null;
   if (route === '/auth/google/unlink') return { group: 'google-unlink', limit: 10, seconds: 600 };

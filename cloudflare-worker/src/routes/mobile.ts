@@ -1,9 +1,11 @@
-/** Narrow native account management. Credential changes and account deletion remain web-only. */
+/** Full native account management & direct Android authentication routes (`/api/mobile/*`). */
 import type { D1Database, Env, ResponseWrapper } from '../types.ts';
 import { json, readJson, GENDER_VALUES, parseJsonStringArray } from '../http.ts';
 import { oauthAccess, accessGate } from '../oauth-access.ts';
 import { ACCOUNTS_ANDROID } from '../first-party.ts';
 import { logActivity } from '../users.ts';
+import { handleMobileAuthRoute } from './mobile-auth.ts';
+import { handleMobileSecurityRoute } from './mobile-security.ts';
 
 export function mobileProfileFields(body: Record<string, unknown>) {
   const allowed = ['first_name', 'last_name', 'date_of_birth', 'gender'];
@@ -26,6 +28,9 @@ export function mobileProfileFields(body: Record<string, unknown>) {
 }
 export async function handleMobileRoute(request: Request, db: D1Database, env: Env, route: string, wrap: ResponseWrapper) {
   if (!route.startsWith('/mobile/')) return null;
+  if (route.startsWith('/mobile/auth/')) {
+    return handleMobileAuthRoute(request, new URL(request.url), db, env, route, wrap);
+  }
   const ctx = await oauthAccess(request, db, env);
   if (!ctx) return wrap(json({ error: 'invalid_token' }, 401));
   const write = request.method !== 'GET';
@@ -86,5 +91,7 @@ export async function handleMobileRoute(request: Request, db: D1Database, env: E
     await logActivity(db, uid, 'profile_update', 'Personal info updated', Object.keys(fields).join(', '), request);
     return wrap(json({ ok: true, profile: changed }));
   }
+  const securityRes = await handleMobileSecurityRoute(request, db, env, route, ctx, wrap);
+  if (securityRes) return securityRes;
   return wrap(json({ error: 'not_found' }, 404));
 }

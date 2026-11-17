@@ -158,6 +158,7 @@ export function consentPageHtml(
   };
 
   const nonce = crypto.randomUUID().replace(/-/g, '');
+  const autoApprove = Number(client.first_party) === 1 && params.get('prompt') !== 'consent';
   const html = `<!doctype html>
 <html lang="en"><head>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -217,7 +218,7 @@ export function consentPageHtml(
 <body>
   <div class="card">
     <div class="brand"><img src="/favicon.ico" id="brand-icon" alt="Gothwad" /><span>Gothwad</span></div>
-    <h1>${esc(client.name)} wants access to your account</h1>
+    <h1>${autoApprove ? `Signing in to ${esc(client.name)}…` : `${esc(client.name)} wants access to your account`}</h1>
     <p class="sub">Sign in with your Gothwad Account</p>
 
     <div class="user">
@@ -230,13 +231,15 @@ export function consentPageHtml(
          style="color:var(--link);text-decoration:none;font-weight:500;">Use another account</a>
     </p>
 
-    <div class="label">This will allow the app to:</div>
-    ${scopeItems}
+    <div id="consent-details"${autoApprove ? ' style="display:none"' : ''}>
+      <div class="label">This will allow the app to:</div>
+      ${scopeItems}
 
-    <div class="note">Gothwad never shares your password with this app.
-      You can remove access anytime from <b>My Account → Security</b>.</div>
+      <div class="note">Gothwad never shares your password with this app.
+        You can remove access anytime from <b>My Account → Security</b>.</div>
+    </div>
 
-    ${env.TURNSTILE_REQUIRED === 'true' ? `<div class="cf-turnstile" data-sitekey="${esc(env.TURNSTILE_SITE_KEY || '')}" data-action="authorize"></div><script nonce="${nonce}" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>` : ''}
+    ${env.TURNSTILE_REQUIRED === 'true' ? `<div class="cf-turnstile" data-sitekey="${esc(env.TURNSTILE_SITE_KEY || '')}" data-action="authorize" data-callback="onTurnstileSolved"></div><script nonce="${nonce}" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>` : ''}
     <div class="err" id="err"></div>
     <div class="row">
       <button class="btn btn-ghost" id="deny">Cancel</button>
@@ -247,9 +250,11 @@ export function consentPageHtml(
   document.getElementById('brand-icon').addEventListener('error', (event) => { event.target.style.display = 'none'; });
   const data = ${JSON.stringify(data).replace(/</g, '\\u003c')};
   const androidPkg = ${JSON.stringify(Number(client.first_party) === 1 ? String(client.android_package || '') : '').replace(/</g, '\\u003c')};
+  const autoApprove = ${autoApprove ? 'true' : 'false'};
+  const turnstileRequired = ${env.TURNSTILE_REQUIRED === 'true' ? 'true' : 'false'};
   async function decide(approved) {
     const btn = document.getElementById(approved ? 'allow' : 'deny');
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (approved ? 'Authorizing…' : 'Denying…');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (approved ? 'Signing in…' : 'Canceling…');
     try {
       const res = await fetch('/api/oauth/decision', {
         method: 'POST', credentials: 'include',
@@ -271,11 +276,13 @@ export function consentPageHtml(
       const err = document.getElementById('err');
       err.textContent = e.message; err.style.display = 'block';
       if (window.turnstile) window.turnstile.reset();
-      btn.disabled = false; btn.textContent = approved ? 'Allow access' : 'Deny';
+      btn.disabled = false; btn.textContent = approved ? 'Continue' : 'Cancel';
     }
   }
+  window.onTurnstileSolved = () => { if (autoApprove) decide(true); };
   document.getElementById('allow').onclick = () => decide(true);
   document.getElementById('deny').onclick = () => decide(false);
+  if (autoApprove && !turnstileRequired) decide(true);
 </script>
 </body></html>`;
 
