@@ -47,8 +47,8 @@ export function isUnsafeBrowserMutation(request: Request, env: Env): boolean {
   const fetchSite = request.headers.get('Sec-Fetch-Site');
   if (fetchSite && !['same-origin', 'none'].includes(fetchSite)) return true;
   if (authenticatedProxy(request, env)) return false;
-  // OAuth exchange uses PKCE/client authentication, never a browser session cookie.
+  // OAuth exchange and cookie-free native mobile auth never use browser session cookies.
   const path = new URL(request.url).pathname.replace(/^\/api(?=\/)/, '');
-  if (!fetchSite && (path === '/oauth/token' || ((path === '/oauth/revoke' || path.startsWith('/mobile/')) && /^Bearer [^\s]+$/i.test(request.headers.get('Authorization') || '')))) return false;
+  if (!fetchSite && (path === '/oauth/token' || path.startsWith('/mobile/auth/') || ((path === '/oauth/revoke' || path.startsWith('/mobile/')) && /^Bearer [^\s]+$/i.test(request.headers.get('Authorization') || '')))) return false;
   return true;
 }
