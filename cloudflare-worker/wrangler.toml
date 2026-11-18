@@ -52,7 +52,7 @@ API_DOMAIN = "api.gothwadtech.com"
 
 # Owner-selected outbound sender; verify noreply.<APP_DOMAIN> in Resend before use.
 # Keep this public value in source control so deployments retain the chosen sender.
-RESEND_FROM = "Gothwad Accounts <security@noreply.gothwadtech.com>"
+RESEND_FROM = "Bansify Accounts <security@noreply.gothwadtech.com>"
 
 # ⚠️ MUST stay "false" in production! ("true" only in local `.dev.vars`)
 DEV_MODE = "false"

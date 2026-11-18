@@ -7,14 +7,14 @@
 export const GOTHWAD_SERVICES = [
   {
     id: 'gothwad-meet',
-    name: 'Gothwad Meet',
+    name: 'Bansify Meet',
     url: 'https://meet.gothwadtech.com',
     icon: 'video',
-    description: 'Video meetings for your Gothwad Account',
+    description: 'Video meetings for your Bansify Account',
   },
   {
     id: 'gothwad-mail',
-    name: 'Gothwad Mail',
+    name: 'Bansify Email',
     url: 'https://mail.gothwadtech.com',
     icon: 'mail',
     description: 'username@gothwadtech.com inbox',
@@ -28,28 +28,28 @@ export const GOTHWAD_SERVICES = [
   },
   {
     id: 'gothwad-drive',
-    name: 'Gothwad Drive',
+    name: 'Bansify Drive',
     url: 'https://drive.gothwadtech.com',
     icon: 'hard-drive',
     description: 'Files and folders on your account',
   },
   {
     id: 'gothwad-notes',
-    name: 'Gothwad Notes',
+    name: 'Bansify Notes',
     url: 'https://notes.gothwadtech.com',
     icon: 'file-text',
     description: 'Notes and lists, synced',
   },
   {
     id: 'gothwad-calendar',
-    name: 'Gothwad Calendar',
+    name: 'Bansify Calendar',
     url: 'https://calender.gothwadtech.com',
     icon: 'calendar',
     description: 'Events and reminders',
   },
   {
     id: 'gothwad-contacts',
-    name: 'Gothwad Contacts',
+    name: 'Bansify Contacts',
     url: 'https://contacts.gothwadtech.com',
     icon: 'users',
     description: 'People and addresses',
@@ -59,14 +59,14 @@ export const GOTHWAD_SERVICES = [
 export const GOTHWAD_PRODUCTS = [
   {
     id: 'gothwad-tube',
-    name: 'Gothwad Tube (PlusTube)',
+    name: 'Bansify Tube (PlusTube)',
     url: 'https://tube.gothwadtech.com',
     icon: 'play',
     description: 'Video — PlusTube',
   },
   {
     id: 'gothwad-chat',
-    name: 'GrixChat (Gothwad Chat)',
+    name: 'Bansify Chat (GrixChat)',
     url: 'https://grixchat.gothwadtech.com',
     icon: 'message-circle',
     description: 'Messaging',

@@ -46,15 +46,15 @@ if (!document.getElementById('google-chooser')) {
     fail('');
     el('google-onboarding').hidden = true;
     el('google-chooser').hidden = false;
-    el('google-title').textContent = 'Choose a Gothwad Account';
+    el('google-title').textContent = 'Choose a Bansify Account';
     el('google-message').textContent = 'Continue with an existing account, or add a new account using this Google account.';
   }
   function showOnboarding() {
     fail('');
     el('google-chooser').hidden = true;
     el('google-onboarding').hidden = false;
-    el('google-title').textContent = 'Create your Gothwad Account';
-    el('google-message').textContent = 'Choose a new Gothwad username and confirm your details.';
+    el('google-title').textContent = 'Create your Bansify Account';
+    el('google-message').textContent = 'Choose a new Bansify username and confirm your details.';
     el('google-choose-back').hidden = accounts.length === 0;
   }
   async function init() {

@@ -68,7 +68,7 @@ export function resolveEndpoints(opts = {}) {
     opts.accountsApiOrigin || `${accountsWebOrigin}/api`
   ).replace(/\/+$/, '');
 
-  const ecosystemName = String(opts.ecosystemName || 'Gothwad').trim() || 'Gothwad';
+  const ecosystemName = String(opts.ecosystemName || 'Bansify').trim() || 'Bansify';
   return { appDomain: inferredDomain, accountsWebOrigin, accountsApiOrigin, ecosystemName };
 }
 

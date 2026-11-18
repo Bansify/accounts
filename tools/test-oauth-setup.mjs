@@ -71,6 +71,6 @@ test('production config binds D1 DB, contains zero Supabase vars, and disables D
 test('production sender retains the owner-selected noreply sending subdomain', () => {
   const domain = config.match(/^APP_DOMAIN\s*=\s*"([^"]+)"/m)[1];
   const sender = config.match(/^RESEND_FROM\s*=\s*"([^"]+)"/m)[1];
-  assert.equal(sender, `Gothwad Accounts <security@noreply.${domain}>`);
+  assert.equal(sender, `Bansify Accounts <security@noreply.${domain}>`);
   assert.doesNotMatch(sender, /onboarding@resend\.dev/);
 });

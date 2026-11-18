@@ -110,7 +110,7 @@ test('Multi-account D1 summaries return real avatarUrl + avatar_url + name for A
   assert.match(expandedHtml, /<span class="gw-badge">5<\/span>/, 'Unread badge pill must render cleanly');
   assert.match(expandedHtml, /Add another account/);
   assert.doesNotMatch(expandedHtml, /Manage accounts/);
-  assert.match(expandedHtml, /Manage your Gothwad Account/);
+  assert.match(expandedHtml, /Manage your Bansify Account/);
   assert.match(expandedHtml, /Privacy policy/);
   assert.match(expandedHtml, /Terms of Service/);
 

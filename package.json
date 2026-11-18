@@ -1,7 +1,7 @@
 {
-  "name": "gothwad-accounts",
+  "name": "bansify-accounts",
   "version": "2.0.0",
-  "description": "Gothwad Accounts — 100% Cloudflare Native (D1 + Worker Auth + OAuth 2.0) central identity provider",
+  "description": "Bansify Accounts — 100% Cloudflare Native (D1 + Worker Auth + OAuth 2.0) central identity provider",
   "type": "module",
   "scripts": {
     "dev": "npm run build && node --experimental-strip-types server.js",
