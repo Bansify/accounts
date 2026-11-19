@@ -1,153 +1,109 @@
-# Bansify Mail Android (`Bansify/mailapp`) — Runtime Fixes, Zero-Browser Cross-App SSO & Direct Native Auth Prompt
+# Bansify Mail Android (`Bansify/mailapp`): Domain (`bansify.com`) & Brand (`Bansify Mail`) Migration Prompt
 
-> **How to use:** Copy and paste the prompt below into the Arena coding agent working inside **`Bansify/mailapp`**.
-
----
-
-```markdown
-You are working inside `Bansify/mailapp` (`com.gothwad.mail`).
-
-## Standing Rules
-1. **100% Pure English** across all Kotlin code, Compose UI, strings, comments, tests, and docs.
-2. **Preserve Everything That Currently Works:** Keep the existing Browser / Chrome Custom Tabs OAuth 2.0 + S256 PKCE flow (`GothwadMailAuth.launchSignIn` / `OAuthHttpClient`), `EncryptedTokenStore`, Room v2 offline-first sync, `MailApiClient`, and existing tests intact.
-3. **Fix Two Runtime Bugs + Upgrade to Zero-Browser Cross-App Silent SSO & Direct Native Worker Sign-In:**
-   - Fix the `/api/session` missing Bearer header in `MailApiClient.kt` and the custom-scheme `<intent-filter>` in `AndroidManifest.xml` (plus untrack `.gradle/` cache files).
-   - When a user is already signed into `Bansify Accounts` (`com.gothwad.accounts`) or another official Gothwad app on the phone, sign in **automatically via Binder IPC + PKCE (`issue_peer_code`) in <1 second with ZERO browser and ZERO permissions screen**.
-   - Provide a **100% Native Jetpack Compose Sign-In / Sign-Up / 2FA / Forgot Password UI** talking directly to `https://accounts.bansify.com/api/mobile/auth/*` over `OkHttp` so `Bansify Mail` works even if **no browser is installed on the phone**, while keeping **"Sign in with Browser"** (`CustomTabsIntent`) as a secondary button.
+Paste the prompt below into the coding agent working in **`Bansify/mailapp`**.
+Do not run this prompt inside `Bansify/accounts`, `Bansify/accountsapp`, or `Bansify/mail`.
 
 ---
 
-## 1. Fix Two Runtime Bugs & Untrack `.gradle/` Cache Files
+Work only in this `Bansify/mailapp` repository on the active session branch. First read `README.md`, `app/build.gradle.kts`, `app/src/main/AndroidManifest.xml`, `app/src/main/res/values/strings.xml`, `app/src/main/java/com/gothwad/mail/auth/GothwadEndpoints.kt`, `app/src/main/java/com/gothwad/mail/auth/MailAuthModels.kt`, `app/src/main/java/com/gothwad/mail/auth/MailAuthSessionManager.kt`, `app/src/main/java/com/gothwad/mail/auth/broker/BrokerModels.kt`, `app/src/main/java/com/gothwad/mail/data/remote/MailApiClient.kt`, `app/src/main/java/com/gothwad/mail/data/repository/MailMappers.kt`, `tools/check_android_scaffold.py`, `tools/check_docs.py`, and `.github/workflows/release.yml` before editing.
 
-1. **`app/src/main/java/com/gothwad/mail/data/remote/MailApiClient.kt` (`executeRaw`, lines 188–196):**
-   - Remove the `if (url.pathSegments.lastOrNull() == ROUTE_SESSION)` block that sends `GET /api/session` without `Authorization: Bearer <token>`.
-   - `GET /api/session` on `https://mail.bansify.com` requires authentication (`requireSession`), so `api.session()` must attach `Authorization: Bearer $token` just like every other `/api/*` endpoint.
-   - Update the `/api/session` unit test in `app/src/test/java/com/gothwad/mail/data/remote/MailApiClientTest.kt` to assert `assertEquals("Bearer test-token", request.getHeader("Authorization"))`.
-2. **`app/src/main/AndroidManifest.xml` (lines 48–56):**
-   - On `AccountCallbackActivity`, change the custom-scheme `<data>` element from:
-     ```xml
-     <data
-         android:scheme="${gothwadRedirectScheme}"
-         android:host="oauth"
-         android:path="/callback" />
-     ```
-     to:
-     ```xml
-     <data android:scheme="${gothwadRedirectScheme}" />
-     ```
-     (matching `Bansify/accountsapp`) so Android intercepts single-slash `com.gothwad.mail:/oauth/callback` redirects as well as `https://mail.bansify.com/oauth/callback`.
-3. **Remove tracked `.gradle/` files:**
-   - Run `git rm -r --cached .gradle || true` and ensure `.gradle/` is in `.gitignore`.
+## Why `Bansify/mailapp` Needs This Update
+
+Both `Bansify/accounts` and `Bansify/mail` have been migrated from `gothwadtech.com` (`accounts.gothwadtech.com`, `mail.gothwadtech.com`) and `Gothwad Mail` / `Gothwad Accounts` to **`bansify.com`** (`accounts.bansify.com`, `mail.bansify.com`) and **`Bansify Mail`** / **`Bansify Accounts`**.
+An incomplete open PR (`#6`) in `Bansify/mailapp` only updated a few UI labels to "Bansify Email" and completely missed `GothwadEndpoints.kt`, `MailApiClient.kt`, `AndroidManifest.xml` App Links (`mail.gothwadtech.com`), fallback `@gothwadtech.com` email domains, and unit tests.
 
 ---
 
-## 2. Zero-Browser Automatic Cross-App Silent SSO (`issue_peer_code` + `POST /api/mobile/auth/peer-code`)
+## Mandatory Compatibility Invariants (Enforced by `tools/check_android_scaffold.py` & `Bansify/accounts`)
 
-When `Bansify Accounts` (`com.gothwad.accounts`) or another official Gothwad app is signed in on the phone, `Bansify Mail` must be able to sign in **automatically without opening a browser or showing a permissions screen**:
-
-1. **Server Endpoint (`POST https://accounts.bansify.com/api/mobile/auth/peer-code`):**
-   - Authenticated with `Authorization: Bearer <peer_app_valid_first_party_access_token>`.
-   - Request JSON:
-     ```json
-     {
-       "target_client_id": "gothwad-mail",
-       "redirect_uri": "com.gothwad.mail:/oauth/callback",
-       "scope": "profile email offline_access mail",
-       "code_challenge": "<S256_challenge>",
-       "code_challenge_method": "S256"
-     }
-     ```
-   - Response JSON (`200`):
-     ```json
-     {
-       "ok": true,
-       "code": "<one-time-pkce-code>",
-       "client_id": "gothwad-mail",
-       "redirect_uri": "com.gothwad.mail:/oauth/callback",
-       "scope": "profile email offline_access mail",
-       "expires_in": 300
-     }
-     ```
-2. **Update `AccountDirectoryProvider.kt` (`app/src/main/java/com/gothwad/mail/auth/broker/AccountDirectoryProvider.kt`):**
-   - Override `call(method: String, arg: String?, extras: Bundle?): Bundle?`:
-     - Verify `TrustVerifier.isTrustedUid(context, Binder.getCallingUid())`. If untrusted, return `Bundle().apply { putBoolean("ok", false); putString("error", "untrusted_caller") }`.
-     - When `method == "issue_peer_code"`:
-       - Read `user_id` (or `username`/`email`), `target_client_id`, `redirect_uri`, `scope`, `code_challenge`, and `code_challenge_method` (default `"S256"`) from `extras`.
-       - Find the matching local account in `MailAuthSessionManager` / `EncryptedTokenStore`, ensure a fresh `access_token` (refreshing via `OAuthHttpClient.refreshToken` if expired), and call `OAuthHttpClient.issuePeerAuthCode(...)` (`POST https://accounts.bansify.com/api/mobile/auth/peer-code`).
-       - Return a `Bundle` with `putBoolean("ok", true)`, `putString("code", code)`, `putString("redirect_uri", redirectUri)`, `putString("scope", scope)`.
-3. **Update `PeerBrokerClient.kt` & `GothwadMailAuth.kt` / `MailAuthSessionManager.kt`:**
-   - Add `PeerBrokerClient.requestPeerAuthCode(sourcePackage, userId, targetClientId, redirectUri, scope, codeChallenge): Result<PeerAuthCodeResult>`.
-   - When the user taps **"Continue as <DiscoveredAccount>"** on `SignInWelcomeScreen` or `AccountSwitcherDialog` — **AND automatically on app startup when 0 local accounts are signed in and at least 1 verified `DiscoveredAccount` is found from a peer app (`com.gothwad.accounts`)**:
-     - Generate a fresh S256 PKCE `(codeVerifier, codeChallenge)`.
-     - Call `PeerBrokerClient.requestPeerAuthCode(...)` on `content://${discovered.sourcePackage}.accountprovider` with `targetClientId = "gothwad-mail"`, `redirectUri = GothwadEndpoints.REDIRECT_URI_CUSTOM_SCHEME`, `scope = GothwadEndpoints.OAUTH_SCOPE`, and `codeChallenge`.
-     - If `requestPeerAuthCode` returns a `code`, immediately exchange `(code, codeVerifier)` via `OAuthHttpClient.exchangeAuthorizationCode(...)` (`POST /api/oauth/token`), fetch `/api/oauth/userinfo`, and persist the session in `EncryptedTokenStore` — **logging the user in silently in <1 second with ZERO browser**!
-     - Only if `requestPeerAuthCode` fails (for example, the peer app is older or its token is expired), fall back to opening the native Sign-In sheet pre-filled with `discovered.email`.
+Do **NOT** change any of the following technical identifiers:
+1. **`applicationId = "com.gothwad.mail"`** in `app/build.gradle.kts` (and `applicationIdSuffix = ".debug"`).
+2. **Kotlin `package com.gothwad.mail.*` declarations and class/file names** (`GothwadMailAuth`, `GothwadEndpoints`, `KnownGothwadApps`, etc. — `.github/workflows/android-ci.yml` and `tools/check_android_scaffold.py` reference them).
+3. **OAuth `CLIENT_ID = "gothwad-mail"`** and custom scheme **`com.gothwad.mail:/oauth/callback`** (`${gothwadRedirectScheme}`).
+4. **ContentProvider authority `${applicationId}.gothwad.account.directory`** and `<queries>` package `com.gothwad.accounts` (`tools/check_android_scaffold.py` enforces both).
+5. **Required `README.md` sections and documented secrets/endpoints** enforced by `tools/check_docs.py` (`## Architecture`, `### Endpoints used`, `## Build and test`, `## Manual device checks`, and the 4 `RELEASE_KEYSTORE_BASE64` / `KEYSTORE_PASSWORD` / `KEY_ALIAS` / `KEY_PASSWORD` secret names).
 
 ---
 
-## 3. Direct Native Android Sign-In / Sign-Up / MFA / Forgot Password (`/api/mobile/auth/*` — Zero Browser Required)
+## Exact File-by-File Changes Required in `Bansify/mailapp`
 
-Add direct native authentication methods to `OAuthHttpClient.kt` and `MailAuthSessionManager.kt` / `GothwadMailAuth.kt` calling `https://accounts.bansify.com/api/mobile/auth/*`:
+### 1. Update All Runtime Endpoints, Hosts & App Links (`gothwadtech.com` -> `bansify.com`)
 
-1. **`POST /api/mobile/auth/check-identifier`** — `{ "identifier": "..." }` -> `{ "ok": true, "exists": true|false, "kind": "...", "error"?: "..." }`
-2. **`POST /api/mobile/auth/check-username`** — `{ "username": "..." }` -> `{ "ok": true, "available": true|false, "valid": true|false, "email": "...@bansify.com", "error"?: "..." }`
-3. **`POST /api/mobile/auth/signin`** —
-   ```json
-   {
-     "client_id": "gothwad-mail",
-     "scope": "profile email offline_access mail",
-     "identifier": "<username | email | phone>",
-     "password": "<password>"
-   }
+1. **`app/src/main/AndroidManifest.xml`**:
+   - In `.auth.AccountCallbackActivity`, change `android:host="mail.gothwadtech.com"` to `android:host="mail.bansify.com"`.
+   - Keep the custom-scheme `<data android:scheme="${gothwadRedirectScheme}" />` intent-filter with scheme only (no `android:host` or `android:path`).
+2. **`app/src/main/java/com/gothwad/mail/auth/GothwadEndpoints.kt`**:
+   - Update all domain constants to `bansify.com`:
+     ```kotlin
+     const val REDIRECT_URI_APP_LINK: String = "https://mail.bansify.com/oauth/callback"
+     const val ACCOUNTS_BASE_URL: String = "https://accounts.bansify.com"
+     const val MAIL_API_BASE_URL: String = "https://mail.bansify.com/api"
+     const val MAIL_API_HOST: String = "mail.bansify.com"
+     const val ACCOUNTS_API_HOST: String = "accounts.bansify.com"
+     ```
+   - Keep `CLIENT_ID = "gothwad-mail"` and `REDIRECT_URI_CUSTOM_SCHEME = "com.gothwad.mail:/oauth/callback"` unchanged.
+3. **`app/src/main/java/com/gothwad/mail/data/remote/MailApiClient.kt`**:
+   - Update companion constants:
+     ```kotlin
+     const val DEFAULT_BASE_URL: String = "https://mail.bansify.com/api"
+     const val GothwadMailHost: String = "mail.bansify.com"
+     ```
+4. **Fallback `@gothwadtech.com` Email Addresses in Auth, Broker & Repository Mappers**:
+   - `app/src/main/java/com/gothwad/mail/auth/MailAuthModels.kt` (line 32):
+     `val mailboxAddress: String get() = email.ifBlank { "$username@bansify.com" }`
+   - `app/src/main/java/com/gothwad/mail/auth/MailAuthSessionManager.kt` (line 566):
+     `email = email?.takeIf { it.isNotBlank() } ?: "$username@bansify.com",`
+   - `app/src/main/java/com/gothwad/mail/auth/broker/BrokerModels.kt` (line 122):
+     `?: username?.takeIf { it.isNotBlank() }?.let { "$it@bansify.com" }`
+   - `app/src/main/java/com/gothwad/mail/data/repository/MailMappers.kt` (lines 73, 176, 211):
+     - `val senderEmail = message.from.email.ifBlank { "unknown@bansify.com" }`
+     - `val email = user.email.ifBlank { "$username@bansify.com" }`
+     - `val email = info.email?.takeIf { it.isNotBlank() } ?: existing?.email ?: "$username@bansify.com"`
+
+### 2. Rebrand All User-Visible Strings & Compose Screens (`Gothwad Mail` -> `Bansify Mail`, `Gothwad Account` -> `Bansify Account`)
+
+Use **`Bansify Mail`** (consistent with `Bansify/accounts` and `Bansify/mail`) across all UI strings:
+1. **`app/src/main/res/values/strings.xml`**:
+   - `<string name="app_name">Bansify Mail</string>`
+   - `<string name="signed_out_title">Welcome to Bansify Mail</string>`
+   - `<string name="signed_out_subtitle">Sign in with your Bansify Account to read and send email</string>`
+   - `<string name="sign_in_with_gothwad">Sign in with Bansify</string>` (keep the `name="sign_in_with_gothwad"` resource ID unchanged).
+2. **`app/src/main/java/com/gothwad/mail/data/model/MailModels.kt` & `app/src/main/java/com/gothwad/mail/data/repository/MailMappers.kt`**:
+   - Default signature: `"Sent from Gothwad Mail"` -> `"Sent from Bansify Mail"`.
+3. **`app/src/main/java/com/gothwad/mail/data/remote/MailApiClient.kt` & `MailApiModels.kt` & `auth/*.kt`**:
+   - Replace user-facing error messages referencing `Gothwad Mail`, `Gothwad Account`, and `Gothwad Accounts` with `Bansify Mail`, `Bansify Account`, and `Bansify Accounts`.
+4. **`app/src/main/java/com/gothwad/mail/ui/components/AccountSwitcherDialog.kt` & `MailNavigationDrawer.kt`**:
+   - Replace `"Gothwad Mail"` -> `"Bansify Mail"` and `"Manage your Gothwad Account"` -> `"Manage your Bansify Account"`.
+5. **`app/src/main/java/com/gothwad/mail/ui/screens/InboxScreen.kt`, `NativeAuthSheet.kt`, `SettingsScreen.kt`, `SignedOutScreen.kt`, and `viewmodel/MailViewModel.kt`**:
+   - In `InboxScreen.kt`: fallback `"Pawan Gothwad"` -> `"Bansify User"` (or `"Pawan"`).
+   - In `NativeAuthSheet.kt`:
+     - `"Sign in to Gothwad"` -> `"Sign in to Bansify"`
+     - `"Create a Gothwad Account"` -> `"Create a Bansify Account"`
+     - `"Your new account is created on Gothwad Accounts"` -> `"Your new account is created on Bansify Accounts"`
+   - In `SettingsScreen.kt`, `SignedOutScreen.kt`, and `MailViewModel.kt`:
+     - Replace all `"Gothwad Mail"` -> `"Bansify Mail"`, `"Gothwad Account"` -> `"Bansify Account"`, `"Gothwad Accounts"` -> `"Bansify Accounts"`, `"Sign in with Gothwad"` -> `"Sign in with Bansify"`, and `"Gothwad apps"` -> `"Bansify apps"`.
+
+### 3. Update All Unit Tests, `README.md` & `.github/workflows/release.yml`
+
+1. **Unit Tests (`app/src/test/java/com/gothwad/mail/**/*.kt`)**:
+   - In `PkceTest.kt`, `CallbackValidatorTest.kt`, `MailAuthSessionManagerTest.kt`, `NativeAuthTest.kt`, `PeerBrokerDiscoveryTest.kt`, `MailApiClientTest.kt`, and `MailRepositorySyncTest.kt`:
+     - Replace all `accounts.gothwadtech.com`, `mail.gothwadtech.com`, `mail.gothwadtech.com%2Foauth%2Fcallback`, and `@gothwadtech.com` URLs/emails with `accounts.bansify.com`, `mail.bansify.com`, `mail.bansify.com%2Foauth%2Fcallback`, and `@bansify.com`.
+     - Update any test assertions that check for `"Gothwad Accounts"` / `"Gothwad Mail"` strings if the underlying string was updated.
+2. **`README.md`**:
+   - Replace `accounts.gothwadtech.com` -> `accounts.bansify.com`, `mail.gothwadtech.com` -> `mail.bansify.com`, and `Gothwad Mail` / `Gothwad Accounts` -> `Bansify Mail` / `Bansify Accounts` while preserving all required headings, endpoint paths, and secret names checked by `tools/check_docs.py`.
+3. **`.github/workflows/release.yml`**:
+   - Keep all required steps, secrets, and Gradle tasks enforced by `tools/check_android_scaffold.py` (`Publish versioned GitHub Release`, `Publish rolling pre-release`, `:app:assembleRelease`, `:app:assembleDebug`, `:app:bundleRelease`, `apksigner`, `zipalign`, `steps.signing.outputs.can_sign`, `on:\n  push:`), and update the output APK/AAB filenames and release title from `GothwadMail-v...` / `Gothwad-Mail-v...` / `Gothwad Mail` to `BansifyMail-v...` / `Bansify-Mail-v...` / `Bansify Mail`.
+
+---
+
+## Verification, PR Merge & Final Response Instructions
+
+1. Run and pass all checks locally:
+   ```bash
+   python3 tools/check_android_scaffold.py
+   python3 tools/check_docs.py
+   ./gradlew testDebugUnitTest assembleDebug
    ```
-   - Returns `200` with `{ "ok": true, "access_token": "...", "refresh_token": "...", "expires_in": 900, "scope": "profile email offline_access mail", "user": { ... } }` (immediately fetch `/api/oauth/userinfo` or map and save in `EncryptedTokenStore`!).
-   - Or returns `202` with `{ "ok": true, "mfa_required": true, "challenge": "<64-hex>", "expires_in": 300, "message": "..." }`.
-4. **`POST /api/mobile/auth/signin/mfa`** —
-   ```json
-   {
-     "client_id": "gothwad-mail",
-     "scope": "profile email offline_access mail",
-     "challenge": "<64-hex>",
-     "code": "<6-digit-totp-or-recovery-code>"
-   }
-   ```
-   - Returns `200` with `{ "ok": true, "access_token": "...", "refresh_token": "...", "expires_in": 900, "user": { ... } }`.
-5. **`POST /api/mobile/auth/signup`** —
-   ```json
-   {
-     "client_id": "gothwad-mail",
-     "scope": "profile email offline_access mail",
-     "first_name": "...",
-     "last_name": "...",
-     "username": "...",
-     "password": "...",
-     "recovery_email": "...",
-     "phone_number": "...",
-     "date_of_birth": "YYYY-MM-DD",
-     "gender": "..."
-   }
-   ```
-   - Returns `201` with `{ "ok": true, "access_token": "...", "refresh_token": "...", "expires_in": 900, "user": { ... } }`.
-6. **`POST /api/mobile/auth/forgot-password` & `POST /api/mobile/auth/reset-password`** —
-   - `{ "username": "..." }` and `{ "token": "...", "password": "..." }`.
-
-### UI Integration in `SignInWelcomeScreen.kt` & `AccountSwitcherDialog`:
-- Make the primary **"Sign in with Bansify"** (and **"Add another account"**) action open a **100% Native Jetpack Compose Sign-In / Sign-Up / 2FA / Forgot Password Dialog or Sheet** right inside `Bansify Mail` (Step 1: Username/Email/Phone + "Create account" link -> Step 2: Password + "Forgot password?" link -> Step 3: 6-digit Authenticator/Backup code if `mfa_required == true`).
-- Keep **"Sign in with Browser"** as a secondary outlined/text button that launches the existing Chrome Custom Tabs OAuth 2.0 + S256 PKCE flow (`GothwadMailAuth.launchSignIn`).
-
----
-
-## 4. Domain (`bansify.com`) & Brand (`Bansify Mail` / `Bansify Accounts`) Rebrand
-- Update all domain configuration defaults (`BuildConfig`, Gradle `buildConfigField` / `manifestPlaceholders`, `AndroidManifest.xml` App Links `android:host` for `mail.bansify.com`, `OAuthConfig`, `MailApiClient`, and unit test fixtures) from `gothwadtech.com` (`mail.gothwadtech.com`, `accounts.gothwadtech.com`, `api.gothwadtech.com`) to **`bansify.com`** (`mail.bansify.com`, `accounts.bansify.com`, `api.bansify.com`).
-- Update all user-visible brand strings (`strings.xml`, Compose UI titles/subtitles, app label `Bansify Mail`, and sign-in buttons `Sign in with Bansify`) from `Gothwad Mail` / `Gothwad Accounts` / `Gothwad` to **`Bansify Mail`** / **`Bansify Accounts`** / **`Bansify`**.
-- Keep technical Android package IDs (`com.gothwad.mail`, `com.gothwad.accounts`) and OAuth `client_id` (`gothwad-mail`) unchanged for backward compatibility.
-
----
-
-## 5. Verification & Delivery
-1. Add unit tests in `app/src/test/` covering:
-   - `GET /api/session` sending `Authorization: Bearer <token>`
-   - Direct native sign-in, MFA verification, sign-up, and `issue_peer_code` silent cross-app token exchange.
-2. Run `./gradlew testDebugUnitTest assembleDebug` and verify 0 errors.
-3. Commit, push to the active branch, and merge the pull request to `main`.
-```
+2. Commit your changes, push to the active branch (`git push -u origin <active-branch>`), open a pull request to `main`, and merge it using `gh pr merge <number> --merge`.
+3. Close the superseded incomplete PR #6 (`gh pr close 6 --repo Bansify/mailapp`).
+4. Check the GitHub Actions workflow runs on the merged `main` commit (`gh run list --repo Bansify/mailapp --branch main --limit 5`) and report the status of the CI and Release APK build to the user, along with any repository secret checks (`RELEASE_KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`) if needed.
