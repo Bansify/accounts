@@ -48,7 +48,8 @@ export function extractRequestedAuthuser(request: Request): string | null {
   } catch {
     // Ignore malformed URL
   }
-  const headerVal = request.headers.get('X-Gothwad-Authuser');
+  const headerVal =
+    request.headers.get('X-Gothwad-Authuser') ?? request.headers.get('X-Bansify-Authuser');
   if (headerVal !== null && headerVal.trim() !== '') return headerVal.trim();
   return null;
 }
