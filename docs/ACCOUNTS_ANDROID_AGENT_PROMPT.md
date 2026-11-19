@@ -178,7 +178,14 @@ Update `MobileAccountClient.kt`, `SessionManager.kt`, `AccountDashboardViewModel
 
 ---
 
-## 4. Verification & Delivery
+## 4. Domain (`bansify.com`) & Brand (`Bansify Accounts`) Rebrand
+- Update all domain configuration defaults (`BuildConfig`, `AccountConfig`, Gradle `buildConfigField` / `manifestPlaceholders`, `AndroidManifest.xml` App Links `android:host`, and unit test fixtures) from `gothwadtech.com` (`accounts.gothwadtech.com`, `api.gothwadtech.com`) to **`bansify.com`** (`accounts.bansify.com`, `api.bansify.com`).
+- Update all user-visible brand strings (`strings.xml`, Compose UI headings/subtitles, app name `Bansify Accounts`, and product names `Bansify Mail`, `Bansify Drive`, `Bansify Meet`, `Bansify Notes`, `Bansify Calendar`, `Bansify Contacts`, `Bansify Tube`, `Bansify Chat`) from `Gothwad` / `Gothwad Accounts` to **`Bansify`** / **`Bansify Accounts`**.
+- Keep technical Android package IDs (`com.gothwad.accounts`, `com.gothwad.mail`, etc.) and OAuth `client_id` slugs (`gothwad-accounts-android`, `gothwad-mail`, etc.) unchanged for backward compatibility.
+
+---
+
+## 5. Verification & Delivery
 1. Add unit tests in `core/src/test/` and `ui/src/test/` covering direct native sign-in/sign-up/MFA, `issue_peer_code` cross-app SSO, and the new `/api/mobile/*` methods.
 2. Run `./gradlew test assembleDebug` and verify all tests and Python checks (`python3 tools/check_android_scaffold.py`, `python3 tools/check_docs.py`) pass with 0 errors.
 3. Commit, push to the active branch, and merge the pull request to `main`.
