@@ -73,7 +73,7 @@ export function buildEcosystemAppHref(rawAppUrl, authuser = 0) {
   if (!rawAppUrl) return '#';
   const idx = Number.isInteger(authuser) && authuser >= 0 ? authuser : 0;
   try {
-    const dest = new URL(rawAppUrl, globalThis.location?.origin || 'https://accounts.gothwadtech.com');
+    const dest = new URL(rawAppUrl, globalThis.location?.origin || 'https://accounts.bansify.com');
     dest.searchParams.set('authuser', String(idx));
     return apiUrl(`/auth/switch?authuser=${encodeURIComponent(String(idx))}&next=${encodeURIComponent(dest.toString())}`);
   } catch {

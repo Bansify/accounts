@@ -33,7 +33,7 @@ export async function nativeCode(f, { client = accountsClient, scope = fullScope
   return url.searchParams.get('code');
 }
 export function nativeRequest(f, path, access, { method = 'GET', body, headers = {} } = {}) {
-  return worker.fetch(new Request(`https://api.gothwadtech.com${path}`, {
+  return worker.fetch(new Request(`https://api.bansify.com${path}`, {
     method, headers: { ...(access ? { Authorization: `Bearer ${access}` } : {}), ...headers,
       ...(body ? { 'Content-Type': body instanceof URLSearchParams ? 'application/x-www-form-urlencoded' : 'application/json' } : {}) },
     body: body ? body instanceof URLSearchParams ? body : JSON.stringify(body) : undefined,

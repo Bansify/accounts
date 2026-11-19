@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "version": "2.2.0",
-  "description": "Gothwad Accounts auth API — Cloudflare Worker",
+  "description": "Bansify Accounts auth API — Cloudflare Worker",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",

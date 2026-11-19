@@ -8,7 +8,7 @@ import { createLocalD1 } from '../tools/local-d1.mjs';
 import { makeEnv } from './helpers/multi-account-harness.mjs';
 
 function request(ip = '192.0.2.1', method = 'POST') {
-  return new Request('https://api.gothwadtech.com/api/auth/forgot-password', {
+  return new Request('https://api.bansify.com/api/auth/forgot-password', {
     method, headers: { 'CF-Connecting-IP': ip },
   });
 }
@@ -60,7 +60,7 @@ test('missing edge IP cannot bypass throttling using arbitrary forwarding header
   const env = makeEnv();
   const db = await getDb(env);
   for (let i = 0; i < 6; i++) {
-    const req = new Request('https://api.gothwadtech.com/api/auth/forgot-password', {
+    const req = new Request('https://api.bansify.com/api/auth/forgot-password', {
       method: 'POST', headers: { 'X-Forwarded-For': `192.0.2.${i}` },
     });
     const response = await enforceAuthRateLimit(req, db, env, '/auth/forgot-password');
@@ -76,7 +76,7 @@ test('rate-limit storage failure fails closed with retryable 503 through the rou
     if (sql.includes('INSERT INTO auth_rate_limits')) throw new Error('Simulated limiter outage');
     return original(sql);
   };
-  const response = await worker.fetch(new Request('https://api.gothwadtech.com/api/auth/signin', {
+  const response = await worker.fetch(new Request('https://api.bansify.com/api/auth/signin', {
     method: 'POST', headers: { 'Content-Type': 'application/json', Origin: env.AUTH_HUB_URL }, body: '{}',
   }), env);
   assert.equal(response.status, 503);
@@ -87,12 +87,12 @@ test('rate-limit storage failure fails closed with retryable 503 through the rou
 test('router enforces discovery throttling while health and identity bootstrap stay exempt', async () => {
   const env = makeEnv();
   for (let i = 0; i < 121; i++) {
-    const res = await worker.fetch(new Request('https://api.gothwadtech.com/api/auth/check-username?username=sample', {
+    const res = await worker.fetch(new Request('https://api.bansify.com/api/auth/check-username?username=sample', {
       headers: { 'CF-Connecting-IP': '192.0.2.8' },
     }), env);
     assert.equal(res.status, i < 120 ? 200 : 429);
   }
-  assert.equal((await worker.fetch(new Request('https://api.gothwadtech.com/api/health'), env)).status, 200);
+  assert.equal((await worker.fetch(new Request('https://api.bansify.com/api/health'), env)).status, 200);
   assert.equal(authRateLimitPolicy('GET', '/auth/me'), null);
   for (const route of ['/auth/signin', '/auth/signup', '/auth/reset-password', '/oauth/token', '/auth/change-password']) {
     assert.ok(authRateLimitPolicy('POST', route));

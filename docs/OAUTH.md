@@ -14,8 +14,8 @@
 ## 🗺️ End-to-End Authorization Flow
 
 ```
-[ Client App ]                       [ Gothwad Accounts ]              [ Worker API ]
- "Sign in with Gothwad" tap
+[ Client App ]                       [ Bansify Accounts ]              [ Worker API ]
+ "Sign in with Bansify" tap
         │
         ├─ redirect ──────────────►  /oauth/authorize
         │                                 │  not signed in?
@@ -49,12 +49,12 @@
 ## 📌 Endpoints
 
 Base URL options:
-- **Worker Route on Accounts Host:** `https://accounts.gothwadtech.com/api`
+- **Worker Route on Accounts Host:** `https://accounts.bansify.com/api`
   → endpoints: `/api/oauth/authorize`, `/api/oauth/token`, `/api/oauth/userinfo`
-- **Dedicated Worker Custom Domain:** `https://api.gothwadtech.com`
+- **Dedicated Worker Custom Domain:** `https://api.bansify.com`
   → endpoints: `/oauth/authorize`, `/oauth/token`, `/oauth/userinfo`
 
-⚠️ On `accounts.gothwadtech.com`, the Worker route matches `/api/*` — never omit `/api` when calling via `accounts.gothwadtech.com/api/...`!
+⚠️ On `accounts.bansify.com`, the Worker route matches `/api/*` — never omit `/api` when calling via `accounts.bansify.com/api/...`!
 
 ### 1. `GET /oauth/authorize` — Authorization Endpoint
 
@@ -131,7 +131,7 @@ Response (filtered by granted scopes):
   "name": "Pawan Gothwad",            // scope: profile
   "preferred_username": "pawan",      // scope: profile
   "picture": null,                    // scope: profile
-  "email": "pawan@gothwadtech.com",   // scope: email (derived dynamically — username-only DB)
+  "email": "pawan@bansify.com",   // scope: email (derived dynamically — username-only DB)
   "email_verified": true,
   "drive": {                          // scope: drive / drive.read
     "used_bytes": 0,
@@ -173,7 +173,7 @@ Run in **Cloudflare Dashboard → D1 → `accounts` → Console**:
 -- Register or update redirect URIs for a public OAuth client (PKCE S256 required)
 UPDATE ecosystem_apps
 SET redirect_uris = json_array(
-  'https://chat.gothwadtech.com/auth/gothwad/callback',
+  'https://chat.bansify.com/auth/gothwad/callback',
   'http://localhost:3000/auth/gothwad/callback'
 )
 WHERE id = 'gothwad-chat';
@@ -189,9 +189,9 @@ WHERE id = 'gothwad-chat';
 
 `sql/04_kiwi_store_oauth_migration.sql` registers `id = client_id = 'kiwi-store'`, preserves prior user grants, clears stale legacy authorization codes, and revokes old refresh tokens idempotently:
 
-- `https://kiwistore.gothwadtech.com/auth/callback`
-- `https://kiwiconsole.gothwadtech.com/auth/callback`
-- `https://kiwiadmin.gothwadtech.com/auth/callback`
+- `https://kiwistore.bansify.com/auth/callback`
+- `https://kiwiconsole.bansify.com/auth/callback`
+- `https://kiwiadmin.bansify.com/auth/callback`
 - `http://localhost:3000/auth/callback`
 - `gothwadstore://oauth/callback` (Android APK)
 - `kiwistore://oauth/callback` (Android APK transition scheme)
@@ -203,11 +203,11 @@ WHERE id = 'gothwad-chat';
 Add this login button and PKCE launcher to your client sign-in page:
 
 ```html
-<button id="btn-signin-gothwad">🔥 Sign in with Gothwad</button>
+<button id="btn-signin-gothwad">🔥 Sign in with Bansify</button>
 
 <script type="module">
   // ⚙️ Configuration — update for your registered OAuth client
-  const GOTHWAD_AUTH_URL = 'https://accounts.gothwadtech.com/api'; // Worker base URL
+  const GOTHWAD_AUTH_URL = 'https://accounts.bansify.com/api'; // Worker base URL
   const CLIENT_ID = 'gothwad-chat';
   const REDIRECT_URI = location.origin + '/auth/gothwad/callback'; // must match ecosystem_apps.redirect_uris
   const SCOPES = 'profile email offline_access';
@@ -244,7 +244,7 @@ On your callback route (`/auth/gothwad/callback`):
 
 ```html
 <script type="module">
-  const GOTHWAD_AUTH_URL = 'https://accounts.gothwadtech.com/api';
+  const GOTHWAD_AUTH_URL = 'https://accounts.bansify.com/api';
   const CLIENT_ID = 'gothwad-chat';
   const p = new URLSearchParams(location.search);
   const expectedState = sessionStorage.getItem('oauth_state');

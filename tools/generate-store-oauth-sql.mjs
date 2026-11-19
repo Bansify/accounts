@@ -30,7 +30,7 @@ export function generateStoreOAuthSql(domain) {
   }
   const webSql = template.replaceAll(placeholder, domain);
 
-  return `-- Generated from Gothwad Accounts config for ${domain} (Cloudflare D1 SQLite).
+  return `-- Generated from Bansify Accounts config for ${domain} (Cloudflare D1 SQLite).
 -- Run in Cloudflare Dashboard -> D1 -> gothwad-accounts-db -> Console.
 -- Safe to re-run: preserves existing callbacks and never overwrites secret_hash.
 

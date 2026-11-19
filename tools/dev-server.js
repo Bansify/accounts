@@ -73,7 +73,7 @@ const server = http.createServer((req, res) => {
 
   if (!filePath) {
     res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end('<h1 style="font-family:sans-serif">404 — Not found</h1><p><a href="/signin">← Gothwad Accounts</a></p>');
+    res.end('<h1 style="font-family:sans-serif">404 — Not found</h1><p><a href="/signin">← Bansify Accounts</a></p>');
     return;
   }
 

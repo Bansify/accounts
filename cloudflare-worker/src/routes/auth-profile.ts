@@ -318,7 +318,7 @@ export async function handleAuthProfileRoute(
     ]);
 
     const exportData = {
-      export: 'gothwad-accounts',
+      export: 'bansify-accounts',
       version: 2,
       generated_at: new Date().toISOString(),
       profile: profile ? presentUser(profile, env) : null,
@@ -335,7 +335,7 @@ export async function handleAuthProfileRoute(
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Content-Disposition': 'attachment; filename="gothwad-account-data.json"',
+          'Content-Disposition': 'attachment; filename="bansify-account-data.json"',
           'Cache-Control': 'no-store',
         },
       }),

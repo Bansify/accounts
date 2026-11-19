@@ -69,12 +69,12 @@ Existing code uses Resend; no provider account or paid plan was activated. Confi
 an actually available free, card-free plan. If payment/card entry is required, stop
 and reassess transport rather than enabling billing or weakening verification.
 
-1. The owner selected `noreply.gothwadtech.com` as the sending subdomain. Add it
-   in the provider dashboard without http/https. Do not alter Gothwad Mail inbound DNS.
+1. The owner selected `noreply.bansify.com` as the sending subdomain. Add it
+   in the provider dashboard without http/https. Do not alter Bansify Mail inbound DNS.
 2. Copy **only** the record names/types/values supplied there into Cloudflare DNS.
    Do not invent SPF/DKIM values or overwrite root MX/TXT records blindly.
 3. After verification, choose a real sender on that domain, for example
-   `Gothwad Accounts <security@noreply.gothwadtech.com>`.
+   `Bansify Accounts <security@noreply.bansify.com>`.
 4. Create a least-privilege sending key; set Worker secret `RESEND_API_KEY` directly
    in Cloudflare. The non-secret `RESEND_FROM` is now maintained in
    `cloudflare-worker/wrangler.toml` as the sender above; no duplicate manual value

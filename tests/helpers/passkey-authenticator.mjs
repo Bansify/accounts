@@ -12,7 +12,7 @@ export function authenticator({ algorithm = 'ES256' } = {}) {
   const cose = isoCBOR.encode(algorithm === 'RS256'
     ? new Map([[1, 3], [3, -257], [-1, bytes(jwk.n)], [-2, bytes(jwk.e)]])
     : new Map([[1, 2], [3, -7], [-1, 1], [-2, bytes(jwk.x)], [-3, bytes(jwk.y)]]));
-  function response(options, { origin = 'https://accounts.gothwadtech.com', register = false,
+  function response(options, { origin = 'https://accounts.bansify.com', register = false,
     counter = 1, uv = true, crossOrigin = false, rpID = options.rpId || options.rp?.id, userHandle } = {}) {
     const client = Buffer.from(JSON.stringify({ type: register ? 'webauthn.create' : 'webauthn.get',
       challenge: options.challenge, origin, crossOrigin }));

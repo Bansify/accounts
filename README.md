@@ -1,4 +1,4 @@
-# Gothwad Accounts
+# Bansify Accounts
 
 Central identity, multi-account SSO and OAuth/PKCE provider for Gothwad apps.
 Vanilla HTML/CSS/JavaScript runs on Cloudflare Pages; the API runs on a Cloudflare
@@ -105,7 +105,7 @@ build or merge does not prove that API endpoints were released; see
 [Worker troubleshooting](docs/WORKER_BUILD_TROUBLESHOOTING.md).
 
 The source-controlled recovery sender is
-`Gothwad Accounts <security@noreply.gothwadtech.com>`. Verify the sending subdomain
+`Bansify Accounts <security@noreply.bansify.com>`. Verify the sending subdomain
 and configure RESEND_API_KEY privately before testing real delivery. Repository
 configuration alone does not establish delivery.
 

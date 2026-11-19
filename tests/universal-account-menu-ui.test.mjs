@@ -39,12 +39,12 @@ test('current account appears first without renumbering server authuser indices'
 
 test('separate matching action pills, branded logo, and title replace old menu controls', () => {
   const html = buildAccountSheetHtml({ user: samples[0], accounts: samples }, options);
-  assert.match(html, /<h2 class="gw-heading">Gothwad Accounts<\/h2>/);
+  assert.match(html, /<h2 class="gw-heading">Bansify Accounts<\/h2>/);
   assert.match(html, /<div class="gw-topbar">[\s\S]*gw-heading[\s\S]*aria-label="Close account menu"/);
   assert.match(html, /src="https:\/\/accounts\.example\.com\/icon-192\.png"/);
   assert.equal((html.match(/class="gw-manage-pill"/g) || []).length, 2);
   assert.match(html, /<\/div>\s*<div class="gw-primary-actions">/);
-  assert.match(html, /Manage your Gothwad Account/);
+  assert.match(html, /Manage your Bansify Account/);
   assert.match(html, /Add another account/);
   assert.doesNotMatch(html, /Google|#4285F4|#34A853|#FBBC05|#EA4335/);
   assert.match(html, /Privacy policy/);

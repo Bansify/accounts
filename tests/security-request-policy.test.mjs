@@ -8,13 +8,13 @@ import { buildCorsHeaders } from '../cloudflare-worker/src/http.ts';
 import { consentPageHtml } from '../cloudflare-worker/src/oauth-helpers.ts';
 import { makeEnv, seedAccount } from './helpers/multi-account-harness.mjs';
 
-const request = new Request('https://api.gothwadtech.com/api/auth/me');
+const request = new Request('https://api.bansify.com/api/auth/me');
 
 for (const origin of [
-  'http://mail.gothwadtech.com', 'http://localhost:3000', 'http://localhost.attacker.example',
-  'http://127.0.0.1.attacker.example', 'https://gothwadtech.com.attacker.example',
-  'https://user:password@mail.gothwadtech.com', 'https://mail.gothwadtech.com/path',
-  'https://mail.gothwadtech.com:8443', 'null', 'not-an-origin',
+  'http://mail.bansify.com', 'http://localhost:3000', 'http://localhost.attacker.example',
+  'http://127.0.0.1.attacker.example', 'https://bansify.com.attacker.example',
+  'https://user:password@mail.bansify.com', 'https://mail.bansify.com/path',
+  'https://mail.bansify.com:8443', 'null', 'not-an-origin',
 ]) {
   test(`production CORS refuses unsafe origin ${origin}`, () => {
     const req = new Request(request, { headers: { Origin: origin } });
@@ -27,8 +27,8 @@ for (const origin of [
 
 test('CORS preserves HTTPS sibling SSO, exact HTTPS previews, and local development', () => {
   const env = makeEnv({ ALLOWED_ORIGINS: 'https://preview.example' });
-  for (const origin of ['https://accounts.gothwadtech.com', 'https://mail.gothwadtech.com',
-    'https://gothwadtech.com', 'https://preview.example']) {
+  for (const origin of ['https://accounts.bansify.com', 'https://mail.bansify.com',
+    'https://bansify.com', 'https://preview.example']) {
     const headers = buildCorsHeaders(new Request(request, { headers: { Origin: origin } }), env);
     assert.equal(headers.get('Access-Control-Allow-Origin'), origin);
     assert.equal(headers.get('Access-Control-Allow-Credentials'), 'true');
@@ -52,7 +52,7 @@ test('hostile browser mutations are rejected before database access across auth 
       { Origin: 'https://evil.example' }, { Origin: 'null' },
       { Referer: 'https://evil.example/attack' }, { 'Sec-Fetch-Site': 'cross-site' },
     ]) {
-      const response = await worker.fetch(new Request(`https://api.gothwadtech.com/api${path}`, {
+      const response = await worker.fetch(new Request(`https://api.bansify.com/api${path}`, {
         method: 'POST', headers: evidence, body: '{}',
       }), env);
       assert.equal(response.status, 403, `${path}: ${JSON.stringify(evidence)}`);
@@ -67,8 +67,8 @@ test('trusted browser requests and authenticated headerless proxies retain compa
   const env = makeEnv();
   const { jar } = await seedAccount(env, { username: 'trustedbrowser', firstName: 'Trusted', lastName: 'Browser' });
   for (const headers of [
-    { Origin: 'https://accounts.gothwadtech.com' },
-    { Referer: 'https://mail.gothwadtech.com/inbox?authuser=0' },
+    { Origin: 'https://accounts.bansify.com' },
+    { Referer: 'https://mail.bansify.com/inbox?authuser=0' },
     { Accept: 'application/json', 'X-Gothwad-Proxy-Token': env.SSO_PROXY_TOKEN },
   ]) {
     const response = await jar.fetch(env, '/api/auth/update-profile', {

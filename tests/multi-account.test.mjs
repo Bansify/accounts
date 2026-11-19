@@ -18,7 +18,7 @@ test('1 & 2. Two accounts signed in -> GET /api/auth/accounts lists both & POST 
 
   const loginA = await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'pawan', password: 'StrongPassword!123', remember: true },
   });
   assert.equal(loginA.status, 200);
@@ -26,7 +26,7 @@ test('1 & 2. Two accounts signed in -> GET /api/auth/accounts lists both & POST 
 
   const loginB = await browser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'work', password: 'StrongPassword!123', remember: true, add: true },
   });
   assert.equal(loginB.status, 200);
@@ -48,10 +48,10 @@ test('1 & 2. Two accounts signed in -> GET /api/auth/accounts lists both & POST 
   }
 
   const listRes = await browser.fetch(env, '/api/auth/accounts', {
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
   });
   assert.equal(listRes.status, 200);
-  assert.equal(listRes.headers.get('Access-Control-Allow-Origin'), 'https://mail.gothwadtech.com');
+  assert.equal(listRes.headers.get('Access-Control-Allow-Origin'), 'https://mail.bansify.com');
   assert.equal(listRes.headers.get('Access-Control-Allow-Credentials'), 'true');
   const listJson = await listRes.json();
   assert.equal(listJson.activeId, 'b');
@@ -70,14 +70,14 @@ test('1 & 2. Two accounts signed in -> GET /api/auth/accounts lists both & POST 
         username: 'pawan',
         firstName: 'Pawan',
         lastName: 'Gothwad',
-        email: 'pawan@gothwadtech.com',
+        email: 'pawan@bansify.com',
       },
       {
         id: 'b',
         username: 'work',
         firstName: 'Pawan',
         lastName: 'Work',
-        email: 'work@gothwadtech.com',
+        email: 'work@bansify.com',
       },
     ],
   );
@@ -89,7 +89,7 @@ test('1 & 2. Two accounts signed in -> GET /api/auth/accounts lists both & POST 
 
   const switchToA = await browser.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
     body: { id: 'a' },
   });
   assert.equal(switchToA.status, 200);
@@ -105,7 +105,7 @@ test('1 & 2. Two accounts signed in -> GET /api/auth/accounts lists both & POST 
 
   const switchAgainA = await browser.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
     body: { id: 'a' },
   });
   assert.equal(switchAgainA.status, 200);
@@ -113,7 +113,7 @@ test('1 & 2. Two accounts signed in -> GET /api/auth/accounts lists both & POST 
 
   const switchBackToB = await browser.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
     body: { id: 'b' },
   });
   assert.equal(switchBackToB.status, 200);
@@ -132,18 +132,18 @@ test('3. Switch to a slot whose session was revoked -> 409 account_not_signed_in
   const browser = new BrowserJar();
   await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'alice', password: seededA.password, remember: true },
   });
   await browser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'bob', password: seededB.password, remember: true, add: true },
   });
 
   await browser.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
     body: { id: 'a' },
   });
 
@@ -151,7 +151,7 @@ test('3. Switch to a slot whose session was revoked -> 409 account_not_signed_in
 
   const switchDead = await browser.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
     body: { id: 'b' },
   });
   assert.equal(switchDead.status, 409);
@@ -174,18 +174,18 @@ test('4 & 5. Sign out one account keeps the other signed in; signing out last ac
   const browser = new BrowserJar();
   await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'primary', password: 'StrongPassword!123', remember: true },
   });
   await browser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'secondary', password: 'StrongPassword!123', remember: true, add: true },
   });
 
   const signOutB = await browser.fetch(env, '/api/auth/accounts/b/signout', {
     method: 'POST',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
   });
   assert.equal(signOutB.status, 200);
   const signOutBJson = await signOutB.json();
@@ -203,7 +203,7 @@ test('4 & 5. Sign out one account keeps the other signed in; signing out last ac
 
   const signOutLast = await browser.fetch(env, '/api/auth/accounts/a/signout', {
     method: 'POST',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
   });
   assert.equal(signOutLast.status, 200);
   const signOutLastJson = await signOutLast.json();
@@ -228,7 +228,7 @@ test('6. Tampered gothwad_accounts cookie (1-byte flip in signature or payload) 
   const browser = new BrowserJar();
   await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'intact', password: 'StrongPassword!123', remember: true },
   });
 

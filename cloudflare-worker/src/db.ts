@@ -108,17 +108,17 @@ const BOOTSTRAP_STATEMENTS: string[] = [
     created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   )`,
   `INSERT INTO ecosystem_apps (id, client_id, name, description, icon, is_verified, is_core) VALUES
-    ('gothwad-meet',     'gothwad-meet',     'Gothwad Meet',              'Video meetings for your Gothwad Account', 'video',          1, 1),
-    ('gothwad-mail',     'gothwad-mail',     'Gothwad Mail',              'username inbox for your Gothwad Account', 'mail',           1, 1),
+    ('gothwad-meet',     'gothwad-meet',     'Bansify Meet',              'Video meetings for your Bansify Account', 'video',          1, 1),
+    ('gothwad-mail',     'gothwad-mail',     'Bansify Mail',              'username inbox for your Bansify Account', 'mail',           1, 1),
     ('kiwi-store',       'kiwi-store',       'Kiwi Store',                'Apps and add-ons for Kiwi Store',         'store',          1, 1),
-    ('gothwad-drive',    'gothwad-drive',    'Gothwad Drive',             'Files and folders on your account',       'hard-drive',     1, 1),
-    ('gothwad-notes',    'gothwad-notes',    'Gothwad Notes',             'Notes and lists, synced',                 'file-text',      1, 1),
-    ('gothwad-calendar', 'gothwad-calendar', 'Gothwad Calendar',          'Events and reminders',                    'calendar',       1, 1),
-    ('gothwad-contacts', 'gothwad-contacts', 'Gothwad Contacts',          'People and addresses',                    'users',          1, 1),
-    ('gothwad-tube',     'gothwad-tube',     'Gothwad Tube (PlusTube)',   'Video — PlusTube',                        'play',           1, 0),
-    ('gothwad-chat',     'gothwad-chat',     'GrixChat (Gothwad Chat)',   'Messaging',                               'message-circle', 1, 0),
+    ('gothwad-drive',    'gothwad-drive',    'Bansify Drive',             'Files and folders on your account',       'hard-drive',     1, 1),
+    ('gothwad-notes',    'gothwad-notes',    'Bansify Notes',             'Notes and lists, synced',                 'file-text',      1, 1),
+    ('gothwad-calendar', 'gothwad-calendar', 'Bansify Calendar',          'Events and reminders',                    'calendar',       1, 1),
+    ('gothwad-contacts', 'gothwad-contacts', 'Bansify Contacts',          'People and addresses',                    'users',          1, 1),
+    ('gothwad-tube',     'gothwad-tube',     'Bansify Tube (PlusTube)',   'Video — PlusTube',                        'play',           1, 0),
+    ('gothwad-chat',     'gothwad-chat',     'GrixChat (Bansify Chat)',   'Messaging',                               'message-circle', 1, 0),
     ('gothwad-indogram', 'gothwad-indogram', 'Indogram',                  'Telegram-style chat',                     'send',           1, 0)
-  ON CONFLICT (id) DO NOTHING`,
+  ON CONFLICT (id) DO UPDATE SET name = excluded.name, description = excluded.description`,
   `CREATE TABLE IF NOT EXISTS app_authorizations (
     id           TEXT PRIMARY KEY,
     user_id      TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,

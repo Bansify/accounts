@@ -18,7 +18,7 @@ export function validateIdentifier(raw) {
     return { ok: false, error: 'Please enter your username, email or phone number.', isThirdParty: false };
   }
 
-  const appDomain = (GOTHWAD_CONFIG.APP_DOMAIN || 'gothwadtech.com').toLowerCase();
+  const appDomain = (GOTHWAD_CONFIG.APP_DOMAIN || 'bansify.com').toLowerCase();
 
   const digitsOnly = trimmed.replace(/[\s\-()]/g, '');
   const isPhone = /^(\+)?[0-9]{7,15}$/.test(digitsOnly);
@@ -197,7 +197,7 @@ export function initSigninForm(showAlert, hideAlert) {
   if (identifierInput) {
     identifierInput.addEventListener('input', () => {
       const val = identifierInput.value.trim().toLowerCase();
-      const appDomain = (GOTHWAD_CONFIG.APP_DOMAIN || 'gothwadtech.com').toLowerCase();
+      const appDomain = (GOTHWAD_CONFIG.APP_DOMAIN || 'bansify.com').toLowerCase();
 
       if (val.includes('@')) {
         const parts = val.split('@');

@@ -45,7 +45,7 @@ test('unmigrated native/OAuth routes fail closed without poisoning subsequent br
   const f = await legacyFixture();
   try {
     for (const path of ['/oauth/authorize?client_id=kiwi-store', '/api/mobile/sessions', '/api/apps/trusted', '/.well-known/assetlinks.json']) {
-      const r = await worker.fetch(new Request('https://api.gothwadtech.com' + path), f.env);
+      const r = await worker.fetch(new Request('https://api.bansify.com' + path), f.env);
       assert.equal(r.status, 503, path);
       assert.equal((await r.json()).error, 'migration_required', path);
     }

@@ -220,9 +220,11 @@ class SheetOverlayController {
 }
 
 export const GothwadAccountMenu = new SheetOverlayController();
+export const BansifyAccountMenu = GothwadAccountMenu;
 
 if (globalThis.window) {
   globalThis.window.GothwadAccountMenu = GothwadAccountMenu;
+  globalThis.window.BansifyAccountMenu = GothwadAccountMenu;
 }
 
 if (typeof globalThis.HTMLElement !== 'undefined' && globalThis.customElements && !globalThis.customElements.get('gothwad-account-menu')) {

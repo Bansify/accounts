@@ -1,9 +1,9 @@
 # Drive Startup, Vault Recovery, and Account Isolation — Implementation Prompt
 
-Paste into the coding agent working in `GothwadTech/drive`:
+Paste into the coding agent working in `Bansify/drive`:
 
 ```text
-Work in GothwadTech/drive. Diagnose and repair persistent startup/login/vault
+Work in Bansify/drive. Diagnose and repair persistent startup/login/vault
 problems. This is not merely a spinner redesign: preserve existing Telegram
 sessions, encrypted vaults, private account isolation, and user files.
 

@@ -17,7 +17,7 @@ test('direct native Android signup, signin, token refresh, and cross-app peer-co
       body: { username: 'androidnative' },
     })).json();
     assert.equal(unameCheck.available, true);
-    assert.equal(unameCheck.email, 'androidnative@gothwadtech.com');
+    assert.equal(unameCheck.email, 'androidnative@bansify.com');
 
     // 2. Direct native Android signup (`gothwad-accounts-android`)
     const signupRes = await nativeRequest(f, '/api/mobile/auth/signup', null, {
@@ -54,7 +54,7 @@ test('direct native Android signup, signin, token refresh, and cross-app peer-co
       body: {
         client_id: 'gothwad-mail',
         scope: 'profile email offline_access mail',
-        identifier: 'androidnative@gothwadtech.com',
+        identifier: 'androidnative@bansify.com',
         password: 'NativePassword!123',
       },
     });
@@ -224,7 +224,7 @@ test('full native Android account management: phone, avatar, password, recovery 
     // 6. Export account data natively
     const exportRes = await nativeRequest(f, '/api/mobile/export', token);
     assert.equal(exportRes.status, 200);
-    assert.equal((await exportRes.json()).export, 'gothwad-accounts');
+    assert.equal((await exportRes.json()).export, 'bansify-accounts');
 
     // 7. Delete account natively
     const delRes = await nativeRequest(f, '/api/mobile/delete-account', token, {

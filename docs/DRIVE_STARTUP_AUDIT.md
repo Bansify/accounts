@@ -2,7 +2,7 @@
 
 ## Scope and evidence
 
-Read-only review of `GothwadTech/drive` main at
+Read-only review of `Bansify/drive` main at
 `1e8c397a036ab7b65f7b35233a0e58f96297d38d`. No Drive source was changed or pushed.
 Temporary checkouts and dependencies were removed after verification.
 

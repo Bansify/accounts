@@ -1,4 +1,4 @@
-# 🌐 web/ — Gothwad Accounts Modular Frontend
+# 🌐 web/ — Bansify Accounts Modular Frontend
 
 Static Vanilla HTML + Modular CSS + Native ES Modules (zero framework overhead). Cloudflare Pages serves `web/` directly alongside `web/_headers` (`Cache-Control: public, max-age=0, must-revalidate` so HTML/JS/CSS stay 100% version-synced on reload).
 

@@ -1,29 +1,29 @@
-# Gothwad Mail Backend (`GothwadTech/mail`): Copy-Paste Implementation Prompt
+# Bansify Mail Backend (`Bansify/mail`): Copy-Paste Implementation Prompt
 
-Paste the prompt below into the coding agent working in **`GothwadTech/mail`**.
-Do not run this prompt inside `GothwadTech/accounts` or `GothwadTech/mailapp`.
+Paste the prompt below into the coding agent working in **`Bansify/mail`**.
+Do not run this prompt inside `Bansify/accounts` or `Bansify/mailapp`.
 
 ---
 
-Work only in this `GothwadTech/mail` repository on the active session branch. First read `AGENTS.md`, `TASK.md`, `docs/MAIL.md`, `sql/01_mail_schema.sql`, `worker/wrangler.toml`, `worker/src/index.ts`, `worker/src/session.ts`, `worker/src/sessionPayload.ts`, `worker/src/mail-types.ts`, `worker/src/mail-read.ts`, `worker/src/mail-write.ts`, `worker/src/retention.ts`, and `worker/test/*` before editing.
+Work only in this `Bansify/mail` repository on the active session branch. First read `AGENTS.md`, `TASK.md`, `docs/MAIL.md`, `sql/01_mail_schema.sql`, `worker/wrangler.toml`, `worker/src/index.ts`, `worker/src/session.ts`, `worker/src/sessionPayload.ts`, `worker/src/mail-types.ts`, `worker/src/mail-read.ts`, `worker/src/mail-write.ts`, `worker/src/retention.ts`, and `worker/test/*` before editing.
 
 Follow every rule in `AGENTS.md`:
 - Every `.ts`, `.tsx`, `.mjs`, `.js`, `.css`, `.html`, `.sql`, and `.md` file must stay strictly `<= 500` lines (`npm run check:sizes`).
 - 100% pure English across all code, comments, tests, and documentation (`npm run test:language`).
 - Zero hardcoded domains in runtime logic; use `config.appDomain`, `config.authHubUrl`, `config.authSigninUrl`, and `config.mailUrl`.
-- Do not edit `GothwadTech/accounts` or add new Worker secrets.
+- Do not edit `Bansify/accounts` or add new Worker secrets.
 
 ## Goal
 
-Upgrade the `GothwadTech/mail` Cloudflare Worker API (`worker/src/*`) so the native Android app (**`GothwadTech/mailapp`**, package `com.gothwad.mail`, OAuth client `gothwad-mail`) works end-to-end alongside the existing web client, with strict OAuth Bearer scope/audience enforcement, bearer unread metadata, restore-from-trash (Undo), batch mutations, server search, and Empty Trash. Preserve 100% backward compatibility with the existing web frontend (`src/*`) and all existing Worker tests.
+Upgrade the `Bansify/mail` Cloudflare Worker API (`worker/src/*`) so the native Android app (**`Bansify/mailapp`**, package `com.gothwad.mail`, OAuth client `gothwad-mail`) works end-to-end alongside the existing web client, with strict OAuth Bearer scope/audience enforcement, bearer unread metadata, restore-from-trash (Undo), batch mutations, server search, and Empty Trash. Preserve 100% backward compatibility with the existing web frontend (`src/*`) and all existing Worker tests.
 
-## 1. Authoritative `GothwadTech/accounts` OAuth Contract (Already Live)
+## 1. Authoritative `Bansify/accounts` OAuth Contract (Already Live)
 
-In `GothwadTech/accounts` (`migrations/0014_first_party_native.sql` and `cloudflare-worker/src/routes/oauth.ts`):
+In `Bansify/accounts` (`migrations/0014_first_party_native.sql` and `cloudflare-worker/src/routes/oauth.ts`):
 - Official public PKCE OAuth registration:
   - `client_id`: `gothwad-mail`
   - `android_package`: `com.gothwad.mail`
-  - `redirect_uris`: `["https://mail.gothwadtech.com/oauth/callback", "com.gothwad.mail:/oauth/callback"]`
+  - `redirect_uris`: `["https://mail.bansify.com/oauth/callback", "com.gothwad.mail:/oauth/callback"]`
   - `allowed_scopes`: `["profile", "email", "offline_access", "mail"]`
 - `GET {AUTH_HUB_URL}/api/oauth/userinfo` with `Authorization: Bearer <access_token>` validates the JWT signature, `token_use === "oauth_access"`, `first_party = 1`, `active = 1`, and the live `oauth_credential_bindings` + `app_authorizations` grant ledger in Accounts D1, and returns:
   ```json
@@ -37,7 +37,7 @@ In `GothwadTech/accounts` (`migrations/0014_first_party_native.sql` and `cloudfl
     "name": "<Full Name>",
     "given_name": "<First>",
     "family_name": "<Last>",
-    "email": "<username>@gothwadtech.com",
+    "email": "<username>@bansify.com",
     "email_verified": true,
     "picture": "https://..."
   }
@@ -52,17 +52,17 @@ In `GothwadTech/accounts` (`migrations/0014_first_party_native.sql` and `cloudfl
      - Require `(body.client_id === 'gothwad-mail' || body.aud === 'gothwad-mail')`.
      - Parse granted scopes from `Array.isArray(body.scopes) ? body.scopes : typeof body.scope === 'string' ? body.scope.trim().split(/\s+/).filter(Boolean) : []`.
      - Require `scopes.includes('mail')`.
-     - If `client_id`/`aud` is not `'gothwad-mail'` or `'mail'` is not in `scopes`, throw `new HttpError(403, 'insufficient_scope', 'OAuth token is not authorized for Gothwad Mail.')`. Do not accept identity-only tokens minted for other clients (such as `kiwi-store` or `gothwad-tube`).
+     - If `client_id`/`aud` is not `'gothwad-mail'` or `'mail'` is not in `scopes`, throw `new HttpError(403, 'insufficient_scope', 'OAuth token is not authorized for Bansify Mail.')`. Do not accept identity-only tokens minted for other clients (such as `kiwi-store` or `gothwad-tube`).
    - Extract `given_name` and `family_name` when strings are provided by `/api/oauth/userinfo`, falling back to splitting `name`.
    - Populate `accounts` in the returned `Session` for `source: 'bearer'` with a single `PublicAccount` entry for the authenticated user (`id: 'bearer'`, `authuser: 0`, `username`, `name`, `firstName`, `lastName`, `email`, `avatarUrl`, `accountUrl: "${config.authSigninUrl}/me"`, `lastUsedAt: null`) so `loadSessionMeta()` (`worker/src/sessionPayload.ts`) computes `unread: { [session.username]: <count> }` for Bearer callers on `GET /api/session` and `GET /api/session/meta`.
 
-## 3. Add Native Mail Operations Needed by `GothwadTech/mailapp` (`worker/src/mail-types.ts`, `mail-read.ts`, `mail-write.ts`, `index.ts`)
+## 3. Add Native Mail Operations Needed by `Bansify/mailapp` (`worker/src/mail-types.ts`, `mail-read.ts`, `mail-write.ts`, `index.ts`)
 
 Keep all files `<= 500` lines (split cleanly into focused modules if any file approaches 500 lines):
 
 1. **Restore from Trash / Folder Move (`PATCH /api/mail/messages/:id`)**:
    - In `parsePatch` (`worker/src/mail-write.ts`), keep existing `{ isRead?: boolean, isStarred?: boolean, moveToTrash?: true }` support for web compatibility, and additionally allow:
-     - `moveToInbox?: true` (or `folder?: 'inbox' | 'trash'`) so `GothwadTech/mailapp` can undo a swipe-to-trash or restore a message from Trash back to `'inbox'` (`WHERE id = ? AND to_username = ?`).
+     - `moveToInbox?: true` (or `folder?: 'inbox' | 'trash'`) so `Bansify/mailapp` can undo a swipe-to-trash or restore a message from Trash back to `'inbox'` (`WHERE id = ? AND to_username = ?`).
 2. **Batch Message Actions (`POST /api/mail/messages/batch`)**:
    - Require a verified session and `assertSafeWrite(request, config)`.
    - Accept `{ ids: string[], isRead?: boolean, isStarred?: boolean, moveToTrash?: boolean, moveToInbox?: boolean, deleteFromTrash?: boolean }`:
@@ -85,8 +85,8 @@ Keep all files `<= 500` lines (split cleanly into focused modules if any file ap
 
 ## 4. Web OAuth Callback Passthrough for Android App Links (`public/_redirects` or Web Route)
 
-- The web app at `https://mail.gothwadtech.com` uses cookie SSO (`/u/0/`), while `GothwadTech/mailapp` registers `com.gothwad.mail:/oauth/callback` and `https://mail.gothwadtech.com/oauth/callback`.
-- Add a lightweight static callback bridge at `public/oauth/callback/index.html` (or handle `/oauth/callback` cleanly without breaking `/u/:n/` routing) that redirects `https://mail.gothwadtech.com/oauth/callback?code=...&state=...` on Android to `intent://mail.gothwadtech.com/oauth/callback?...#Intent;scheme=https;package=com.gothwad.mail;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end` (and provides a fallback button to `com.gothwad.mail:/oauth/callback?...`), plus `public/.well-known/assetlinks.json` for `com.gothwad.mail` with fingerprint `50:4E:2F:C7:8A:B6:8E:01:8B:84:8F:C1:02:76:2E:44:99:A0:88:03:41:2E:66:A4:0B:2B:09:40:3C:61:49:B6`.
+- The web app at `https://mail.bansify.com` uses cookie SSO (`/u/0/`), while `Bansify/mailapp` registers `com.gothwad.mail:/oauth/callback` and `https://mail.bansify.com/oauth/callback`.
+- Add a lightweight static callback bridge at `public/oauth/callback/index.html` (or handle `/oauth/callback` cleanly without breaking `/u/:n/` routing) that redirects `https://mail.bansify.com/oauth/callback?code=...&state=...` on Android to `intent://mail.bansify.com/oauth/callback?...#Intent;scheme=https;package=com.gothwad.mail;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end` (and provides a fallback button to `com.gothwad.mail:/oauth/callback?...`), plus `public/.well-known/assetlinks.json` for `com.gothwad.mail` with fingerprint `50:4E:2F:C7:8A:B6:8E:01:8B:84:8F:C1:02:76:2E:44:99:A0:88:03:41:2E:66:A4:0B:2B:09:40:3C:61:49:B6`.
 
 ## 5. Verification & Tests Required Before Finishing
 

@@ -13,7 +13,7 @@ export class GoogleJar extends BrowserJar {
       assert.match(cookie, /; SameSite=Lax/);
       assert.match(cookie, /; Secure/);
       if (cookie.startsWith('gothwad_google_')) assert.doesNotMatch(cookie, /; Domain=/i);
-      else assert.match(cookie, /; Domain=\.gothwadtech\.com/);
+      else assert.match(cookie, /; Domain=\.bansify\.com/);
     }
     super.ingest(response, { verifyMailContract: false });
   }

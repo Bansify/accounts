@@ -11,9 +11,9 @@ import { createLocalD1 } from '../../tools/local-d1.mjs';
 export function makeEnv(overrides = {}) {
   return {
     DB: createLocalD1(':memory:'),
-    APP_DOMAIN: 'gothwadtech.com',
-    AUTH_HUB_URL: 'https://accounts.gothwadtech.com',
-    API_DOMAIN: 'api.gothwadtech.com',
+    APP_DOMAIN: 'bansify.com',
+    AUTH_HUB_URL: 'https://accounts.bansify.com',
+    API_DOMAIN: 'api.bansify.com',
     JWT_SECRET: 'test-multi-account-jwt-secret-key-2026-gothwad',
     SSO_PROXY_TOKEN: 'synthetic-proxy-secret-for-tests-only-2026',
     MAIL_INTERNAL_TOKEN: 'mail-internal-test-secret-2026',
@@ -53,7 +53,7 @@ export class BrowserJar {
         assert.match(header, /;\s*HttpOnly(?:;|$)/i);
         assert.match(header, /;\s*SameSite=Lax(?:;|$)/i);
         assert.match(header, /;\s*Secure(?:;|$)/i);
-        assert.match(header, /;\s*Domain=\.gothwadtech\.com(?:;|$)/i);
+        assert.match(header, /;\s*Domain=\.bansify\.com(?:;|$)/i);
       }
 
       const segments = header.split(';').map((s) => s.trim());
@@ -75,7 +75,7 @@ export class BrowserJar {
       .join('; ');
   }
 
-  async fetch(env, path, { method = 'GET', body, headers = {}, host = 'api.gothwadtech.com', origin } = {}) {
+  async fetch(env, path, { method = 'GET', body, headers = {}, host = 'api.bansify.com', origin } = {}) {
     const finalHeaders = { ...headers };
     if (origin === undefined && !new Headers(headers).has('Origin') && !new Headers(headers).has('Referer')) {
       finalHeaders.Origin = env.AUTH_HUB_URL;
@@ -105,7 +105,7 @@ export async function seedAccount(env, { username, firstName, lastName, password
   const jar = new BrowserJar();
   const res = await jar.fetch(env, '/api/auth/signup', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: {
       first_name: firstName,
       last_name: lastName,

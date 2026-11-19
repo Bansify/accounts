@@ -1,6 +1,6 @@
 /**
  * =============================================================================
- * GOTHWAD CONFIG — SINGLE DOMAIN CONFIGURATION POINT (Rule #1)
+ * BANSIFY CONFIG — SINGLE DOMAIN CONFIGURATION POINT (Rule #1)
  * =============================================================================
  * Update only these values when changing domains — no domain string is
  * hardcoded anywhere in runtime code. Backend domain configuration lives in
@@ -24,8 +24,10 @@ export const GOTHWAD_CONFIG = {
    * Root ecosystem domain used to format display emails in the UI
    * (authoritative email is always derived server-side as `username@APP_DOMAIN`).
    */
-  APP_DOMAIN: 'gothwadtech.com',
+  APP_DOMAIN: 'bansify.com',
 };
+
+export const BANSIFY_CONFIG = GOTHWAD_CONFIG;
 
 /** Builds a full API endpoint URL, e.g. apiUrl('/auth/me') -> "/api/auth/me" */
 export function apiUrl(path) {
@@ -37,3 +39,5 @@ export function apiUrl(path) {
 export function gothwadEmail(username) {
   return `${username}@${GOTHWAD_CONFIG.APP_DOMAIN}`;
 }
+
+export const bansifyEmail = gothwadEmail;

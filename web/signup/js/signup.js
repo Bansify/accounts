@@ -37,7 +37,7 @@ function clearError() {
 /* --------------------------------------------------- Multi-step navigation */
 const steps = [
   { panel: document.getElementById('signup-step-1'), actions: document.getElementById('signup-step-1-actions'), desc: 'Enter your first and last name.' },
-  { panel: document.getElementById('signup-step-2'), actions: document.getElementById('signup-step-2-actions'), desc: 'Choose your Gothwad email address and password.' },
+  { panel: document.getElementById('signup-step-2'), actions: document.getElementById('signup-step-2-actions'), desc: 'Choose your Bansify email address and password.' },
   { panel: document.getElementById('signup-step-3'), actions: document.getElementById('signup-step-3-actions'), desc: 'Recovery information to keep your account safe.' },
 ];
 

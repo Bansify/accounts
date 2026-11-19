@@ -12,12 +12,12 @@ import { sha256Base64Url, sha256Hex, timingSafeEqual } from './crypto.ts';
 
 export const OAUTH_SCOPES: Record<string, string> = {
   profile: 'View your basic profile (name, username, avatar)',
-  email: 'View your Gothwad email address',
-  drive: 'Read & write files in your Gothwad Drive',
-  'drive.read': 'View files in your Gothwad Drive',
-  notes: 'Read & write your Gothwad Notes',
-  chat: 'Access your Gothwad Chat messages',
-  mail: 'Access your Gothwad mailbox',
+  email: 'View your Bansify email address',
+  drive: 'Read & write files in your Bansify Drive',
+  'drive.read': 'View files in your Bansify Drive',
+  notes: 'Read & write your Bansify Notes',
+  chat: 'Access your Bansify Chat messages',
+  mail: 'Access your Bansify mailbox',
   'account.read': 'View account security and device information',
   'account.profile.write': 'Edit basic profile and manage account connections',
   offline_access: 'Keep you signed in to this app even when you are away',
@@ -162,7 +162,7 @@ export function consentPageHtml(
   const html = `<!doctype html>
 <html lang="en"><head>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Authorize — Gothwad</title>
+<title>Authorize — Bansify</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -217,9 +217,9 @@ export function consentPageHtml(
 </style></head>
 <body>
   <div class="card">
-    <div class="brand"><img src="/favicon.ico" id="brand-icon" alt="Gothwad" /><span>Gothwad</span></div>
+    <div class="brand"><img src="/favicon.ico" id="brand-icon" alt="Bansify" /><span>Bansify</span></div>
     <h1>${autoApprove ? `Signing in to ${esc(client.name)}…` : `${esc(client.name)} wants access to your account`}</h1>
-    <p class="sub">Sign in with your Gothwad Account</p>
+    <p class="sub">Sign in with your Bansify Account</p>
 
     <div class="user">
       <div class="av">${esc(initials)}</div>
@@ -235,7 +235,7 @@ export function consentPageHtml(
       <div class="label">This will allow the app to:</div>
       ${scopeItems}
 
-      <div class="note">Gothwad never shares your password with this app.
+      <div class="note">Bansify never shares your password with this app.
         You can remove access anytime from <b>My Account → Security</b>.</div>
     </div>
 

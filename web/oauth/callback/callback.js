@@ -23,7 +23,7 @@ if (typeof document !== 'undefined') {
     if (/Android/i.test(navigator.userAgent || '')) {
       location.replace(intentUrl);
     } else if (msgEl) {
-      msgEl.textContent = 'Tap the button below to return to the Gothwad Accounts app.';
+      msgEl.textContent = 'Tap the button below to return to the Bansify Accounts app.';
     }
   } else if (msgEl) {
     msgEl.textContent = 'No active authorization callback parameters were found.';

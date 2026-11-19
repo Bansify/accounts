@@ -17,7 +17,7 @@ export async function registrationOptions(db: D1Database, env: Env, userId: stri
   const keys = (await db.prepare('SELECT credential_id FROM auth_passkeys WHERE user_id = ?').bind(userId).all()).results || [];
   if (keys.length >= 10) return null;
   const { rpID } = passkeyConfig(env);
-  const options = await generateRegistrationOptions({ rpName: 'Gothwad Accounts', rpID,
+  const options = await generateRegistrationOptions({ rpName: 'Bansify Accounts', rpID,
     userID: new TextEncoder().encode(userId), userName: account.username,
     userDisplayName: account.username, attestationType: 'none', supportedAlgorithmIDs: [-7, -257],
     authenticatorSelection: { residentKey: 'required', userVerification: 'required' },

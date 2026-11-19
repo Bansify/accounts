@@ -1,10 +1,10 @@
 # Mail Startup Performance — Standalone Implementation Prompt
 
-Paste into the coding agent working in `GothwadTech/mail`:
+Paste into the coding agent working in `Bansify/mail`:
 
 ```text
-Work in GothwadTech/mail. Fix slow startup and the full-screen "Loading your
-Gothwad Account" gate without weakening authentication or breaking mail.
+Work in Bansify/mail. Fix slow startup and the full-screen "Loading your
+Bansify Account" gate without weakening authentication or breaking mail.
 
 Use independent engineering judgment. Audit the current repository and its
 instructions first; do not trust this prompt blindly. Implement the best safe

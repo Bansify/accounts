@@ -20,18 +20,18 @@ export const FIRST_PARTY_CERT_SCHEMA = ['INSERT', 'UPDATE OF android_cert_sha256
 export function officialClients(domain: string) {
   const profile = ['profile', 'email', 'offline_access'];
   return [
-    { id: ACCOUNTS_ANDROID, name: 'Gothwad Accounts Android', package: 'com.gothwad.accounts',
+    { id: ACCOUNTS_ANDROID, name: 'Bansify Accounts Android', package: 'com.gothwad.accounts',
       redirects: [`https://accounts.${domain}/oauth/callback`, 'com.gothwad.accounts:/oauth/callback'],
       scopes: [...profile, 'drive.read', 'account.read', 'account.profile.write'] },
     ...['alpha', 'beta'].map(part => ({ id: `gothwad-accounts-sample-${part}`, name: `Accounts Sample ${part}`,
       package: `com.gothwad.accounts.sample.${part}`, redirects: [`com.gothwad.accounts.sample.${part}:/oauth/callback`], scopes: profile })),
-    { id: 'gothwad-mail', name: 'Gothwad Mail', package: 'com.gothwad.mail',
+    { id: 'gothwad-mail', name: 'Bansify Mail', package: 'com.gothwad.mail',
       redirects: [`https://mail.${domain}/oauth/callback`, 'com.gothwad.mail:/oauth/callback'], scopes: [...profile, 'mail'] },
-    { id: 'gothwad-drive', name: 'Gothwad Drive', package: 'com.gothwad.drive',
+    { id: 'gothwad-drive', name: 'Bansify Drive', package: 'com.gothwad.drive',
       redirects: [`https://drive.${domain}/oauth/callback`, 'com.gothwad.drive:/oauth/callback'], scopes: [...profile, 'drive', 'drive.read'] },
     { id: 'kiwi-store', name: 'Kiwi Store', package: 'com.gothwad.store',
       redirects: ['kiwistore://oauth/callback', `https://kiwistore.${domain}/oauth/callback`, 'com.gothwad.store:/oauth/callback'], scopes: profile },
-    { id: 'gothwad-tube', name: 'Gothwad Tube', package: 'com.gothwad.tube',
+    { id: 'gothwad-tube', name: 'Bansify Tube', package: 'com.gothwad.tube',
       redirects: [`https://tube.${domain}/oauth/callback`, 'com.gothwad.tube:/oauth/callback'], scopes: profile },
   ];
 }
@@ -42,11 +42,17 @@ export function firstPartySeeds(db: D1Database, domain: string) {
     SELECT ?, ?, ?, 1, ?, ?, ?, 1
     WHERE NOT EXISTS (SELECT 1 FROM auth_schema_versions WHERE version = '14_first_party_native')
     ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
-      allowed_scopes = excluded.allowed_scopes,
+      name = excluded.name, allowed_scopes = excluded.allowed_scopes,
       redirect_uris = (SELECT json_group_array(value) FROM (
         SELECT value FROM json_each(ecosystem_apps.redirect_uris)
         UNION SELECT value FROM json_each(excluded.redirect_uris)))`)
     .bind(app.id, app.id, app.name, app.package, JSON.stringify(app.redirects), JSON.stringify(app.scopes))),
+    ...officialClients(domain).map(app => db.prepare(`UPDATE ecosystem_apps
+      SET name = ?, redirect_uris = (SELECT json_group_array(value) FROM (
+        SELECT value FROM json_each(ecosystem_apps.redirect_uris)
+        UNION SELECT value FROM json_each(?)))
+      WHERE id = ? AND json_valid(redirect_uris) = 1 AND redirect_uris != '[]'`)
+      .bind(app.name, JSON.stringify(app.redirects), app.id)),
     db.prepare("INSERT OR IGNORE INTO auth_schema_versions(version) VALUES ('14_first_party_native')")];
 }
 export function firstPartyAllowed(client: Record<string, any> | null): client is Record<string, any> {

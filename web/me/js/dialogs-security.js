@@ -25,7 +25,7 @@ export function dialogPassword() {
 export function dialogDelete() {
   const owner = getDialogUser();
   if (!owner) return;
-  modal({ title: 'Delete your Gothwad Account', danger: true,
+  modal({ title: 'Delete your Bansify Account', danger: true,
     sub: 'Permanent deletion of this Accounts identity cannot be undone. Export your Accounts data first.',
     body: `<div class="alert alert-error"><strong>${escapeHtml(gothwadEmail(owner.username))}</strong> is the account being deleted.</div>
       <p>This removes the Accounts profile, sign-in methods, sessions, app grants and retained Accounts activity. It does not guarantee deletion of Mail, Drive or other services’ separate databases, backups or legal records. Manage those with each service first. Other signed-in accounts are not deleted.</p>

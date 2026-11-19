@@ -144,16 +144,16 @@ CREATE TABLE IF NOT EXISTS user_avatars (
 );
 
 INSERT INTO ecosystem_apps (id, client_id, name, description, icon, redirect_uris, is_verified, is_core) VALUES
-  ('gothwad-meet', 'gothwad-meet', 'Gothwad Meet', 'Video meetings for your Gothwad Account', 'video', '["https://meet.gothwadtech.com/auth/callback","https://meet.gothwadtech.com/oauth/callback"]', 1, 1),
-  ('gothwad-mail', 'gothwad-mail', 'Gothwad Mail', 'username inbox for your Gothwad Account', 'mail', '["https://mail.gothwadtech.com/auth/callback","https://mail.gothwadtech.com/oauth/callback"]', 1, 1),
-  ('kiwi-store', 'kiwi-store', 'Kiwi Store', 'Apps and add-ons for Kiwi Store', 'store', '["gothwadstore://oauth/callback","kiwistore://oauth/callback","https://kiwistore.gothwadtech.com/auth/callback","https://kiwiconsole.gothwadtech.com/auth/callback","https://kiwiadmin.gothwadtech.com/auth/callback","https://kiwiapp.gothwadtech.com/auth/callback","http://localhost:3000/auth/callback","http://localhost:5173/auth/callback"]', 1, 1),
-  ('gothwad-drive', 'gothwad-drive', 'Gothwad Drive', 'Files and folders on your account', 'hard-drive', '["https://drive.gothwadtech.com/auth/callback","https://drive.gothwadtech.com/oauth/callback"]', 1, 1),
-  ('gothwad-notes', 'gothwad-notes', 'Gothwad Notes', 'Notes and lists, synced', 'file-text', '[]', 1, 1),
-  ('gothwad-calendar', 'gothwad-calendar', 'Gothwad Calendar', 'Events and reminders', 'calendar', '[]', 1, 1),
-  ('gothwad-contacts', 'gothwad-contacts', 'Gothwad Contacts', 'People and addresses', 'users', '[]', 1, 1),
-  ('gothwad-tube', 'gothwad-tube', 'Gothwad Tube (PlusTube)', 'Video - PlusTube', 'play', '["https://plustube.gothwadtech.com/auth/callback","https://tube.gothwadtech.com/auth/callback"]', 1, 0),
-  ('gothwad-chat', 'gothwad-chat', 'GrixChat (Gothwad Chat)', 'Messaging', 'message-circle', '["https://grixchat.gothwadtech.com/auth/callback","https://chat.gothwadtech.com/auth/callback"]', 1, 0),
-  ('gothwad-indogram', 'gothwad-indogram', 'Indogram', 'Telegram-style chat', 'send', '["https://indogram.gothwadtech.com/auth/callback"]', 1, 0)
+  ('gothwad-meet', 'gothwad-meet', 'Bansify Meet', 'Video meetings for your Bansify Account', 'video', '["https://meet.bansify.com/auth/callback","https://meet.bansify.com/oauth/callback"]', 1, 1),
+  ('gothwad-mail', 'gothwad-mail', 'Bansify Mail', 'username inbox for your Bansify Account', 'mail', '["https://mail.bansify.com/auth/callback","https://mail.bansify.com/oauth/callback"]', 1, 1),
+  ('kiwi-store', 'kiwi-store', 'Kiwi Store', 'Apps and add-ons for Kiwi Store', 'store', '["gothwadstore://oauth/callback","kiwistore://oauth/callback","https://kiwistore.bansify.com/auth/callback","https://kiwiconsole.bansify.com/auth/callback","https://kiwiadmin.bansify.com/auth/callback","https://kiwiapp.bansify.com/auth/callback","http://localhost:3000/auth/callback","http://localhost:5173/auth/callback"]', 1, 1),
+  ('gothwad-drive', 'gothwad-drive', 'Bansify Drive', 'Files and folders on your account', 'hard-drive', '["https://drive.bansify.com/auth/callback","https://drive.bansify.com/oauth/callback"]', 1, 1),
+  ('gothwad-notes', 'gothwad-notes', 'Bansify Notes', 'Notes and lists, synced', 'file-text', '[]', 1, 1),
+  ('gothwad-calendar', 'gothwad-calendar', 'Bansify Calendar', 'Events and reminders', 'calendar', '[]', 1, 1),
+  ('gothwad-contacts', 'gothwad-contacts', 'Bansify Contacts', 'People and addresses', 'users', '[]', 1, 1),
+  ('gothwad-tube', 'gothwad-tube', 'Bansify Tube (PlusTube)', 'Video - PlusTube', 'play', '["https://plustube.bansify.com/auth/callback","https://tube.bansify.com/auth/callback"]', 1, 0),
+  ('gothwad-chat', 'gothwad-chat', 'GrixChat (Bansify Chat)', 'Messaging', 'message-circle', '["https://grixchat.bansify.com/auth/callback","https://chat.bansify.com/auth/callback"]', 1, 0),
+  ('gothwad-indogram', 'gothwad-indogram', 'Indogram', 'Telegram-style chat', 'send', '["https://indogram.bansify.com/auth/callback"]', 1, 0)
 ON CONFLICT (id) DO UPDATE SET
   client_id = excluded.client_id,
   name = excluded.name,

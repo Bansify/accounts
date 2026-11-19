@@ -35,7 +35,7 @@ The simplest consistent working-directory layout for the **Worker** is:
 
 | Setting | Expected repository layout |
 |---|---|
-| Repository | `GothwadTech/accounts` |
+| Repository | `Bansify/accounts` |
 | Production branch | `main` |
 | Root directory | `cloudflare-worker` |
 | Dependency installation | Install from that directory's `package-lock.json` (`npm ci` if explicitly configured) |

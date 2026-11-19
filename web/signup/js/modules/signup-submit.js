@@ -55,7 +55,7 @@ export function createSignupSubmit(submitBtn, showError, clearError) {
       return showError(res.error || 'Could not create account. Please try again.');
     }
 
-    toast(`Account created! Welcome to Gothwad, ${firstName}!`);
+    toast(`Account created! Welcome to Bansify, ${firstName}!`);
 
     setTimeout(() => {
       const authuser = Number.isInteger(res.data?.authuser) ? res.data.authuser : 0;

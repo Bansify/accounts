@@ -1,6 +1,6 @@
-# Copy-paste prompt — GothwadTech/store (web + Store Worker)
+# Copy-paste prompt — Bansify/store (web + Store Worker)
 
-Work ONLY in `GothwadTech/store`. Fix its real **Sign in with Gothwad** integration;
+Work ONLY in `Bansify/store`. Fix its real **Sign in with Bansify** integration;
 do not redesign the UI, change unrelated catalog/upload behavior, rename Worker
 `store`, or modify the Accounts/Android repositories. Follow this repo's working
 branch rules. Read HANDOVER.md, PLAN.md, TASK.md, src/lib/auth.ts, config.ts,
@@ -14,8 +14,8 @@ not proof that the live database/deployment has already been fixed.
 
 - Public OAuth client: `kiwi-store`; scopes `profile email offline_access`.
   No client secret in the browser or APK.
-- Browser authorize base: `https://accounts.gothwadtech.com/api` (config/env).
-- Store Worker → Accounts base: `https://api.gothwadtech.com` (Custom Domain).
+- Browser authorize base: `https://accounts.bansify.com/api` (config/env).
+- Store Worker → Accounts base: `https://api.bansify.com` (Custom Domain).
   Keep this distinction; same-zone server calls must not use the browser Route host.
 - OAuth endpoints: `/oauth/authorize`, `/oauth/token`, `/oauth/userinfo` relative
   to the appropriate base. OAuth refresh uses `/oauth/token` with

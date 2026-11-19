@@ -172,8 +172,8 @@ export async function handleMobileSecurityRoute(
     if (!stored) return wrap(apiError('Security state changed. Verify again before retrying.', 409));
 
     const link = `${env.AUTH_HUB_URL.replace(/\/+$/, '')}/verify-recovery/#token=${encodeURIComponent(token)}`;
-    const delivered = await sendSecurityEmail(env, newEmail, 'Verify your Gothwad recovery email',
-      `Confirm the replacement recovery email for your Gothwad Account within 15 minutes:\n\nVerification Token (for Gothwad Accounts Android app):\n${token}\n\nOr open in browser:\n${link}`);
+    const delivered = await sendSecurityEmail(env, newEmail, 'Verify your Bansify recovery email',
+      `Confirm the replacement recovery email for your Bansify Account within 15 minutes:\n\nVerification Token (for Bansify Accounts Android app):\n${token}\n\nOr open in browser:\n${link}`);
     if (!delivered && env.DEV_MODE !== 'true') {
       await db.prepare('DELETE FROM recovery_email_changes WHERE token_hash = ?').bind(hash).run();
       return wrap(json({ error: 'email_unavailable', message: 'Could not send verification email.' }, 503));
@@ -301,7 +301,7 @@ export async function handleMobileSecurityRoute(
       db.prepare('SELECT id, type, title, detail, ip_address, created_at FROM account_activity WHERE user_id = ? ORDER BY created_at DESC LIMIT 100').bind(uid).all(),
     ]);
     return wrap(json({
-      ok: true, export: 'gothwad-accounts', version: 2, generated_at: new Date().toISOString(),
+      ok: true, export: 'bansify-accounts', version: 2, generated_at: new Date().toISOString(),
       profile: profile ? presentUser(profile, env) : null, sessions: sessionsOut.results || [],
       connected_apps: (authzOut.results || []).map((g) => ({ ...g, scopes: parseJsonStringArray(g.scopes) })),
       recent_activity: activityOut.results || [],

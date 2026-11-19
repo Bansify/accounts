@@ -56,7 +56,7 @@ export async function handleAuthSessionRoute(
       return withCors(apiError('Username, email or phone and password are required'));
     }
 
-    const appDomain = (env.APP_DOMAIN || 'gothwadtech.com').toLowerCase();
+    const appDomain = (env.APP_DOMAIN || 'bansify.com').toLowerCase();
     if (
       !identifierLooksLikePhone(rawIdentifier) &&
       rawIdentifier.includes('@') &&
@@ -69,7 +69,7 @@ export async function handleAuthSessionRoute(
     if (!found.exists) {
       const msg =
         found.kind === 'phone'
-          ? "This phone number isn't registered with Gothwad Accounts."
+          ? "This phone number isn't registered with Bansify Accounts."
           : "This username doesn't exist. Check the spelling, or create a new account.";
       return withCors(apiError(msg, 404));
     }

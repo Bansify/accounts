@@ -23,7 +23,7 @@ export async function notifyGoogleChange(db: D1Database, env: Env, userId: strin
     metadataLoaded = true;
   } catch { /* A notification lookup cannot turn a committed mutation into an error. */ }
   const recipients = new Set([...previous.map(row => String(row.email)), email, ...(recovery?.email ? [String(recovery.email)] : [])]);
-  const address = recovery?.username ? `${recovery.username}@${env.APP_DOMAIN}` : 'your Gothwad Account';
+  const address = recovery?.username ? `${recovery.username}@${env.APP_DOMAIN}` : 'your Bansify Account';
   const delivered = await Promise.all([...recipients].map(to => sendSecurityEmail(env, to,
     `Google sign-in method ${action}`, `A Google sign-in method (${email}) was ${action} on ${address}.\n\n` +
     `If this was not you, open ${env.AUTH_HUB_URL} directly, review Security and sign out unknown devices. ` +

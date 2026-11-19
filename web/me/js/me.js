@@ -91,7 +91,7 @@ async function boot() {
     initSearch();
     initNav();
   } catch {
-    showLoadFailure('Could not finish loading your Gothwad Account.');
+    showLoadFailure('Could not finish loading your Bansify Account.');
   }
 }
 

@@ -19,11 +19,11 @@ test('Cross-subdomain CORS preflight allows X-Gothwad-Authuser with credentials 
   const browser = new BrowserJar();
 
   for (const origin of [
-    'https://kiwistore.gothwadtech.com',
-    'https://kiwiconsole.gothwadtech.com',
-    'https://kiwiadmin.gothwadtech.com',
-    'https://mail.gothwadtech.com',
-    'https://notes.gothwadtech.com',
+    'https://kiwistore.bansify.com',
+    'https://kiwiconsole.bansify.com',
+    'https://kiwiadmin.bansify.com',
+    'https://mail.bansify.com',
+    'https://notes.bansify.com',
   ]) {
     const preflight = await browser.fetch(env, '/api/auth/me', {
       method: 'OPTIONS',
@@ -50,42 +50,42 @@ test('Multi-account D1 summaries return real avatarUrl + avatar_url + name for A
 
   // Give u1 and u3 custom profile avatars while leaving u2 on monogram fallback (exact screenshot case!)
   env.DB.prepare('UPDATE profiles SET avatar_url = ? WHERE id = ?')
-    .bind('https://accounts.gothwadtech.com/api/avatars/u1.webp', u1.data.user.id)
+    .bind('https://accounts.bansify.com/api/avatars/u1.webp', u1.data.user.id)
     .run();
   env.DB.prepare('UPDATE profiles SET avatar_url = ? WHERE id = ?')
-    .bind('https://accounts.gothwadtech.com/api/avatars/u3.webp', u3.data.user.id)
+    .bind('https://accounts.bansify.com/api/avatars/u3.webp', u3.data.user.id)
     .run();
 
   await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'pawangothwad', password: u1.password },
   });
   await browser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'pawan999', password: u2.password, add: true },
   });
   await browser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'gtstudio', password: u3.password, add: true },
   });
 
   // Switch back to slot `a` (`pawangothwad`) directly from Kiwi Store subdomain
   const swRes = await browser.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://kiwistore.gothwadtech.com',
+    origin: 'https://kiwistore.bansify.com',
     body: { id: 'a' },
   });
   assert.equal(swRes.status, 200);
   const swData = await swRes.json();
   assert.equal(swData.accounts.length, 3);
   assert.equal(swData.accounts[0].name, 'Pawan Gothwad');
-  assert.equal(swData.accounts[0].avatarUrl, 'https://accounts.gothwadtech.com/api/avatars/u1.webp');
+  assert.equal(swData.accounts[0].avatarUrl, 'https://accounts.bansify.com/api/avatars/u1.webp');
   assert.equal(swData.accounts[1].avatarUrl, null);
   assert.equal(swData.accounts[2].name, 'Gothwad Tech');
-  assert.equal(swData.accounts[2].avatarUrl, 'https://accounts.gothwadtech.com/api/avatars/u3.webp');
+  assert.equal(swData.accounts[2].avatarUrl, 'https://accounts.bansify.com/api/avatars/u3.webp');
 
   // Verify Universal Account Menu renders uniform, always-visible account rows
   const expandedHtml = buildAccountSheetHtml(
@@ -98,32 +98,32 @@ test('Multi-account D1 summaries return real avatarUrl + avatar_url + name for A
       manageMode: false,
     },
     {
-      accountsWebOrigin: 'https://accounts.gothwadtech.com',
-      nextUrl: 'https://kiwistore.gothwadtech.com/apps',
+      accountsWebOrigin: 'https://accounts.bansify.com',
+      nextUrl: 'https://kiwistore.bansify.com/apps',
       badges: { gtstudio: 5 },
     },
   );
 
   assert.doesNotMatch(expandedHtml, /data-gw-action="edit-avatar"/, 'Avatar editing is not shown in the shared menu');
-  assert.match(expandedHtml, /https:\/\/accounts\.gothwadtech\.com\/api\/avatars\/u3\.webp/, 'Secondary account must display real avatarUrl photo');
+  assert.match(expandedHtml, /https:\/\/accounts\.bansify\.com\/api\/avatars\/u3\.webp/, 'Secondary account must display real avatarUrl photo');
   assert.match(expandedHtml, />PG<\/span>/, 'Avatarless secondary account must render crisp monogram circle');
   assert.match(expandedHtml, /<span class="gw-badge">5<\/span>/, 'Unread badge pill must render cleanly');
   assert.match(expandedHtml, /Add another account/);
   assert.doesNotMatch(expandedHtml, /Manage accounts/);
-  assert.match(expandedHtml, /Manage your Gothwad Account/);
+  assert.match(expandedHtml, /Manage your Bansify Account/);
   assert.match(expandedHtml, /Privacy policy/);
   assert.match(expandedHtml, /Terms of Service/);
 
   const collapsedHtml = buildAccountSheetHtml(
     { user: swData.user, accounts: swData.accounts, activeId: swData.activeId, authuser: 0, collapsed: true },
-    { accountsWebOrigin: 'https://accounts.gothwadtech.com' },
+    { accountsWebOrigin: 'https://accounts.bansify.com' },
   );
   assert.doesNotMatch(collapsedHtml, /gw-hero|toggle-collapse/);
   assert.match(collapsedHtml, /Add another account/, 'Legacy collapsed state cannot hide the account list');
 
   const manageHtml = buildAccountSheetHtml(
     { user: swData.user, accounts: swData.accounts, activeId: swData.activeId, authuser: 0, manageMode: true },
-    { accountsWebOrigin: 'https://accounts.gothwadtech.com' },
+    { accountsWebOrigin: 'https://accounts.bansify.com' },
   );
   assert.match(manageHtml, /data-gw-signout-slot="b"/);
   assert.match(manageHtml, /data-gw-action="signout-all"/);
@@ -154,13 +154,13 @@ test('Universal Account Widget supports zero-hardcode rebrand & cross-origin Pag
   const extraActionsHtml = buildAccountSheetHtml(
     { user: { username: 'pawan', name: 'Pawan' }, accounts: [], authuser: 0 },
     {
-      accountsWebOrigin: 'https://accounts.gothwadtech.com',
+      accountsWebOrigin: 'https://accounts.bansify.com',
       extraActions: [
-        { id: 'console', label: 'Kiwi Console', href: 'https://kiwiconsole.gothwadtech.com' },
+        { id: 'console', label: 'Kiwi Console', href: 'https://kiwiconsole.bansify.com' },
         { id: 'settings', label: 'Settings', onClick: () => {} },
       ],
     },
   );
-  assert.match(extraActionsHtml, /<a href="https:\/\/kiwiconsole\.gothwadtech\.com" class="gw-row" data-gw-extra="0">/);
+  assert.match(extraActionsHtml, /<a href="https:\/\/kiwiconsole\.bansify\.com" class="gw-row" data-gw-extra="0">/);
   assert.match(extraActionsHtml, /<button type="button" class="gw-row" data-gw-extra="1">/);
 });

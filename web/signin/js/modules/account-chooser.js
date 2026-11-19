@@ -37,7 +37,7 @@ export async function initAccountChooser(preloadedState = null) {
   if (tabs) tabs.classList.add('hidden');
   if (sub) {
     sub.textContent = params.get('next')
-      ? 'Choose a Gothwad Account to continue'
+      ? 'Choose a Bansify Account to continue'
       : 'Choose an account';
   }
 

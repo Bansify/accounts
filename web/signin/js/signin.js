@@ -23,7 +23,7 @@ if (!resetTokenEarly) {
 
 if (new URLSearchParams(location.search).get('add') === '1') {
   const sub = document.getElementById('auth-header-sub');
-  if (sub) sub.textContent = 'Add another Gothwad Account on this device.';
+  if (sub) sub.textContent = 'Add another Bansify Account on this device.';
 }
 
 const suffixText = `@${GOTHWAD_CONFIG.APP_DOMAIN}`;
@@ -50,7 +50,7 @@ export function showMode(name) {
     if (name === 'forgot') sub.textContent = 'Reset your password to regain access to your account.';
     else if (name === 'reset') sub.textContent = 'Your reset link is verified. Choose a new password below.';
     else if (new URLSearchParams(location.search).get('add') === '1') {
-      sub.textContent = 'Add another Gothwad Account on this device.';
+      sub.textContent = 'Add another Bansify Account on this device.';
     } else {
       sub.textContent = 'Connecting you to your world, one identity for Mail, Drive, Chat, Notes & more.';
     }

@@ -1,26 +1,26 @@
-# 🚀 Copy-Paste Master Prompt for `GothwadTech/mail` AI Agent (100% Cloudflare D1 Migration)
+# 🚀 Copy-Paste Master Prompt for `Bansify/mail` AI Agent (100% Cloudflare D1 Migration)
 
 > **Usage Instructions:**
-> 1. Open a new chat on Arena.ai connected to **`GothwadTech/mail`**.
+> 1. Open a new chat on Arena.ai connected to **`Bansify/mail`**.
 > 2. Copy the `Database ID` (UUID) of your **`mail`** Cloudflare D1 database from `Storage & Databases` ➔ `D1 SQL Database` ➔ **`mail`**.
-> 3. Paste everything between **`PROMPT START`** and **`PROMPT END`** below into the `GothwadTech/mail` session *(along with the `mail` D1 `Database ID` UUID if handy).*
+> 3. Paste everything between **`PROMPT START`** and **`PROMPT END`** below into the `Bansify/mail` session *(along with the `mail` D1 `Database ID` UUID if handy).*
 > 4. ⚠️ **Never paste secret keys (`RESEND_API_KEY`, `ACCOUNTS_INTERNAL_TOKEN`) into chat!**
 
 ---
 
 ## PROMPT START
 
-You are an autonomous senior full-stack + Cloudflare Workers engineer on Arena.ai working inside **`GothwadTech/mail`** (`mail.gothwadtech.com`).
+You are an autonomous senior full-stack + Cloudflare Workers engineer on Arena.ai working inside **`Bansify/mail`** (`mail.bansify.com`).
 
-### 0. MANDATORY FIRST STEP — READ PUBLIC `GothwadTech/accounts` REPO DOCS FIRST!
+### 0. MANDATORY FIRST STEP — READ PUBLIC `Bansify/accounts` REPO DOCS FIRST!
 Before writing any code, inspect BOTH:
-1. All files in this repository (`GothwadTech/mail`: `AGENTS.md`, `PLAN.md`, `TASK.md`, `docs/SETUP.md`, `docs/MAIL.md`, `package.json`, `worker/wrangler.toml`, `worker/src/*`, `worker/test/worker.test.ts`, `supabase/mail.sql`, `src/*`, `tests/*`).
-2. The live public sibling repository **`https://github.com/GothwadTech/accounts`** (`main` branch — already migrated to **v2.0 100% Cloudflare D1 Native with ZERO Supabase**!), specifically:
-   - `GothwadTech/accounts/docs/MAIL_INTERNAL.md`
-   - `GothwadTech/accounts/PLAN.md`
-   - `GothwadTech/accounts/docs/SETUP.md`
-   - `GothwadTech/accounts/cloudflare-worker/wrangler.toml`
-   - `GothwadTech/accounts/tools/local-d1.mjs` (clean pattern using Node 22 built-in `node:sqlite` `DatabaseSync` to test real SQLite D1 locally with zero NPM packages!)
+1. All files in this repository (`Bansify/mail`: `AGENTS.md`, `PLAN.md`, `TASK.md`, `docs/SETUP.md`, `docs/MAIL.md`, `package.json`, `worker/wrangler.toml`, `worker/src/*`, `worker/test/worker.test.ts`, `supabase/mail.sql`, `src/*`, `tests/*`).
+2. The live public sibling repository **`https://github.com/Bansify/accounts`** (`main` branch — already migrated to **v2.0 100% Cloudflare D1 Native with ZERO Supabase**!), specifically:
+   - `Bansify/accounts/docs/MAIL_INTERNAL.md`
+   - `Bansify/accounts/PLAN.md`
+   - `Bansify/accounts/docs/SETUP.md`
+   - `Bansify/accounts/cloudflare-worker/wrangler.toml`
+   - `Bansify/accounts/tools/local-d1.mjs` (clean pattern using Node 22 built-in `node:sqlite` `DatabaseSync` to test real SQLite D1 locally with zero NPM packages!)
 
 Write all UI strings, code comments, documentation, and engineering explanations in **100% pure, clear English** (zero Hindi / Hinglish anywhere). Update `TASK.md`, `PLAN.md`, `AGENTS.md`, `docs/MAIL.md`, and `docs/SETUP.md` thoroughly before finishing.
 
@@ -28,17 +28,17 @@ Write all UI strings, code comments, documentation, and engineering explanations
 
 ### 1. MISSION OVERVIEW (DO EVERYTHING END-TO-END, VERIFY 100%, DO NOT STOP AT A PLAN!)
 
-Gothwad Tech follows a locked **Hybrid Cloud Free-Tier Architecture ($0 cost)**:
+Bansify follows a locked **Hybrid Cloud Free-Tier Architecture ($0 cost)**:
 - **`PlusTube`, `Indogram`, `GrixChat`** stay on Supabase permanently (saving both free Supabase projects for heavy social/realtime apps).
-- **`Gothwad Accounts` (`GothwadTech/accounts`)** is ALREADY **100% LIVE on Cloudflare Workers + Cloudflare D1 (`accounts` DB)** with zero Supabase.
-- **YOUR JOB NOW:** Completely remove **ALL Supabase dependencies** from **`GothwadTech/mail`** (`@supabase/supabase-js`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, PostgREST HTTP calls, `supabase/mail.sql` Postgres-only RLS) and upgrade `GothwadTech/mail` to **100% Native Cloudflare Workers + Cloudflare D1 (`mail` DB)** WITH **Smart Per-User Retention & Compression (`Default: Latest 500 emails`, user-configurable in Settings up to `Store All` within fair-use quota)**!
+- **`Bansify Accounts` (`Bansify/accounts`)** is ALREADY **100% LIVE on Cloudflare Workers + Cloudflare D1 (`accounts` DB)** with zero Supabase.
+- **YOUR JOB NOW:** Completely remove **ALL Supabase dependencies** from **`Bansify/mail`** (`@supabase/supabase-js`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, PostgREST HTTP calls, `supabase/mail.sql` Postgres-only RLS) and upgrade `Bansify/mail` to **100% Native Cloudflare Workers + Cloudflare D1 (`mail` DB)** WITH **Smart Per-User Retention & Compression (`Default: Latest 500 emails`, user-configurable in Settings up to `Store All` within fair-use quota)**!
 
 ---
 
 ### 2. HARD ARCHITECTURAL & NAMING RULES (NEVER VIOLATE!)
 
 1. **Exact Cloudflare Names (DO NOT RENAME!):**
-   - Worker name in `worker/wrangler.toml`: **`name = "mail"`** *(NEVER `gothwad-mail-api`! Production route `mail.gothwadtech.com/api/*`, Email Routing `*@gothwadtech.com`, and Worker secrets `ACCOUNTS_INTERNAL_TOKEN` + `RESEND_API_KEY` live on Worker `mail`!)*
+   - Worker name in `worker/wrangler.toml`: **`name = "mail"`** *(NEVER `gothwad-mail-api`! Production route `mail.bansify.com/api/*`, Email Routing `*@bansify.com`, and Worker secrets `ACCOUNTS_INTERNAL_TOKEN` + `RESEND_API_KEY` live on Worker `mail`!)*
    - Cloudflare D1 Database name created on Cloudflare Dashboard: **`database_name = "mail"`** with binding **`binding = "DB"`** in `worker/wrangler.toml`:
      ```toml
      keep_vars = true
@@ -50,11 +50,11 @@ Gothwad Tech follows a locked **Hybrid Cloud Free-Tier Architecture ($0 cost)**:
      ```
    - Accounts OAuth `client_id`: **`gothwad-mail`**
 2. **Domain-Agnostic (`Rule #1`) & Pure Username DB (`Rule #2`):**
-   - Never hardcode `gothwadtech.com` inside application logic — always read from `config.appDomain` (`APP_DOMAIN` in `worker/wrangler.toml`).
+   - Never hardcode `bansify.com` inside application logic — always read from `config.appDomain` (`APP_DOMAIN` in `worker/wrangler.toml`).
    - Store **only lowercase `username`** (`to_username` / `username`) in D1 — derive `username@${config.appDomain}` at runtime.
 3. **Same-Zone Accounts URL Split (CRITICAL — DO NOT BREAK!):**
-   - `AUTH_HUB_URL = "https://api.gothwadtech.com"` → used for **ALL server-to-server Worker calls** (`/api/auth/me`, `/api/oauth/userinfo`, `/api/internal/usernames/:username`). NEVER use `accounts.gothwadtech.com` for Worker-to-Worker `fetch()`!
-   - `AUTH_SIGNIN_URL = "https://accounts.gothwadtech.com"` → used ONLY for browser-facing sign-in & `/me` links.
+   - `AUTH_HUB_URL = "https://api.bansify.com"` → used for **ALL server-to-server Worker calls** (`/api/auth/me`, `/api/oauth/userinfo`, `/api/internal/usernames/:username`). NEVER use `accounts.bansify.com` for Worker-to-Worker `fetch()`!
+   - `AUTH_SIGNIN_URL = "https://accounts.bansify.com"` → used ONLY for browser-facing sign-in & `/me` links.
    - Preserve upstream cookie rotation forwarding (`takeUpstreamCookies(request)` in `worker/src/session.ts` & `worker/src/index.ts`)!
 4. **Zero Secrets in Code or Git:**
    - Remove `SUPABASE_URL` from `worker/wrangler.toml` and `SUPABASE_SERVICE_ROLE_KEY` from `worker/src/config.ts`, `.dev.vars.example`, `.env.example`, and `package.json` scripts (`worker:secrets`).
@@ -68,7 +68,7 @@ Gothwad Tech follows a locked **Hybrid Cloud Free-Tier Architecture ($0 cost)**:
 ### 3. EXACT DATABASE, COMPRESSION & RETENTION ARCHITECTURE (`sql/01_mail_schema.sql` + Auto-Bootstrap in `worker/src/db.ts`)
 
 1. **Auto-Bootstrap Schema on Cold Start (`WeakMap<object, Promise<void>>`):**
-   - Just like `GothwadTech/accounts/cloudflare-worker/src/index.ts`, make `worker/src/db.ts` run idempotent `CREATE TABLE IF NOT EXISTS ...` + `CREATE INDEX IF NOT EXISTS ...` via `env.DB.batch(...)` once per D1 instance on cold start so **even a brand-new empty `"mail"` D1 database works automatically with zero manual SQL errors**!
+   - Just like `Bansify/accounts/cloudflare-worker/src/index.ts`, make `worker/src/db.ts` run idempotent `CREATE TABLE IF NOT EXISTS ...` + `CREATE INDEX IF NOT EXISTS ...` via `env.DB.batch(...)` once per D1 instance on cold start so **even a brand-new empty `"mail"` D1 database works automatically with zero manual SQL errors**!
    - **IMPORTANT CLOUDFLARE D1 RULE:** Do **NOT** put `PRAGMA` statements in D1 runtime/remote SQL (remote D1 already enforces `foreign_keys = ON` and rejects `PRAGMA` with `SQLITE_AUTH`). Also provide a clean, comment-free `sql/00_d1_console_bootstrap.sql` + documented `sql/01_mail_schema.sql` (and remove obsolete `supabase/mail.sql`).
 
 2. **Tables in `mail` D1 Database:**

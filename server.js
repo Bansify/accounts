@@ -56,7 +56,7 @@ const server = http.createServer(async (req, res) => {
 
       const env = {
         DB: localDb,
-        APP_DOMAIN: process.env.APP_DOMAIN || 'gothwadtech.com',
+        APP_DOMAIN: process.env.APP_DOMAIN || 'bansify.com',
         AUTH_HUB_URL: process.env.AUTH_HUB_URL || origin,
         API_DOMAIN: process.env.API_DOMAIN || '',
         DEV_MODE: process.env.DEV_MODE || 'true',
@@ -107,7 +107,7 @@ const server = http.createServer(async (req, res) => {
 
   if (!filePath) {
     res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end('<h1 style="font-family:sans-serif;color:#e6edf3;background:#0d1117;padding:40px;margin:0;height:100vh;">404 — Not found<br><br><a href="/signin" style="color:#2f80ed;font-size:16px;">← Go to Gothwad Sign In</a></h1>');
+    res.end('<h1 style="font-family:sans-serif;color:#e6edf3;background:#0d1117;padding:40px;margin:0;height:100vh;">404 — Not found<br><br><a href="/signin" style="color:#2f80ed;font-size:16px;">← Go to Bansify Sign In</a></h1>');
     return;
   }
 
@@ -136,7 +136,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`🔥 Gothwad Accounts (100% Cloudflare D1 Native) running on http://${HOST}:${PORT}`);
+  console.log(`🔥 Bansify Accounts (100% Cloudflare D1 Native) running on http://${HOST}:${PORT}`);
   console.log(`🗄️  Local SQLite D1 database: ${DB_FILE}`);
   console.log(`📁 Serving web/ directory (/signin · /signup · /me)`);
 });

@@ -71,7 +71,7 @@ export async function handleAuthEntryRoute(
       return withCors(apiError('Please enter your username, email or phone number.', 400));
     }
 
-    const appDomain = (env.APP_DOMAIN || 'gothwadtech.com').toLowerCase();
+    const appDomain = (env.APP_DOMAIN || 'bansify.com').toLowerCase();
     if (
       !identifierLooksLikePhone(raw) &&
       raw.includes('@') &&
@@ -89,7 +89,7 @@ export async function handleAuthEntryRoute(
     if (!found.exists) {
       const msg =
         found.kind === 'phone'
-          ? "This phone number isn't registered with Gothwad Accounts."
+          ? "This phone number isn't registered with Bansify Accounts."
           : "This username doesn't exist. Check the spelling, or create a new account.";
       return withCors(json({ exists: false, error: msg }));
     }
@@ -224,7 +224,7 @@ export async function handleAuthEntryRoute(
 
     const accessToken = await issueSessionAccessToken(env, { userId, username, sessionId });
     const profile = await fetchProfile(db, userId);
-    await logActivity(db, userId, 'signup', 'Account created', `Welcome to Gothwad, ${firstName}!`, request);
+    await logActivity(db, userId, 'signup', 'Account created', `Welcome to Bansify, ${firstName}!`, request);
 
     const slotResult = await buildSignInCookies(request, db, env, {
       userId,

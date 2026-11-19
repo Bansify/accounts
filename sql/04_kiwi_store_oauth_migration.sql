@@ -18,9 +18,9 @@ VALUES (
   'Apps and add-ons for Kiwi Store',
   'store',
   json_array(
-    'https://kiwistore.gothwadtech.com/auth/callback',
-    'https://kiwiconsole.gothwadtech.com/auth/callback',
-    'https://kiwiadmin.gothwadtech.com/auth/callback',
+    'https://kiwistore.bansify.com/auth/callback',
+    'https://kiwiconsole.bansify.com/auth/callback',
+    'https://kiwiadmin.bansify.com/auth/callback',
     'http://localhost:3000/auth/callback',
     'gothwadstore://oauth/callback',
     'kiwistore://oauth/callback'

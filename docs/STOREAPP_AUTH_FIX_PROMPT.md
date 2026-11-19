@@ -1,6 +1,6 @@
-# Copy-paste prompt — GothwadTech/storeapp (Android)
+# Copy-paste prompt — Bansify/storeapp (Android)
 
-Work ONLY in `GothwadTech/storeapp`. Fix real **Sign in with Gothwad**, callback
+Work ONLY in `Bansify/storeapp`. Fix real **Sign in with Bansify**, callback
 handling and session refresh without redesigning unrelated screens or changing
 applicationId, package identity, signing keys, Worker names, or download/install
 architecture. Follow this repo's working branch rules. Read its working guide,
@@ -16,13 +16,13 @@ Accounts session; add focused tests to prove the failures and fixes.
 
 - `OAUTH_CLIENT_ID = kiwi-store` (public client; no client secret in the APK).
 - `OAUTH_REDIRECT_URI = gothwadstore://oauth/callback`, exactly, no trailing slash.
-- Default Accounts API base: `https://accounts.gothwadtech.com/api/`.
+- Default Accounts API base: `https://accounts.bansify.com/api/`.
   Android already constructs `/api/oauth/authorize` correctly. Do not remove `/api`.
 - Scopes: `profile email offline_access`; S256 PKCE using a fresh random verifier
   (43–128 RFC 7636 characters), base64url SHA-256 challenge (43 characters, no
   padding), and a fresh nonempty state per request.
 - Code exchange and OAuth refresh go to `oauth/token`; profile to `oauth/userinfo`.
-  Store API calls use `https://store.gothwadtech.com/api/` with the OAuth Bearer token.
+  Store API calls use `https://store.bansify.com/api/` with the OAuth Bearer token.
 - The native callback must be in **Accounts'** `ecosystem_apps.redirect_uris` for
   `kiwi-store`. This is not a Store DB or Supabase Authentication setting.
   Accounts has prepared registration SQL; an owner still needs to apply it.

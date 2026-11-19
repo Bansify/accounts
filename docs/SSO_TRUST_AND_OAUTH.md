@@ -10,8 +10,8 @@ Reviewed current GitHub source on 2026-10-29 without editing other repositories:
 
 | Consumer | Revision | Observed contract |
 |---|---|---|
-| `GothwadTech/mail` | `7764dcea7eadab1cb1d1e7beef977f3700664f81` | `worker/src/accounts.ts` forwards an explicit browser/configured Mail origin for switch/signout and preserves separate `gothwad_*` Set-Cookie headers. `worker/src/session.ts` reads cookie identity via GET `/auth/me`, preserves rotated cookies, and resolves bearer OAuth identity via `/oauth/userinfo`. |
-| `GothwadTech/store` | `c41d95ae2a6c11c40f697852c5ef3d30cfbec300` | `worker/src/auth.ts` supports GET `/auth/me` cookie identity and OAuth code exchange/userinfo. Native OAuth tokens remain part of the OAuth response contract. |
+| `Bansify/mail` | `7764dcea7eadab1cb1d1e7beef977f3700664f81` | `worker/src/accounts.ts` forwards an explicit browser/configured Mail origin for switch/signout and preserves separate `gothwad_*` Set-Cookie headers. `worker/src/session.ts` reads cookie identity via GET `/auth/me`, preserves rotated cookies, and resolves bearer OAuth identity via `/oauth/userinfo`. |
+| `Bansify/store` | `c41d95ae2a6c11c40f697852c5ef3d30cfbec300` | `worker/src/auth.ts` supports GET `/auth/me` cookie identity and OAuth code exchange/userinfo. Native OAuth tokens remain part of the OAuth response contract. |
 | Accounts frontend/widget | Current working tree | Cookie-based identity and six-slot selectors; no need for session credentials in response JSON. |
 
 Mail's current source differs from the older headerless-`Accept` reproduction test.

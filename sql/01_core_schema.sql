@@ -5,7 +5,7 @@
 -- Engine: Cloudflare D1 (SQLite)
 --
 -- OVERVIEW:
---   Core identity database for Gothwad Accounts — native password credentials (`users`),
+--   Core identity database for Bansify Accounts — native password credentials (`users`),
 --   user profile metadata (`profiles`), active signed-in devices (`user_sessions`),
 --   refresh & password-reset token vaults, and OAuth 2.0 provider tables (`ecosystem_apps`,
 --   `app_authorizations`, `oauth_auth_codes`, `oauth_refresh_tokens`).
@@ -151,15 +151,15 @@ CREATE TABLE IF NOT EXISTS ecosystem_apps (
 );
 
 INSERT INTO ecosystem_apps (id, client_id, name, description, icon, is_verified, is_core) VALUES
-  ('gothwad-meet',     'gothwad-meet',     'Gothwad Meet',              'Video meetings for your Gothwad Account', 'video',          1, 1),
-  ('gothwad-mail',     'gothwad-mail',     'Gothwad Mail',              'username inbox for your Gothwad Account', 'mail',           1, 1),
+  ('gothwad-meet',     'gothwad-meet',     'Bansify Meet',              'Video meetings for your Bansify Account', 'video',          1, 1),
+  ('gothwad-mail',     'gothwad-mail',     'Bansify Mail',              'username inbox for your Bansify Account', 'mail',           1, 1),
   ('kiwi-store',       'kiwi-store',       'Kiwi Store',                'Apps and add-ons for Kiwi Store',         'store',          1, 1),
-  ('gothwad-drive',    'gothwad-drive',    'Gothwad Drive',             'Files and folders on your account',       'hard-drive',     1, 1),
-  ('gothwad-notes',    'gothwad-notes',    'Gothwad Notes',             'Notes and lists, synced',                 'file-text',      1, 1),
-  ('gothwad-calendar', 'gothwad-calendar', 'Gothwad Calendar',          'Events and reminders',                    'calendar',       1, 1),
-  ('gothwad-contacts', 'gothwad-contacts', 'Gothwad Contacts',          'People and addresses',                    'users',          1, 1),
-  ('gothwad-tube',     'gothwad-tube',     'Gothwad Tube (PlusTube)',   'Video — PlusTube',                        'play',           1, 0),
-  ('gothwad-chat',     'gothwad-chat',     'GrixChat (Gothwad Chat)',   'Messaging',                               'message-circle', 1, 0),
+  ('gothwad-drive',    'gothwad-drive',    'Bansify Drive',             'Files and folders on your account',       'hard-drive',     1, 1),
+  ('gothwad-notes',    'gothwad-notes',    'Bansify Notes',             'Notes and lists, synced',                 'file-text',      1, 1),
+  ('gothwad-calendar', 'gothwad-calendar', 'Bansify Calendar',          'Events and reminders',                    'calendar',       1, 1),
+  ('gothwad-contacts', 'gothwad-contacts', 'Bansify Contacts',          'People and addresses',                    'users',          1, 1),
+  ('gothwad-tube',     'gothwad-tube',     'Bansify Tube (PlusTube)',   'Video — PlusTube',                        'play',           1, 0),
+  ('gothwad-chat',     'gothwad-chat',     'GrixChat (Bansify Chat)',   'Messaging',                               'message-circle', 1, 0),
   ('gothwad-indogram', 'gothwad-indogram', 'Indogram',                  'Telegram-style chat',                     'send',           1, 0)
 ON CONFLICT (id) DO UPDATE SET
   client_id   = COALESCE(ecosystem_apps.client_id, excluded.client_id),

@@ -1,22 +1,22 @@
 import { GOTHWAD_CONFIG } from './config.js';
 const domain = GOTHWAD_CONFIG.APP_DOMAIN;
 /**
- * Gothwad product catalog (Accounts dashboard).
- * Core = First-party Gothwad Services: automatically enabled with the account, non-revocable.
- * Others = Connected apps using Sign in with Gothwad: revocable at any time.
+ * Bansify product catalog (Accounts dashboard).
+ * Core = First-party Bansify Services: automatically enabled with the account, non-revocable.
+ * Others = Connected apps using Sign in with Bansify: revocable at any time.
  */
 
 export const GOTHWAD_SERVICES = [
   {
     id: 'gothwad-meet',
-    name: 'Gothwad Meet',
+    name: 'Bansify Meet',
     url: `https://meet.${domain}`,
     icon: 'video',
-    description: 'Video meetings for your Gothwad Account',
+    description: 'Video meetings for your Bansify Account',
   },
   {
     id: 'gothwad-mail',
-    name: 'Gothwad Mail',
+    name: 'Bansify Mail',
     url: `https://mail.${domain}`,
     icon: 'mail',
     description: `Your account address at ${domain}; mailbox availability is managed by Mail`,
@@ -30,28 +30,28 @@ export const GOTHWAD_SERVICES = [
   },
   {
     id: 'gothwad-drive',
-    name: 'Gothwad Drive',
+    name: 'Bansify Drive',
     url: `https://drive.${domain}`,
     icon: 'hard-drive',
     description: 'Files and folders on your account',
   },
   {
     id: 'gothwad-notes',
-    name: 'Gothwad Notes',
+    name: 'Bansify Notes',
     url: `https://notes.${domain}`,
     icon: 'file-text',
     description: 'Notes and lists, synced',
   },
   {
     id: 'gothwad-calendar',
-    name: 'Gothwad Calendar',
+    name: 'Bansify Calendar',
     url: `https://calender.${domain}`,
     icon: 'calendar',
     description: 'Events and reminders',
   },
   {
     id: 'gothwad-contacts',
-    name: 'Gothwad Contacts',
+    name: 'Bansify Contacts',
     url: `https://contacts.${domain}`,
     icon: 'users',
     description: 'People and addresses',
@@ -61,14 +61,14 @@ export const GOTHWAD_SERVICES = [
 export const GOTHWAD_PRODUCTS = [
   {
     id: 'gothwad-tube',
-    name: 'Gothwad Tube (PlusTube)',
+    name: 'Bansify Tube (PlusTube)',
     url: `https://tube.${domain}`,
     icon: 'play',
     description: 'Video — PlusTube',
   },
   {
     id: 'gothwad-chat',
-    name: 'GrixChat (Gothwad Chat)',
+    name: 'GrixChat (Bansify Chat)',
     url: `https://grixchat.${domain}`,
     icon: 'message-circle',
     description: 'Messaging',
@@ -82,6 +82,8 @@ export const GOTHWAD_PRODUCTS = [
   },
 ];
 
+export const BANSIFY_SERVICES = GOTHWAD_SERVICES;
+export const BANSIFY_PRODUCTS = GOTHWAD_PRODUCTS;
 export const CORE_APP_IDS = GOTHWAD_SERVICES.map((a) => a.id);
 
 export function isCoreApp(id) {
