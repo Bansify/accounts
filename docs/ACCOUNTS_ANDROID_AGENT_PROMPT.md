@@ -1,192 +1,105 @@
-# Bansify Accounts Android (`Bansify/accountsapp`) — Native Auth, Zero-Browser SSO & Full Native Management Prompt
+# Bansify Accounts Android (`Bansify/accountsapp`): Domain (`bansify.com`) & Brand (`Bansify Accounts`) Migration Prompt
 
-> **How to use:** Copy and paste the prompt below into the Arena coding agent working inside **`Bansify/accountsapp`**.
-
----
-
-```markdown
-You are working inside `Bansify/accountsapp` (`com.gothwad.accounts`).
-
-## Standing Rules
-1. **100% Pure English** across all Kotlin code, Compose UI, strings, comments, tests, and docs.
-2. **Preserve Everything That Currently Works:** Keep the existing Browser / Chrome Custom Tabs OAuth 2.0 + S256 PKCE flow (`GothwadAccounts.signIn` / `OAuthClient`), existing `TokenStore`, `AccountDirectoryProvider` query cursor, `PeerBrokerClient`, and existing tests working as a secondary fallback (`signInWithBrowser`).
-3. **Upgrade to 100% Native Direct Worker Authentication, Zero-Browser Cross-App Silent SSO, and 100% Native Account & Security Management:**
-   - Do **not** force users into a web browser for sign-in, sign-up, password reset, profile photo, phone number, recovery email, password change, 2-Step Verification (TOTP MFA), session revocation, data export, or account deletion.
-   - Connect directly to the Cloudflare Worker JSON API at `https://accounts.bansify.com/api` via `OkHttp`.
+Paste the prompt below into the coding agent working in **`Bansify/accountsapp`**.
+Do not run this prompt inside `Bansify/accounts`, `Bansify/mail`, or `Bansify/mailapp`.
 
 ---
 
-## 1. Direct Native Android Authentication (`/api/mobile/auth/*` — Zero Browser Required)
+Work only in this `Bansify/accountsapp` repository on the active session branch. First read `README.md`, `app/src/main/AndroidManifest.xml`, `app/src/main/java/com/gothwad/accounts/AccountsApplication.kt`, `core/src/main/java/com/gothwad/accounts/core/GothwadConfig.kt`, `ui/src/main/res/values/strings.xml`, `ui/src/main/res/values-hi/strings.xml`, `ui/src/main/java/com/gothwad/accounts/ui/model/AccountDashboardModels.kt`, `tools/check_android_scaffold.py`, `tools/check_docs.py`, and `.github/workflows/release.yml` before editing.
 
-The `Bansify/accounts` Cloudflare Worker (`https://accounts.bansify.com/api`) now provides cookie-free, direct JSON authentication endpoints for official first-party Android clients (`client_id = "gothwad-accounts-android"`, `scope = "profile email offline_access drive.read account.read account.profile.write"`):
+## Why `Bansify/accountsapp` Needs This Update
 
-1. **`POST /api/mobile/auth/check-identifier`**
-   - Request JSON: `{ "identifier": "<username | email | phone>" }`
-   - Response JSON (`200`): `{ "ok": true, "exists": true, "kind": "username" | "email" | "phone", "error"?: "..." }`
-2. **`POST /api/mobile/auth/check-username`**
-   - Request JSON: `{ "username": "<desired_username>" }`
-   - Response JSON (`200`): `{ "ok": true, "available": true, "valid": true, "username": "...", "email": "...@bansify.com", "error"?: "..." }`
-3. **`POST /api/mobile/auth/signin`**
-   - Request JSON:
-     ```json
-     {
-       "client_id": "gothwad-accounts-android",
-       "scope": "profile email offline_access drive.read account.read account.profile.write",
-       "identifier": "<username | email | phone>",
-       "password": "<password>"
-     }
-     ```
-   - Response JSON (`200` when MFA is not enabled):
-     ```json
-     {
-       "ok": true,
-       "access_token": "<oauth_access_jwt>",
-       "refresh_token": "<oauth_refresh_token>",
-       "token_type": "Bearer",
-       "expires_in": 900,
-       "scope": "profile email offline_access drive.read account.read account.profile.write",
-       "client_id": "gothwad-accounts-android",
-       "session_id": "<session_id>",
-       "user": { "id": "...", "username": "...", "email": "...", "first_name": "...", "last_name": "...", "avatar_url": "..." }
-     }
-     ```
-   - Response JSON (`202` when 2-Step Verification is enabled):
-     ```json
-     {
-       "ok": true,
-       "mfa_required": true,
-       "challenge": "<64-char-hex-challenge>",
-       "expires_in": 300,
-       "message": "Enter an authenticator code or an unused recovery code."
-     }
-     ```
-4. **`POST /api/mobile/auth/signin/mfa`**
-   - Request JSON:
-     ```json
-     {
-       "client_id": "gothwad-accounts-android",
-       "scope": "profile email offline_access drive.read account.read account.profile.write",
-       "challenge": "<64-char-hex-challenge>",
-       "code": "<6-digit-totp-or-recovery-code>"
-     }
-     ```
-   - Response JSON (`200`): Same token + user payload as `POST /api/mobile/auth/signin`.
-5. **`POST /api/mobile/auth/signup`**
-   - Request JSON:
-     ```json
-     {
-       "client_id": "gothwad-accounts-android",
-       "scope": "profile email offline_access drive.read account.read account.profile.write",
-       "first_name": "...",
-       "last_name": "...",
-       "username": "...",
-       "password": "...",
-       "recovery_email": "...",
-       "phone_number": "...",
-       "date_of_birth": "YYYY-MM-DD",
-       "gender": "Male" | "Female" | "Other" | "Prefer not to say" | ""
-     }
-     ```
-   - Response JSON (`201`): Same token + user payload as `POST /api/mobile/auth/signin`.
-6. **`POST /api/mobile/auth/forgot-password` & `POST /api/mobile/auth/reset-password`**
-   - `forgot-password` Request: `{ "username": "<username>" }` -> `{ "ok": true, "message": "..." }`
-   - `reset-password` Request: `{ "token": "<reset_token>", "password": "<new_password>" }` -> `{ "ok": true, "message": "..." }`
-
-### What to implement in `core/` and `ui/`:
-- Add these methods to `MobileAccountClient.kt` and expose suspend functions on `SessionManager` / `GothwadAccounts` / `AccountSessionController` / `AccountDashboardViewModel`.
-- When `signin`, `signin/mfa`, or `signup` succeeds, immediately fetch `/api/oauth/userinfo` with the returned `access_token` (or map the returned `user` + `/oauth/userinfo`) and store the account + tokens in `TokenStore`, setting it as the active account and notifying `AccountDirectoryProvider`!
-- In `SignedOutAccountScreen.kt` and the "Add another account" dialog:
-  - Make the primary **"Sign in"** action open a **100% Native Jetpack Compose Sign-In / Sign-Up / 2FA / Forgot Password Dialog or Sheet** (Step 1: Identifier or Create Account -> Step 2: Password or Forgot Password -> Step 3: 2FA code if `mfa_required`).
-  - Keep **"Sign in with Browser"** as a secondary outlined/text button that triggers the existing Custom Tabs OAuth PKCE flow.
+The backend (`Bansify/accounts`) has been migrated from `gothwadtech.com` (`accounts.gothwadtech.com`, `api.gothwadtech.com`) and `Gothwad Accounts` to **`bansify.com`** (`accounts.bansify.com`, `api.bansify.com`) and **`Bansify Accounts`**.
+An incomplete open PR (`#6`) in `Bansify/accountsapp` only touched `strings.xml` and `README.md`, leaving all runtime URLs, App Links hosts, Compose UI screens, ecosystem catalog entries, and unit tests pointing at `accounts.gothwadtech.com` and `@gothwadtech.com`.
 
 ---
 
-## 2. Zero-Browser Automatic Cross-App Silent SSO (`POST /api/mobile/auth/peer-code`)
+## Mandatory Compatibility Invariants (Do NOT Change These!)
 
-When a user is signed into `Bansify Accounts` (`com.gothwad.accounts`) or `Bansify Mail` (`com.gothwad.mail`) on the phone, the other app must be able to sign in **automatically in <1 second without opening any browser or permissions screen**:
-
-1. **Server Endpoint (`POST /api/mobile/auth/peer-code`):**
-   - Requires `Authorization: Bearer <caller_valid_first_party_access_token>`.
-   - Request JSON:
-     ```json
-     {
-       "target_client_id": "gothwad-mail",
-       "redirect_uri": "com.gothwad.mail:/oauth/callback",
-       "scope": "profile email offline_access mail",
-       "code_challenge": "<S256_challenge>",
-       "code_challenge_method": "S256"
-     }
-     ```
-   - Response JSON (`200`):
-     ```json
-     {
-       "ok": true,
-       "code": "<one-time-pkce-code>",
-       "client_id": "gothwad-mail",
-       "redirect_uri": "com.gothwad.mail:/oauth/callback",
-       "scope": "profile email offline_access mail",
-       "expires_in": 300
-     }
-     ```
-2. **Update `AccountDirectoryProvider.kt` (`core/src/main/java/com/gothwad/accounts/core/broker/AccountDirectoryProvider.kt`):**
-   - Override `call(method: String, arg: String?, extras: Bundle?): Bundle?`:
-     - Verify `TrustVerifier.isTrustedUid(context, Binder.getCallingUid())`. If untrusted, return `Bundle().apply { putBoolean("ok", false); putString("error", "untrusted_caller") }`.
-     - Support `method == "issue_peer_code"`:
-       - Read `user_id` (or `username`/`email`), `target_client_id`, `redirect_uri`, `scope`, `code_challenge`, and `code_challenge_method` (default `"S256"`) from `extras`.
-       - Find the matching local signed-in account in `SessionManager` / `TokenStore`, obtain a fresh valid `access_token` (refreshing via `OAuthClient.refreshToken` if expired), and call `MobileAccountClient.issuePeerAuthCode(...)` (`POST /api/mobile/auth/peer-code`).
-       - Return a `Bundle` with `putBoolean("ok", true)`, `putString("code", code)`, `putString("redirect_uri", redirectUri)`, `putString("scope", scope)`. (Never put raw `access_token` or `refresh_token` in the Bundle.)
-3. **Update `PeerBrokerClient.kt` & `SessionManager.kt`:**
-   - Add `requestPeerAuthCode(authority, userId, targetClientId, redirectUri, scope, codeChallenge): Result<String>`.
-   - When the user taps **"Continue as <DiscoveredAccount>"** (or when `GothwadAccounts` initializes with 0 local accounts and discovers a verified peer account on the device), generate an S256 PKCE `(codeVerifier, codeChallenge)`, call `PeerBrokerClient.requestPeerAuthCode(...)` on `content://${discovered.sourcePackage}.accountprovider`, and exchange the returned `code` via `OAuthClient.exchangeCode(...)` (`POST /api/oauth/token`) silently in the background! Fall back to the native Sign-In sheet (pre-filled with `discovered.email`) only if the peer code call fails.
+To preserve backward compatibility with installed apps, Android Keystore storage, cross-app ContentProvider discovery, and `Bansify/accounts` D1 `ecosystem_apps` registrations:
+1. **Keep Android `applicationId` & namespaces unchanged:** `com.gothwad.accounts` (and sample apps `com.gothwad.accounts.sample.alpha`, `com.gothwad.accounts.sample.beta`).
+2. **Keep Kotlin `package` declarations and public SDK class/object/method names unchanged:** `package com.gothwad.accounts.*`, `GothwadAccounts`, `GothwadConfig`, `GothwadAccount`, `KnownGothwadApps`, etc.
+3. **Keep OAuth `client_id` slugs unchanged:** `"gothwad-accounts-android"`, `"gothwad-mail"`, `"gothwad-drive"`, `"kiwi-store"`, `"gothwad-tube"`, etc.
+4. **Keep ContentProvider authority & custom-scheme URI unchanged:** `${applicationId}.gothwad.account.directory` and `com.gothwad.accounts:/oauth/callback`.
+5. **Keep `ui/src/main/res/values/strings.xml` and `ui/src/main/res/values-hi/strings.xml` resource `@string/gothwad_*` key names identical** across both files (`tools/check_android_scaffold.py` enforces `strings[0] == strings[1]`). Only update the string *values* inside the tags.
 
 ---
 
-## 3. 100% Native Account & Security Management (`/api/mobile/*` — Zero Web Redirects)
+## Exact File-by-File Changes Required in `Bansify/accountsapp`
 
-Update `MobileAccountClient.kt`, `SessionManager.kt`, `AccountDashboardViewModel.kt`, `PersonalInfoTabScreen.kt`, `SecurityTabScreen.kt`, and `DataPrivacyTabScreen.kt` so every row opens a **native Jetpack Compose dialog/sheet** calling these live Worker endpoints (using `Authorization: Bearer <accessToken>`):
+### 1. Runtime Domain & App Links Configuration (`gothwadtech.com` -> `bansify.com`)
 
-1. **Profile Photo (`POST /api/mobile/avatar` & `DELETE /api/mobile/avatar`):**
-   - `POST /api/mobile/avatar` with `{ "image_base64": "data:image/jpeg;base64,...", "mime": "image/jpeg" }` -> `{ "ok": true, "avatar_url": "...", "user": { ... } }`.
-   - `DELETE /api/mobile/avatar` -> `{ "ok": true, "avatar_url": null, "user": { ... } }`.
-   - In `PersonalInfoTabScreen`, clicking the avatar or "Profile photo" row opens a native dialog with **"Choose photo from device"** (`ActivityResultContracts.PickVisualMedia` / `GetContent("image/*")`, downscaling to `<= 512x512` JPEG and base64-encoding) and **"Remove photo"** (when an avatar is set).
-2. **Phone Number (`POST /api/mobile/phone`):**
-   - Request JSON: `{ "phone_number": "+91...", "current_password": "...", "mfa_code"?: "..." }` -> `{ "ok": true, "phone_number": "...", "user": { ... } }`.
-   - Clicking "Phone number" in `PersonalInfoTabScreen` opens a native Compose dialog to update or clear the phone number.
-3. **Recovery Email (`POST /api/mobile/recovery-email/request` & `POST /api/mobile/recovery-email/verify`):**
-   - Step 1 (`POST /api/mobile/recovery-email/request`): `{ "recovery_email": "...", "current_password": "...", "mfa_code"?: "..." }` -> `{ "ok": true, "pending": true, "message": "..." }`.
-   - Step 2 (`POST /api/mobile/recovery-email/verify`): `{ "token": "<64-char-hex-token>" }` -> `{ "ok": true, "recovery_email": "...", "recovery_email_verified": true }`.
-   - Clicking "Recovery email" in `PersonalInfoTabScreen` or `SecurityTabScreen` opens a native 2-step Compose dialog.
-4. **Password Change (`POST /api/mobile/password`):**
-   - Request JSON: `{ "current_password": "...", "new_password": "...", "mfa_code"?: "..." }` -> `{ "ok": true, "message": "..." }`.
-   - Clicking "Password" in `SecurityTabScreen` opens a native Compose dialog to change (or add) the account password without signing out the current Android app.
-5. **2-Step Verification / Authenticator (`GET /api/mobile/mfa/status`, `POST /api/mobile/mfa/enroll`, `POST /api/mobile/mfa/confirm`, `POST /api/mobile/mfa/recovery-codes`, `POST /api/mobile/mfa/disable`):**
-   - `GET /api/mobile/mfa/status` -> `{ "ok": true, "enabled": true|false, "enrollment_available": true|false, "recovery_codes_remaining": 10 }`.
-   - `POST /api/mobile/mfa/enroll` (`{ "current_password": "..." }`) -> `{ "ok": true, "enrollment_id": "...", "secret": "...", "otpauth_uri": "..." }`.
-   - `POST /api/mobile/mfa/confirm` (`{ "current_password": "...", "enrollment_id": "...", "code": "123456" }`) -> `{ "ok": true, "recovery_codes": ["..."] }`.
-   - `POST /api/mobile/mfa/recovery-codes` (`{ "current_password": "...", "code": "123456" }`) -> `{ "ok": true, "recovery_codes": ["..."] }`.
-   - `POST /api/mobile/mfa/disable` (`{ "current_password": "...", "code": "123456" }`) -> `{ "ok": true }`.
-   - Clicking "2-Step Verification" in `SecurityTabScreen` opens a native Compose management dialog/sheet (showing secret key + "Copy key" + "Open Authenticator App" `Intent(Intent.ACTION_VIEW, Uri.parse(otpauthUri))` + 6-digit confirmation + backup codes display/copy + disable).
-6. **Individual Session Revocation (`POST /api/mobile/sessions/revoke`):**
-   - Request JSON: `{ "session_id": "..." }` -> `{ "ok": true, "revoked": 1 }`.
-   - Add a native "Sign out" button on each non-current session row in `SecurityTabScreen`.
-7. **Export Account Data (`GET /api/mobile/export`):**
-   - Returns the user's JSON archive (`export`, `version`, `generated_at`, `profile`, `sessions`, `connected_apps`, `recent_activity`).
-   - Clicking "Export your account data" in `DataPrivacyTabScreen` fetches `/api/mobile/export` and opens the native Android Share sheet (`Intent.ACTION_SEND` with `text/plain` / `application/json`) or saves via `CreateDocument`.
-8. **Delete Account (`POST /api/mobile/delete-account`):**
-   - Request JSON: `{ "password": "...", "mfa_code"?: "..." }` -> `{ "ok": true, "message": "Account deleted" }`.
-   - Clicking "Delete your Bansify Account" in `DataPrivacyTabScreen` opens a native Compose confirmation dialog; on success, remove the account from `TokenStore` and refresh state.
+1. **`app/src/main/AndroidManifest.xml`**:
+   - Change `android:host="accounts.gothwadtech.com"` to `android:host="accounts.bansify.com"`.
+2. **`app/src/main/java/com/gothwad/accounts/AccountsApplication.kt`**:
+   - Change `"https://accounts.gothwadtech.com/oauth/callback"` to `"https://accounts.bansify.com/oauth/callback"`.
+3. **`core/src/main/java/com/gothwad/accounts/core/GothwadConfig.kt`**:
+   - Change default `val authBaseUrl: String = "https://accounts.gothwadtech.com/api"` to `"https://accounts.bansify.com/api"`.
+4. **`ui/src/main/java/com/gothwad/accounts/ui/components/AccountSharedComponents.kt`**:
+   - Change both fallback `"$it@gothwadtech.com"` expressions (lines 109 and 128) to `"$it@bansify.com"`.
+5. **`ui/src/main/java/com/gothwad/accounts/ui/state/AccountDashboardViewModel.kt`**:
+   - Change `"$clean@gothwadtech.com"` (line 503) and `"$it@gothwadtech.com"` (line 717) to `"$clean@bansify.com"` and `"$it@bansify.com"`.
+   - Update user-visible snackbar and searchable setting labels in `AccountDashboardViewModel.kt`:
+     - `"Disconnected this app grant on Gothwad server and signed out locally."` -> `"Disconnected this app grant on Bansify server and signed out locally."`
+     - `"Welcome to Gothwad, ..."` -> `"Welcome to Bansify, ..."`
+     - `"Gothwad Account permanently deleted"` -> `"Bansify Account permanently deleted"`
+     - `"Gothwad Contacts"` -> `"Bansify Contacts"`
+     - `"Gothwad Services"` -> `"Bansify Services"`
+
+### 2. Compose UI Screens, Ecosystem Catalog & String Resources (`Gothwad` -> `Bansify`, `gothwadtech.com` -> `bansify.com`)
+
+1. **`app/src/main/res/values/strings.xml`**:
+   - Set `<string name="app_name">Bansify Accounts</string>`.
+2. **`sample/src/main/res/values/strings.xml`**:
+   - Set `<string name="app_name">Bansify Accounts Sample</string>`.
+3. **`ui/src/main/res/values/strings.xml` and `ui/src/main/res/values-hi/strings.xml`**:
+   - Keep all `name="gothwad_..."` attribute keys unchanged, and replace `Gothwad Accounts` -> `Bansify Accounts`, `Gothwad Account` -> `Bansify Account`, `Gothwad User` -> `Bansify User`, and `Gothwad` -> `Bansify` in the text values of both files.
+4. **`ui/src/main/java/com/gothwad/accounts/ui/model/AccountDashboardModels.kt`**:
+   - Update `GothwadEcosystemCatalog` entries so all names, descriptions, and URLs use `Bansify` and `bansify.com` (keep the `id` slugs like `"gothwad-meet"`, `"gothwad-mail"`, `"kiwi-store"`, etc. unchanged):
+     - `"gothwad-meet"` -> `"Bansify Meet"`, `"Video meetings for your Bansify Account"`, `"https://meet.bansify.com"`
+     - `"gothwad-mail"` -> `"Bansify Mail"`, `"Account address at bansify.com; mailbox availability is managed by Mail"`, `"https://mail.bansify.com"`
+     - `"kiwi-store"` -> `"Kiwi Store"`, `"Apps and add-ons for Kiwi Store"`, `"https://kiwistore.bansify.com"`
+     - `"gothwad-drive"` -> `"Bansify Drive"`, `"Files and folders on your account"`, `"https://drive.bansify.com"`
+     - `"gothwad-notes"` -> `"Bansify Notes"`, `"Notes and lists, synced"`, `"https://notes.bansify.com"`
+     - `"gothwad-calendar"` -> `"Bansify Calendar"`, `"Events and reminders"`, `"https://calendar.bansify.com"`
+     - `"gothwad-contacts"` -> `"Bansify Contacts"`, `"People and addresses"`, `"https://contacts.bansify.com"`
+     - `"gothwad-tube"` -> `"Bansify Tube (PlusTube)"`, `"Video — PlusTube"`, `"https://tube.bansify.com"`
+     - `"gothwad-chat"` -> `"GrixChat (Bansify Chat)"`, `"Messaging"`, `"https://grixchat.bansify.com"`
+     - `"gothwad-indogram"` -> `"Indogram"`, `"Messaging & communities"`, `"https://indogram.bansify.com"`
+5. **`ui/src/main/java/com/gothwad/accounts/ui/components/NativeAuthDialog.kt`**:
+   - `"Sign in to Gothwad"` -> `"Sign in to Bansify"`
+   - `"Create Gothwad Account"` -> `"Create Bansify Account"`
+   - `"Enter your Gothwad username, @gothwadtech.com email, or registered phone number."` -> `"Enter your Bansify username, @bansify.com email, or registered phone number."`
+   - `"Enter your Gothwad username to request a password reset token via your verified recovery email."` -> `"Enter your Bansify username to request a password reset token via your verified recovery email."`
+6. **`ui/src/main/java/com/gothwad/accounts/ui/components/NativeAccountManagementDialogs.kt` & `ui/src/main/java/com/gothwad/accounts/ui/GothwadAccountsScreen.kt`**:
+   - `"Gothwad Account Data Export"` -> `"Bansify Account Data Export"`
+   - `"Delete Gothwad Account"` -> `"Delete Bansify Account"`
+   - `"Gothwad Account Data"` -> `"Bansify Account Data"`
+7. **`ui/src/main/java/com/gothwad/accounts/ui/screens/*.kt` (`AccountUtilitySubScreens.kt`, `AppSettingsScreen.kt`, `ConnectedAppsTabScreen.kt`, `DataPrivacyTabScreen.kt`, `HomeTabScreen.kt`, `PeopleSharingTabScreen.kt`, `PersonalInfoTabScreen.kt`, `SecurityTabScreen.kt`)**:
+   - Replace all `accounts.gothwadtech.com` and `gothwadtech.com` display strings with `accounts.bansify.com` and `bansify.com`.
+   - Replace all user-visible `Gothwad Accounts`, `Gothwad Account`, `Gothwad Contacts`, `Gothwad Services`, `Gothwad Privacy Policy`, `Gothwad Terms of Service`, and `Gothwad` labels/subtitles with `Bansify Accounts`, `Bansify Account`, `Bansify Contacts`, `Bansify Services`, `Bansify Privacy Policy`, `Bansify Terms of Service`, and `Bansify`.
+
+### 3. Unit Tests, Documentation & Release Workflow
+
+1. **Unit Tests (`core/src/test/java/com/gothwad/accounts/core/*.kt` and `ui/src/test/java/com/gothwad/accounts/ui/*.kt`)**:
+   - Replace all `@gothwadtech.com`, `accounts.gothwadtech.com`, and `tube.gothwadtech.com` test fixtures/assertions with `@bansify.com`, `accounts.bansify.com`, and `tube.bansify.com`.
+   - Run `./gradlew test` and ensure every test in `:core` and `:ui` passes.
+2. **Documentation (`README.md`, `app/README.md`, `docs/*.md`)**:
+   - Update all `gothwadtech.com` (`accounts.gothwadtech.com`, `mail.gothwadtech.com`, `drive.gothwadtech.com`, `tube.gothwadtech.com`) references to `bansify.com` (`accounts.bansify.com`, `mail.bansify.com`, `drive.bansify.com`, `tube.bansify.com`) and `GothwadTech/accounts` -> `Bansify/accounts`, `Gothwad Accounts` -> `Bansify Accounts`.
+   - Ensure all relative Markdown links remain valid (`python3 tools/check_docs.py`).
+3. **Release Workflow (`.github/workflows/release.yml`)**:
+   - Update the release artifact filenames and title in `.github/workflows/release.yml` from `GothwadAccounts-v...` / `Gothwad-Accounts-v...` / `Gothwad Accounts` to `BansifyAccounts-v...` / `Bansify-Accounts-v...` / `Bansify Accounts`.
 
 ---
 
-## 4. Domain (`bansify.com`) & Brand (`Bansify Accounts`) Rebrand
-- Update all domain configuration defaults (`BuildConfig`, `AccountConfig`, Gradle `buildConfigField` / `manifestPlaceholders`, `AndroidManifest.xml` App Links `android:host`, and unit test fixtures) from `gothwadtech.com` (`accounts.gothwadtech.com`, `api.gothwadtech.com`) to **`bansify.com`** (`accounts.bansify.com`, `api.bansify.com`).
-- Update all user-visible brand strings (`strings.xml`, Compose UI headings/subtitles, app name `Bansify Accounts`, and product names `Bansify Mail`, `Bansify Drive`, `Bansify Meet`, `Bansify Notes`, `Bansify Calendar`, `Bansify Contacts`, `Bansify Tube`, `Bansify Chat`) from `Gothwad` / `Gothwad Accounts` to **`Bansify`** / **`Bansify Accounts`**.
-- Keep technical Android package IDs (`com.gothwad.accounts`, `com.gothwad.mail`, etc.) and OAuth `client_id` slugs (`gothwad-accounts-android`, `gothwad-mail`, etc.) unchanged for backward compatibility.
+## Verification, PR Merge & Final Response Instructions
 
----
-
-## 5. Verification & Delivery
-1. Add unit tests in `core/src/test/` and `ui/src/test/` covering direct native sign-in/sign-up/MFA, `issue_peer_code` cross-app SSO, and the new `/api/mobile/*` methods.
-2. Run `./gradlew test assembleDebug` and verify all tests and Python checks (`python3 tools/check_android_scaffold.py`, `python3 tools/check_docs.py`) pass with 0 errors.
-3. Commit, push to the active branch, and merge the pull request to `main`.
-```
+1. Run and pass all checks locally:
+   ```bash
+   python3 tools/check_android_scaffold.py
+   python3 tools/check_docs.py
+   ./gradlew test assembleDebug
+   ```
+2. Commit your changes, push to the active branch (`git push -u origin <active-branch>`), open a pull request to `main`, and merge it using `gh pr merge <number> --merge`.
+3. Close the superseded incomplete PR #6 (`gh pr close 6 --repo Bansify/accountsapp`).
+4. Check the GitHub Actions workflow runs on the merged `main` commit (`gh run list --repo Bansify/accountsapp --branch main --limit 5`) and report the status of the CI and Release APK build to the user, along with any repository secret checks (`RELEASE_KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`) if needed.
