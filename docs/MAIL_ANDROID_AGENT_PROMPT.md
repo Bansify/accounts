@@ -137,7 +137,14 @@ Add direct native authentication methods to `OAuthHttpClient.kt` and `MailAuthSe
 
 ---
 
-## 4. Verification & Delivery
+## 4. Domain (`bansify.com`) & Brand (`Bansify Mail` / `Bansify Accounts`) Rebrand
+- Update all domain configuration defaults (`BuildConfig`, Gradle `buildConfigField` / `manifestPlaceholders`, `AndroidManifest.xml` App Links `android:host` for `mail.bansify.com`, `OAuthConfig`, `MailApiClient`, and unit test fixtures) from `gothwadtech.com` (`mail.gothwadtech.com`, `accounts.gothwadtech.com`, `api.gothwadtech.com`) to **`bansify.com`** (`mail.bansify.com`, `accounts.bansify.com`, `api.bansify.com`).
+- Update all user-visible brand strings (`strings.xml`, Compose UI titles/subtitles, app label `Bansify Mail`, and sign-in buttons `Sign in with Bansify`) from `Gothwad Mail` / `Gothwad Accounts` / `Gothwad` to **`Bansify Mail`** / **`Bansify Accounts`** / **`Bansify`**.
+- Keep technical Android package IDs (`com.gothwad.mail`, `com.gothwad.accounts`) and OAuth `client_id` (`gothwad-mail`) unchanged for backward compatibility.
+
+---
+
+## 5. Verification & Delivery
 1. Add unit tests in `app/src/test/` covering:
    - `GET /api/session` sending `Authorization: Bearer <token>`
    - Direct native sign-in, MFA verification, sign-up, and `issue_peer_code` silent cross-app token exchange.

@@ -88,7 +88,12 @@ Keep all files `<= 500` lines (split cleanly into focused modules if any file ap
 - The web app at `https://mail.bansify.com` uses cookie SSO (`/u/0/`), while `Bansify/mailapp` registers `com.gothwad.mail:/oauth/callback` and `https://mail.bansify.com/oauth/callback`.
 - Add a lightweight static callback bridge at `public/oauth/callback/index.html` (or handle `/oauth/callback` cleanly without breaking `/u/:n/` routing) that redirects `https://mail.bansify.com/oauth/callback?code=...&state=...` on Android to `intent://mail.bansify.com/oauth/callback?...#Intent;scheme=https;package=com.gothwad.mail;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end` (and provides a fallback button to `com.gothwad.mail:/oauth/callback?...`), plus `public/.well-known/assetlinks.json` for `com.gothwad.mail` with fingerprint `50:4E:2F:C7:8A:B6:8E:01:8B:84:8F:C1:02:76:2E:44:99:A0:88:03:41:2E:66:A4:0B:2B:09:40:3C:61:49:B6`.
 
-## 5. Verification & Tests Required Before Finishing
+## 5. Domain (`bansify.com`) & Brand (`Bansify Mail` / `Bansify Accounts`) Rebrand
+
+- Update `worker/wrangler.toml`, `src/config*`, `worker/src/config*`, HTML titles/meta, UI strings, and tests from `gothwadtech.com` (`mail.gothwadtech.com`, `accounts.gothwadtech.com`, `api.gothwadtech.com`) to **`bansify.com`** (`mail.bansify.com`, `accounts.bansify.com`, `api.bansify.com`), and rebrand all `Gothwad Mail` / `Gothwad Accounts` / `Gothwad` product names to **`Bansify Mail`** / **`Bansify Accounts`** / **`Bansify`**.
+- Keep wire cookie/header names (`gothwad_*`, `X-Gothwad-*`) and OAuth `client_id` (`gothwad-mail`) unchanged for compatibility with `Bansify/accounts`.
+
+## 6. Verification & Tests Required Before Finishing
 
 Add unit/integration tests in `worker/test/` covering:
 1. Bearer token with `client_id: 'gothwad-mail'` and `scopes: ['profile', 'email', 'offline_access', 'mail']` succeeds on `/api/session`, `/api/mail/messages`, `/api/mail/send`, etc., and returns unread count for the bearer user.
