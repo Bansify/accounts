@@ -111,7 +111,7 @@ export function buildCorsHeaders(request: Request, env: Env): Headers {
     headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
     headers.set(
       'Access-Control-Allow-Headers',
-      'Content-Type, Authorization, X-Gothwad-Refresh, X-Gothwad-Authuser',
+      'Content-Type, Authorization, X-Gothwad-Refresh, X-Gothwad-Authuser, X-Bansify-Refresh, X-Bansify-Authuser',
     );
     headers.set('Access-Control-Max-Age', '86400');
   }
