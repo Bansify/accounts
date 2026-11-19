@@ -76,7 +76,7 @@ export function openDialog(name) {
 function dialogName() {
   modal({
     title: 'Name',
-    sub: 'Changes to your name will be reflected across your emails and Gothwad services.',
+    sub: 'Changes to your name will be reflected across your emails and Bansify services.',
     body:
       field('dlg-first-name', 'First name', { value: currentUser.first_name }) +
       field('dlg-last-name', 'Last name', { value: currentUser.last_name }),

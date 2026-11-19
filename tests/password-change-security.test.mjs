@@ -8,7 +8,7 @@ async function fixture() {
   const owner = await seedAccount(env, { username: 'passwordowner', firstName: 'Password', lastName: 'Owner' });
   const other = new BrowserJar();
   const response = await other.fetch(env, '/api/auth/signin', {
-    method: 'POST', origin: 'https://accounts.gothwadtech.com',
+    method: 'POST', origin: 'https://accounts.bansify.com',
     body: { identifier: 'passwordowner', password: owner.password },
   });
   assert.equal(response.status, 200);
@@ -19,7 +19,7 @@ async function fixture() {
 
 async function change(env, jar, currentPassword) {
   return jar.fetch(env, '/api/auth/change-password', {
-    method: 'POST', origin: 'https://accounts.gothwadtech.com',
+    method: 'POST', origin: 'https://accounts.bansify.com',
     body: { current_password: currentPassword, new_password: 'NewStrongPassword!456' },
   });
 }

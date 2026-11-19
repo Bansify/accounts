@@ -64,17 +64,17 @@ test('synthetic SQLite backup restores encrypted MFA data, consumed recovery fla
 });
 test('browser and server redirects reject untrusted siblings, credentials, HTTP and backslash confusion', () => {
   const previous = globalThis.location;
-  globalThis.location = new URL('https://accounts.gothwadtech.com/signin');
+  globalThis.location = new URL('https://accounts.bansify.com/signin');
   const env = makeEnv();
-  const request = new Request('https://api.gothwadtech.com/api/auth/switch');
+  const request = new Request('https://api.bansify.com/api/auth/switch');
   try {
-    const rejected = ['https://unclaimed.gothwadtech.com/inbox', 'http://mail.gothwadtech.com/inbox',
-      'https://user:password@mail.gothwadtech.com/inbox', '//evil.example', '/\\evil.example', '/\n/evil.example'];
+    const rejected = ['https://unclaimed.bansify.com/inbox', 'http://mail.bansify.com/inbox',
+      'https://user:password@mail.bansify.com/inbox', '//evil.example', '/\\evil.example', '/\n/evil.example'];
     for (const raw of rejected) {
       assert.equal(safeNextUrl(raw, '/fallback'), '/fallback', raw);
       assert.equal(resolveSafeRedirectTarget(raw, request, env), env.AUTH_HUB_URL + '/u/0/me', raw);
     }
-    assert.equal(safeNextUrl('https://mail.gothwadtech.com/inbox'), 'https://mail.gothwadtech.com/inbox');
+    assert.equal(safeNextUrl('https://mail.bansify.com/inbox'), 'https://mail.bansify.com/inbox');
     assert.equal(safeNextUrl('/u/1/me'), '/u/1/me');
   } finally { globalThis.location = previous; env.DB.close(); }
 });

@@ -1,9 +1,9 @@
-# ⚡ GOTHWAD ACCOUNTS WORKER (v2.2 — Modular 100% Cloudflare Native Auth + D1)
+# ⚡ BANSIFY ACCOUNTS WORKER (v2.2 — Modular 100% Cloudflare Native Auth + D1)
 
 > **Zero Supabase · Zero Third-Party Auth · Multi-Account Subdomain SSO (`a`..`f`) · `<= 500` Lines Per Module**
 > Overview: [README.md](../README.md) · Architecture: [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) · Setup: [docs/SETUP.md](../docs/SETUP.md)
 
-Central Identity, Multi-Account Session & OAuth 2.0 server for the Gothwad Ecosystem, organized cleanly into **15 focused TypeScript modules** (`<= 490` lines each, ~28 KiB gzipped total bundle with zero runtime NPM dependencies):
+Central Identity, Multi-Account Session & OAuth 2.0 server for the Bansify Ecosystem, organized cleanly into **15 focused TypeScript modules** (`<= 490` lines each, ~28 KiB gzipped total bundle with zero runtime NPM dependencies):
 
 - **Core Layer (`src/*.ts`):** `index.ts` (router + public re-exports), `types.ts`, `db.ts`, `http.ts`, `crypto.ts`, `cookies.ts`, `users.ts`, `sessions.ts`, `browser-slots.ts`, `oauth-helpers.ts`.
 - **Route Layer (`src/routes/*.ts`):** `public-internal.ts`, `auth-entry.ts`, `auth-session.ts`, `auth-accounts.ts`, `auth-profile.ts`, `oauth.ts`.

@@ -79,7 +79,7 @@ WHERE id IN ('kiwi-store', 'gothwad-mail', 'gothwad-meet', 'gothwad-chat', 'goth
 
 ## 3. Store Web `/api` Base Path Rule
 
-In `GothwadTech/store/src/lib/auth.ts`, always construct the authorize URL with a relative path so `/api` is preserved when using `AUTH_BASE = 'https://accounts.<APP_DOMAIN>/api'`:
+In `Bansify/store/src/lib/auth.ts`, always construct the authorize URL with a relative path so `/api` is preserved when using `AUTH_BASE = 'https://accounts.<APP_DOMAIN>/api'`:
 
 ```ts
 // Relative path keeps /api; normalise the trailing slash for either API host.

@@ -228,14 +228,14 @@ test('Dashboard Reload, Cookie Export & Password-Reset Token Regression: zero-st
   const browser = new BrowserJar();
   const signin = await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'reloadcheck', password: 'StrongPassword!123', remember: true },
   });
   assert.equal(signin.status, 200);
 
   // 1. Multiple consecutive dashboard reloads (`GET /api/auth/me` + `GET /api/auth/accounts`) succeed cleanly
   for (let reload = 1; reload <= 3; reload++) {
-    const meRes = await browser.fetch(env, '/api/auth/me', { origin: 'https://accounts.gothwadtech.com' });
+    const meRes = await browser.fetch(env, '/api/auth/me', { origin: 'https://accounts.bansify.com' });
     assert.equal(meRes.status, 200);
     const meJson = await meRes.json();
     assert.equal(meJson.authenticated, true);
@@ -245,17 +245,17 @@ test('Dashboard Reload, Cookie Export & Password-Reset Token Regression: zero-st
   // 2. Cookie-authenticated `/api/auth/export` succeeds with ZERO `Authorization` header (fixing `tabs/data.js`)
   const exportRes = await browser.fetch(env, '/api/auth/export', {
     method: 'GET',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
   });
   assert.equal(exportRes.status, 200);
   const exported = await exportRes.json();
-  assert.equal(exported.export, 'gothwad-accounts');
+  assert.equal(exported.export, 'bansify-accounts');
   assert.equal(exported.profile.username, 'reloadcheck');
 
   // 3. One-time Bearer token in `apiCall(..., { token })` works end-to-end for `/api/auth/reset-password`
   const forgotRes = await browser.fetch(env, '/api/auth/forgot-password', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { username: 'reloadcheck' },
   });
   assert.equal(forgotRes.status, 200);
@@ -266,7 +266,7 @@ test('Dashboard Reload, Cookie Export & Password-Reset Token Regression: zero-st
   const resetBrowser = new BrowserJar();
   const resetRes = await resetBrowser.fetch(env, '/api/auth/reset-password', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     headers: { Authorization: `Bearer ${resetToken}` },
     body: { password: 'UpdatedStrongPassword!456' },
   });
@@ -280,7 +280,7 @@ test('Real V8 ESM Runtime Boot: dynamically importing web/me/js/me.js links all 
   const browser = new BrowserJar();
   await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'v8boot', password: 'StrongPassword!123', remember: true },
   });
 
@@ -339,12 +339,12 @@ test('Real V8 ESM Runtime Boot: dynamically importing web/me/js/me.js links all 
   const prevGlobals = {};
   const injected = {
     location: {
-      origin: 'https://accounts.gothwadtech.com',
-      hostname: 'accounts.gothwadtech.com',
+      origin: 'https://accounts.bansify.com',
+      hostname: 'accounts.bansify.com',
       pathname: '/me',
       search: '',
       hash: '',
-      href: 'https://accounts.gothwadtech.com/me',
+      href: 'https://accounts.bansify.com/me',
       replace(u) { this.href = u; },
     },
     history: { replaceState() {}, pushState() {} },
@@ -369,7 +369,7 @@ test('Real V8 ESM Runtime Boot: dynamically importing web/me/js/me.js links all 
       return browser.fetch(env, path, {
         method: init.method || 'GET',
         headers,
-        origin: 'https://accounts.gothwadtech.com',
+        origin: 'https://accounts.bansify.com',
       });
     },
   };
@@ -384,7 +384,7 @@ test('Real V8 ESM Runtime Boot: dynamically importing web/me/js/me.js links all 
   let blobCreated = false;
   URL.createObjectURL = () => {
     blobCreated = true;
-    return 'blob:https://accounts.gothwadtech.com/export';
+    return 'blob:https://accounts.bansify.com/export';
   };
   URL.revokeObjectURL = () => {};
 
@@ -400,7 +400,7 @@ test('Real V8 ESM Runtime Boot: dynamically importing web/me/js/me.js links all 
     assert.equal(elements.get('auth-loading').classList.contains('hidden'), true, '#auth-loading must hide after boot()');
     assert.equal(elements.get('dash-root').classList.contains('hidden'), false, '#dash-root must unhide after boot()');
     assert.equal(elements.get('menu-name').textContent, 'Pawan V8Boot', 'Account menu must populate user full name');
-    assert.equal(elements.get('menu-email').textContent, 'v8boot@gothwadtech.com', 'Account menu must populate user email');
+    assert.equal(elements.get('menu-email').textContent, 'v8boot@bansify.com', 'Account menu must populate user email');
 
     // 2. Trigger `#btn-export` wired inside `boot() -> initDataPrivacy()` to prove `exportData()` downloads JSON!
     await elements.get('btn-export').trigger('click');

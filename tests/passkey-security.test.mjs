@@ -4,7 +4,7 @@ import { BrowserJar, makeEnv, seedAccount } from './helpers/multi-account-harnes
 import { authenticator } from './helpers/passkey-authenticator.mjs';
 import { enroll, TEST_MFA_KEY } from './helpers/mfa-harness.mjs';
 import { passkeyConfig } from '../cloudflare-worker/src/passkey-core.ts';
-const origin = 'https://accounts.gothwadtech.com';
+const origin = 'https://accounts.bansify.com';
 const post = (jar, env, route, body, from = origin) => jar.fetch(env, `/api/auth/passkeys/${route}`, { method: 'POST', origin: from, body });
 async function fixture() {
   const env = makeEnv({ MFA_ENCRYPTION_KEY: TEST_MFA_KEY });
@@ -52,8 +52,8 @@ test('passkeys: reject missing UV, wrong origin, cross-origin iframe, wrong RP a
   const f = await fixture();
   try {
     await register(f);
-    for (const change of [{ uv: false }, { origin: 'https://mail.gothwadtech.com' }, { crossOrigin: true },
-      { rpID: 'gothwadtech.com' }]) {
+    for (const change of [{ uv: false }, { origin: 'https://mail.bansify.com' }, { crossOrigin: true },
+      { rpID: 'bansify.com' }]) {
       const signed = await login(f, change);
       assert.equal(signed.result.status, 401);
       // A fresh test bucket, not a relaxation of the production attempt cap.
@@ -65,8 +65,8 @@ test('passkeys: reject missing UV, wrong origin, cross-origin iframe, wrong RP a
 test('passkeys: identity-host RP only and identity-origin-only enrollment', async () => {
   const f = await fixture();
   try {
-    assert.throws(() => passkeyConfig({ ...f.env, WEBAUTHN_RP_ID: 'gothwadtech.com' }));
-    assert.equal((await post(f.owner.jar, f.env, 'register/options', { current_password: f.owner.password }, 'https://mail.gothwadtech.com')).status, 403);
+    assert.throws(() => passkeyConfig({ ...f.env, WEBAUTHN_RP_ID: 'bansify.com' }));
+    assert.equal((await post(f.owner.jar, f.env, 'register/options', { current_password: f.owner.password }, 'https://mail.bansify.com')).status, 403);
     assert.equal((await post(f.owner.jar, f.env, 'register/options', { current_password: 'incorrect' })).status, 400);
     const setup = await prepare(f);
     const response = f.key.response(setup.options, { register: true });

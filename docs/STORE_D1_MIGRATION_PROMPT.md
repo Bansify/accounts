@@ -1,6 +1,6 @@
-# 🚀 Master Engineering Prompt for `GothwadTech/store` (100% Zero-Card Cloudflare D1 Migration + Production Audit)
+# 🚀 Master Engineering Prompt for `Bansify/store` (100% Zero-Card Cloudflare D1 Migration + Production Audit)
 
-You are an autonomous Principal Full-Stack, Security, & Cloudflare Edge Architect working inside **`GothwadTech/store`**.
+You are an autonomous Principal Full-Stack, Security, & Cloudflare Edge Architect working inside **`Bansify/store`**.
 
 Write all UI strings, code comments, tests, documentation, and engineering summaries strictly in **100% pure, clear English** (never Hindi or Hinglish). The project operates on a strict **$0/month, ZERO-credit-card** budget — build everything end-to-end cleanly in one complete pass with zero hidden traps.
 
@@ -12,12 +12,12 @@ Write all UI strings, code comments, tests, documentation, and engineering summa
 
 1. **Zero Blind Trust — Perform Your Own Independent Live Audit First:**
    - Treat every bug report, line reference, schema detail, and design suggestion in this document as an **initial engineering brief — NOT blind dogma**.
-   - Codebases evolve. Line numbers, helper names, edge cases, or subtle interactions in `GothwadTech/store`, `GothwadTech/accounts`, or `GothwadTech/storeapp` may have details beyond or slightly different from what is written here.
+   - Codebases evolve. Line numbers, helper names, edge cases, or subtle interactions in `Bansify/store`, `Bansify/accounts`, or `Bansify/storeapp` may have details beyond or slightly different from what is written here.
 2. **Mandatory Independent Audit First — Give Your 100% Best Effort:**
    - Before writing code, **inspect EVERY relevant file yourself** in:
-     1. **This repo (`GothwadTech/store`)**: `package.json`, `worker/wrangler.toml`, `worker/src/*`, `shared/*`, `src/*`, `sql/*`, and all `.md` documentation files.
-     2. **Live Accounts repo (`https://github.com/GothwadTech/accounts`, `main` branch)**: specifically `cloudflare-worker/src/` (`routes/auth-profile.ts`, `routes/oauth.ts`, `cookies.ts`, `index.ts`), `web/js/authuser.js`, `sql/00_d1_console_bootstrap.sql`, `sql/03_avatars_storage.sql`, `sql/04_kiwi_store_oauth_migration.sql`, `sql/05_store_android_oauth.sql`, `tests/kiwi-store-migration.test.mjs`, and `tools/local-d1.mjs`.
-     3. **Live Android Store client (`https://github.com/GothwadTech/storeapp`)**: specifically `StoreApi.kt`, `StoreModels.kt`, and OAuth callback/deep-link handling so you verify every JSON property name, HTTP status code, and auth header expected by the live Android APK!
+     1. **This repo (`Bansify/store`)**: `package.json`, `worker/wrangler.toml`, `worker/src/*`, `shared/*`, `src/*`, `sql/*`, and all `.md` documentation files.
+     2. **Live Accounts repo (`https://github.com/Bansify/accounts`, `main` branch)**: specifically `cloudflare-worker/src/` (`routes/auth-profile.ts`, `routes/oauth.ts`, `cookies.ts`, `index.ts`), `web/js/authuser.js`, `sql/00_d1_console_bootstrap.sql`, `sql/03_avatars_storage.sql`, `sql/04_kiwi_store_oauth_migration.sql`, `sql/05_store_android_oauth.sql`, `tests/kiwi-store-migration.test.mjs`, and `tools/local-d1.mjs`.
+     3. **Live Android Store client (`https://github.com/Bansify/storeapp`)**: specifically `StoreApi.kt`, `StoreModels.kt`, and OAuth callback/deep-link handling so you verify every JSON property name, HTTP status code, and auth header expected by the live Android APK!
 3. **Full Engineering Autonomy — Build Whatever Solution Is Genuinely Best:**
    - If your independent audit uncovers **additional bugs, race conditions, security flaws, UI/UX rough edges, missing indexes, or a cleaner technical solution** than suggested below — **FIX THEM AND IMPLEMENT THE SUPERIOR SOLUTION!**
    - Never leave a real bug unfixed just because this prompt didn't mention it, and never force an awkward pattern if live code reveals a cleaner, safer, faster architecture — **as long as you strictly honor Section 1's Hard Non-Negotiable Constraints**.
@@ -33,8 +33,8 @@ Write all UI strings, code comments, tests, documentation, and engineering summa
    - **ZERO Supabase** (`@supabase/supabase-js`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` completely removed).
    - **ZERO ImgBB** (`IMGBB_API_KEY` completely removed).
    - **ZERO external paid or card-gated services.** Everything must run **100% Free Forever with ZERO card**:
-     - **Structured Store Data + Native App Icons/Screenshots Binary Storage:** **Cloudflare D1 (`BLOB` table `store_images`) + Cloudflare Edge CDN Cache (`caches.default`)** — exact proven pattern running in production on `GothwadTech/accounts` (`sql/03_avatars_storage.sql` + `routes/auth-profile.ts`).
-     - **APK Binary Storage (`1 MB – 100 MB+`):** Existing **`GothwadTech/storefiles`** GitHub Releases / Contents storage via `worker/src/apk.ts` (`GITHUB_STOREFILES_TOKEN` + optional non-breaking future R2 fallback ONLY if `env.APK_BUCKET` is bound in the future, never required).
+     - **Structured Store Data + Native App Icons/Screenshots Binary Storage:** **Cloudflare D1 (`BLOB` table `store_images`) + Cloudflare Edge CDN Cache (`caches.default`)** — exact proven pattern running in production on `Bansify/accounts` (`sql/03_avatars_storage.sql` + `routes/auth-profile.ts`).
+     - **APK Binary Storage (`1 MB – 100 MB+`):** Existing **`Bansify/storefiles`** GitHub Releases / Contents storage via `worker/src/apk.ts` (`GITHUB_STOREFILES_TOKEN` + optional non-breaking future R2 fallback ONLY if `env.APK_BUCKET` is bound in the future, never required).
 2. **Exact Live Cloudflare D1 Database Binding (Already Created by Pawan):**
    - Wire this exact production D1 database directly into `worker/wrangler.toml`:
      ```toml
@@ -46,12 +46,12 @@ Write all UI strings, code comments, tests, documentation, and engineering summa
      database_id = "a3dc3e71-cf89-4e0a-89d1-693fcf6f227a"
      ```
 3. **Single Unified Codebase Across All 4 Web Domains + 1 API Worker + Android `storeapp`:**
-   - **1 Cloudflare Pages project** (custom domains: `kiwistore.gothwadtech.com`, `kiwiconsole.gothwadtech.com`, `kiwiadmin.gothwadtech.com`, `kiwiapp.gothwadtech.com`) + **1 Cloudflare Worker** (`worker/wrangler.toml`, preserving existing production Worker name, routes, and secrets!).
+   - **1 Cloudflare Pages project** (custom domains: `kiwistore.bansify.com`, `kiwiconsole.bansify.com`, `kiwiadmin.bansify.com`, `kiwiapp.bansify.com`) + **1 Cloudflare Worker** (`worker/wrangler.toml`, preserving existing production Worker name, routes, and secrets!).
    - Verify host-based routing in `shared/brand.ts` and `src/` so all 4 web hosts + local dev (`?surface=store|console|admin|app`) resolve cleanly and remain **domain-agnostic** (`APP_DOMAIN`, never hardcoded outside defaults).
-   - Preserve **100% JSON wire compatibility** with live Android `GothwadTech/storeapp` (`StoreApi.kt` & `StoreModels.kt`) so existing installed APKs keep working without forced breaking changes.
+   - Preserve **100% JSON wire compatibility** with live Android `Bansify/storeapp` (`StoreApi.kt` & `StoreModels.kt`) so existing installed APKs keep working without forced breaking changes.
 4. **Ecosystem Security & Hygiene Rules:**
    - **Zero secrets committed to Git** (never commit tokens/keys; keep `.env.example` / `.dev.vars.example` clean).
-   - **Zero auth tokens stored in `localStorage` or `sessionStorage` on web** (rely on `HttpOnly; Secure` `.gothwadtech.com` SSO slot cookies + `/api/auth/me` & `/api/auth/signout`, while STILL accepting `Authorization: Bearer <oauth_access_token>` on the Worker for Android `storeapp`!).
+   - **Zero auth tokens stored in `localStorage` or `sessionStorage` on web** (rely on `HttpOnly; Secure` `.bansify.com` SSO slot cookies + `/api/auth/me` & `/api/auth/signout`, while STILL accepting `Authorization: Bearer <oauth_access_token>` on the Worker for Android `storeapp`!).
    - **Pure lowercase `username` identity in D1** (derive `username@${appDomain}` dynamically; never store hardcoded domain emails as identity keys).
    - **Strict File-Size Ceiling (`<= 500` lines target per file across ALL code, SQL, test, and `.md` files!):** Split large files into clean, cohesive modules and enforce this with an automated test gate!
 
@@ -59,31 +59,31 @@ Write all UI strings, code comments, tests, documentation, and engineering summa
 
 ## 🔍 2. VERIFIED AUDIT FINDINGS TO CHECK & FIX (PLUS ANYTHING ELSE YOU DISCOVER!)
 
-Verify each of these against the actual files in `GothwadTech/store` and fix all of them cleanly:
+Verify each of these against the actual files in `Bansify/store` and fix all of them cleanly:
 
 ### Bug #1 — Broken OAuth Authorize Base URL (`404` on Sign-In!)
-- **What we found in `shared/brand.ts`:** `BRAND_DEFAULTS.accountsApiUrl` was set to `'https://accounts.gothwadtech.com/api'`.
-- When `src/lib/auth.ts` executes `new URL('/oauth/authorize', AUTH_BASE + '/')`, URL resolution drops `/api` and points the browser to `https://accounts.gothwadtech.com/oauth/authorize` (**static Pages `404`**!), whereas OAuth lives on **`https://api.gothwadtech.com/oauth/authorize`** (and token exchange on `https://api.gothwadtech.com/api/oauth/token`)!
-- **Verify against `GothwadTech/accounts`:**
-  - `AUTH_API_BASE` / `accountsApiUrl` default MUST be **`https://api.gothwadtech.com`** (used for `/oauth/authorize`, `/api/oauth/token`, `/api/oauth/userinfo`, `/api/auth/me`, `/api/auth/signout`).
-  - `ACCOUNTS_WEB_URL` (`https://accounts.gothwadtech.com`) is ONLY for browser UI navigation links (`/me`, `/signin`, account switcher add-account flow).
-  - **CRITICAL CHECK ON `kiwiapp`:** Verify `GothwadTech/accounts/tests/kiwi-store-migration.test.mjs`! Registered OAuth web redirect URIs on `kiwi-store` are:
-    - `https://kiwistore.gothwadtech.com/auth/callback`
-    - `https://kiwiconsole.gothwadtech.com/auth/callback`
-    - `https://kiwiadmin.gothwadtech.com/auth/callback`
+- **What we found in `shared/brand.ts`:** `BRAND_DEFAULTS.accountsApiUrl` was set to `'https://accounts.bansify.com/api'`.
+- When `src/lib/auth.ts` executes `new URL('/oauth/authorize', AUTH_BASE + '/')`, URL resolution drops `/api` and points the browser to `https://accounts.bansify.com/oauth/authorize` (**static Pages `404`**!), whereas OAuth lives on **`https://api.bansify.com/oauth/authorize`** (and token exchange on `https://api.bansify.com/api/oauth/token`)!
+- **Verify against `Bansify/accounts`:**
+  - `AUTH_API_BASE` / `accountsApiUrl` default MUST be **`https://api.bansify.com`** (used for `/oauth/authorize`, `/api/oauth/token`, `/api/oauth/userinfo`, `/api/auth/me`, `/api/auth/signout`).
+  - `ACCOUNTS_WEB_URL` (`https://accounts.bansify.com`) is ONLY for browser UI navigation links (`/me`, `/signin`, account switcher add-account flow).
+  - **CRITICAL CHECK ON `kiwiapp`:** Verify `Bansify/accounts/tests/kiwi-store-migration.test.mjs`! Registered OAuth web redirect URIs on `kiwi-store` are:
+    - `https://kiwistore.bansify.com/auth/callback`
+    - `https://kiwiconsole.bansify.com/auth/callback`
+    - `https://kiwiadmin.bansify.com/auth/callback`
     - `http://localhost:3000/auth/callback`
     - Android deep links: `gothwadstore://oauth/callback` & `kiwistore://oauth/callback`
-    - `https://kiwiapp.gothwadtech.com/auth/callback` is **intentionally NOT registered** because `kiwiapp` is the public Store APK download landing page (`StoreAppLanding.tsx`) — keep `kiwiapp` fast and public, routing any sign-in CTA to `kiwistore` instead of triggering an unregistered `redirect_uri` error!
+    - `https://kiwiapp.bansify.com/auth/callback` is **intentionally NOT registered** because `kiwiapp` is the public Store APK download landing page (`StoreAppLanding.tsx`) — keep `kiwiapp` fast and public, routing any sign-in CTA to `kiwistore` instead of triggering an unregistered `redirect_uri` error!
 
 ### Bug #2 — Cookie SSO Field Mismatch, Cookie Rotation Loss & Multi-Account `/u/0..5` Support
 - **What we found in `worker/src/index.ts` (`verifyUser`):**
-  1. When authenticating via `.gothwadtech.com` SSO cookies against `GET https://api.gothwadtech.com/api/auth/me`, the Worker looked for `d.user.name` and `d.user.picture`, whereas live `GothwadTech/accounts` `/api/auth/me` actually returns `first_name`, `last_name`, `avatar_url`, `username`, `activeId`, `authuser`, and `accounts` (`0..5` slots)! Because of that mismatch, web users lost their real full name and avatar!
-  2. When `api.gothwadtech.com/api/auth/me` transparently refreshes/rotates an expiring slot cookie via `Set-Cookie`, the Store Worker discarded those `Set-Cookie` headers instead of forwarding them back to the browser (`headers.append('Set-Cookie', ...)`).
-  3. Forward `X-Gothwad-Authuser` from browser requests to `api.gothwadtech.com/api/auth/me`, allow `X-Gothwad-Authuser` in CORS `Access-Control-Allow-Headers` (with `Access-Control-Allow-Credentials: true` on allowed `*.${appDomain}` + localhost origins), and expose multi-account `accounts` + `activeSlot` cleanly so users switching accounts (`/u/0`..`/u/5` or `?authuser=0..5` or in-app Google-style account switcher menu) switch **instantly with zero token leaks in `localStorage`/`sessionStorage`**!
-  4. **Keep `Authorization: Bearer <token>` 100% intact** alongside cookie SSO! Android `GothwadTech/storeapp` sends `Authorization: Bearer <oauth_access_token>`, which validates via `GET https://api.gothwadtech.com/api/oauth/userinfo` (returning standard OIDC `{ sub, preferred_username, username, name, given_name, family_name, email, picture }`). Support BOTH paths normalized into one clean `VerifiedSession` object!
+  1. When authenticating via `.bansify.com` SSO cookies against `GET https://api.bansify.com/api/auth/me`, the Worker looked for `d.user.name` and `d.user.picture`, whereas live `Bansify/accounts` `/api/auth/me` actually returns `first_name`, `last_name`, `avatar_url`, `username`, `activeId`, `authuser`, and `accounts` (`0..5` slots)! Because of that mismatch, web users lost their real full name and avatar!
+  2. When `api.bansify.com/api/auth/me` transparently refreshes/rotates an expiring slot cookie via `Set-Cookie`, the Store Worker discarded those `Set-Cookie` headers instead of forwarding them back to the browser (`headers.append('Set-Cookie', ...)`).
+  3. Forward `X-Gothwad-Authuser` from browser requests to `api.bansify.com/api/auth/me`, allow `X-Gothwad-Authuser` in CORS `Access-Control-Allow-Headers` (with `Access-Control-Allow-Credentials: true` on allowed `*.${appDomain}` + localhost origins), and expose multi-account `accounts` + `activeSlot` cleanly so users switching accounts (`/u/0`..`/u/5` or `?authuser=0..5` or in-app Google-style account switcher menu) switch **instantly with zero token leaks in `localStorage`/`sessionStorage`**!
+  4. **Keep `Authorization: Bearer <token>` 100% intact** alongside cookie SSO! Android `Bansify/storeapp` sends `Authorization: Bearer <oauth_access_token>`, which validates via `GET https://api.bansify.com/api/oauth/userinfo` (returning standard OIDC `{ sub, preferred_username, username, name, given_name, family_name, email, picture }`). Support BOTH paths normalized into one clean `VerifiedSession` object!
 
 ### Bug #3 — Fake No-Op `POST /api/auth/signout` & Frontend Stale Error Banners
-- **What we found:** `POST /api/auth/signout` simply returned `{ ok: true }` without notifying `api.gothwadtech.com/api/auth/signout` or forwarding cookie-clearing `Set-Cookie` headers, so clicking Sign Out left the user logged right back in on refresh! Fix real sign-out properly (supporting single-slot / active session sign-out cleanly).
+- **What we found:** `POST /api/auth/signout` simply returned `{ ok: true }` without notifying `api.bansify.com/api/auth/signout` or forwarding cookie-clearing `Set-Cookie` headers, so clicking Sign Out left the user logged right back in on refresh! Fix real sign-out properly (supporting single-slot / active session sign-out cleanly).
 - Also inspect `src/shared/BackendNotice.tsx`, health checks, and error states across `StoreApp`, `ConsoleApp`, and `AdminApp` — remove stale `"Supabase is not configured"` / `"ImgBB"` notices and replace them with clean, accurate diagnostics only if truly offline.
 
 ### Bug #4 — `reports` Table Column Mismatch & SQLite Type Pitfalls
@@ -121,7 +121,7 @@ Replace `ImgBB` completely across `ConsoleApp` (app icon upload, screenshots upl
        1. `kiwistore.<domain>`
        2. `kiwiadmin.<domain>`
        3. `kiwiapp.<domain>`
-       4. **Android `GothwadTech/storeapp` (`Coil` / native image loader, where relative `/api/...` URLs fail if not absolute!)**
+       4. **Android `Bansify/storeapp` (`Coil` / native image loader, where relative `/api/...` URLs fail if not absolute!)**
    - **`GET /api/images/:id`** (public fast edge CDN route):
      - First check `caches.default.match(cacheKey)`.
      - Supporting `If-None-Match` -> instant `304 Not Modified`.
@@ -139,14 +139,14 @@ Replace `ImgBB` completely across `ConsoleApp` (app icon upload, screenshots upl
 ## 🗄️ 4. CLOUDFLARE D1 SCHEMA & ZERO-FRICTION AUTO-BOOTSTRAP (`worker/src/db.ts` + `sql/`)
 
 1. **CRITICAL REMOTE CLOUDFLARE D1 SQL RULES (DO NOT VIOLATE!):**
-   - **NEVER put `PRAGMA` statements** inside runtime D1 SQL or `sql/00_d1_console_bootstrap.sql`! Remote Cloudflare D1 already enforces `foreign_keys = ON` natively and throws **`SQLITE_AUTH`** if a batch contains `PRAGMA`! (Enable `PRAGMA foreign_keys = ON` ONLY inside your local `node:sqlite` test harness JS wrapper, just like `GothwadTech/accounts/tools/local-d1.mjs`.)
+   - **NEVER put `PRAGMA` statements** inside runtime D1 SQL or `sql/00_d1_console_bootstrap.sql`! Remote Cloudflare D1 already enforces `foreign_keys = ON` natively and throws **`SQLITE_AUTH`** if a batch contains `PRAGMA`! (Enable `PRAGMA foreign_keys = ON` ONLY inside your local `node:sqlite` test harness JS wrapper, just like `Bansify/accounts/tools/local-d1.mjs`.)
    - Keep **`sql/00_d1_console_bootstrap.sql` 100% pure, idempotent SQL with ZERO `--` or `/* */` comments** so pasting the entire file into Cloudflare Dashboard -> D1 -> `store` -> Console executes with **zero parser hiccups**!
    - Put human documentation and architectural notes cleanly inside **`sql/01_store_schema.sql`** and **`sql/README.md`**.
 2. **Cold-Start Auto-Bootstrap (`ensureStoreSchema(env.DB)` in `worker/src/db.ts`):**
    - Using a `WeakMap<object, Promise<void>>`, automatically execute all idempotent `CREATE TABLE IF NOT EXISTS ...`, `CREATE INDEX IF NOT EXISTS ...`, and default `categories` `INSERT OR IGNORE` statements via `env.DB.batch(...)` once per isolate cold start.
    - That means **the moment `wrangler deploy` runs against `database_id = "a3dc3e71-cf89-4e0a-89d1-693fcf6f227a"`, the live `"store"` database initializes ALL tables, indexes, and categories automatically on first request** — zero manual step failure possible!
 3. **Complete Table Coverage (Verify Every Column Against Live Worker + UI + Android `storeapp`):**
-   - Cover all store entities cleanly (`developers`, `categories`, `apps`, `app_releases`, `app_screenshots`, `store_images`, `reviews`, `wishlists`, `downloads`, `library`, `review_submissions`, `reports`, `featured` — plus any additional table or column your audit of `GothwadTech/store` and `GothwadTech/storeapp` reveals is needed!).
+   - Cover all store entities cleanly (`developers`, `categories`, `apps`, `app_releases`, `app_screenshots`, `store_images`, `reviews`, `wishlists`, `downloads`, `library`, `review_submissions`, `reports`, `featured` — plus any additional table or column your audit of `Bansify/store` and `Bansify/storeapp` reveals is needed!).
 
 ---
 
@@ -160,13 +160,13 @@ Audit every file's line count across the entire repo (`worker/`, `shared/`, `src
 
 ## 🧪 6. REAL `node:sqlite` AUTOMATED TEST SUITE (PROVE EVERYTHING WORKS!)
 
-Build a comprehensive automated test suite (using Node 22 built-in `node:sqlite` `DatabaseSync` mimicking Cloudflare D1 `.prepare().bind().first()/.all()/.run()` + `.batch()`, modeled after `GothwadTech/accounts/tools/local-d1.mjs` — zero extra native packages needed!) verifying:
+Build a comprehensive automated test suite (using Node 22 built-in `node:sqlite` `DatabaseSync` mimicking Cloudflare D1 `.prepare().bind().first()/.all()/.run()` + `.batch()`, modeled after `Bansify/accounts/tools/local-d1.mjs` — zero extra native packages needed!) verifying:
 1. **Cold-start schema auto-bootstrap & `sql/00_d1_console_bootstrap.sql`** execute cleanly with zero errors and no `PRAGMA` statements.
 2. **Auth & Multi-Account `/u/0..5`:**
-   - Web `.gothwadtech.com` SSO cookie verification via mocked `api.gothwadtech.com/api/auth/me` (`first_name`, `last_name`, `avatar_url`, `activeId`, `authuser`, `accounts`), `X-Gothwad-Authuser` forwarding, and upstream `Set-Cookie` rotation passthrough!
+   - Web `.bansify.com` SSO cookie verification via mocked `api.bansify.com/api/auth/me` (`first_name`, `last_name`, `avatar_url`, `activeId`, `authuser`, `accounts`), `X-Gothwad-Authuser` forwarding, and upstream `Set-Cookie` rotation passthrough!
    - Android `Authorization: Bearer <token>` verification via `/api/oauth/userinfo`!
    - Real `POST /api/auth/signout` clearing session cleanly!
-   - OAuth authorize URL points to `https://api.gothwadtech.com/oauth/authorize` (NEVER `accounts.gothwadtech.com/oauth/authorize`) and `kiwiapp` does NOT register/use `/auth/callback`.
+   - OAuth authorize URL points to `https://api.bansify.com/oauth/authorize` (NEVER `accounts.bansify.com/oauth/authorize`) and `kiwiapp` does NOT register/use `/auth/callback`.
 3. **Zero-Card Image Upload & Edge Cache CDN:**
    - `POST /api/uploads/image` magic-byte check, SVG XSS rejection, SHA-256 deduplication in `store_images`, canonical absolute HTTPS URL output, and `GET /api/images/:id` `200` + `ETag` `304` + `caches.default` hit behavior!
 4. **Full End-to-End Store Lifecycle & Android Wire Contract:**
@@ -184,4 +184,4 @@ Before finishing, write clean, accurate, well-structured documentation (every fi
 3. **`HANDOVER.md`** — Deep, crystal-clear engineering guide covering SSO + `/u/0..5` multi-account flow, Bearer token flow for Android, D1 schema & mappers, Zero-Card `store_images` D1 `BLOB` + `caches.default` CDN architecture, and quick debugging tips.
 4. **`PLAN.md` & `sql/README.md` (plus `sql/00_d1_console_bootstrap.sql` & `sql/01_store_schema.sql`)** — Cleanly updated to match the real v2 Cloudflare D1 architecture 100%.
 
-Now start by running your full independent audit of `GothwadTech/store`, `GothwadTech/accounts`, and `GothwadTech/storeapp`, and execute the complete migration, testing, build verification, and documentation upgrade end-to-end!
+Now start by running your full independent audit of `Bansify/store`, `Bansify/accounts`, and `Bansify/storeapp`, and execute the complete migration, testing, build verification, and documentation upgrade end-to-end!

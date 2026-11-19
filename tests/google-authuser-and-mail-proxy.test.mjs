@@ -42,12 +42,12 @@ async function callAccountsLikeMailWorker(env, jar, method, path, bodyObj = unde
   const headers = {
     cookie,
     accept: 'application/json',
-    origin: 'https://mail.gothwadtech.com',
+    origin: 'https://mail.bansify.com',
   };
   if (bodyObj !== undefined) {
     headers['content-type'] = 'application/json';
   }
-  const req = new Request(`https://api.gothwadtech.com${path}`, {
+  const req = new Request(`https://api.bansify.com${path}`, {
     method,
     headers,
     body: bodyObj !== undefined ? JSON.stringify(bodyObj) : undefined,
@@ -75,16 +75,16 @@ test('Mail Worker Proxy Reproduction: server-to-server /api/auth/switch & signou
   // Sign in WITHOUT explicit `remember: true` — must default to persistent 30-day cookies!
   const loginA = await jar.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
-    body: { identifier: 'pawan@gothwadtech.com', password: 'StrongPassword!123' },
+    origin: 'https://accounts.bansify.com',
+    body: { identifier: 'pawan@bansify.com', password: 'StrongPassword!123' },
   });
   assert.equal(loginA.status, 200);
   assert.match(loginA.headers.getSetCookie().find((c) => c.startsWith('gothwad_sess_a=')), /Max-Age=2592000/);
 
   const loginB = await jar.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
-    body: { identifier: 'work@gothwadtech.com', password: 'StrongPassword!123', add: true },
+    origin: 'https://accounts.bansify.com',
+    body: { identifier: 'work@bansify.com', password: 'StrongPassword!123', add: true },
   });
   assert.equal(loginB.status, 200);
   const loginBData = await loginB.json();
@@ -138,7 +138,7 @@ test('Multi-Tab Race Resilience & Dead Active Slot Auto-Healing: stale sibling c
   const jarTab1 = acctA.jar;
   await jarTab1.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'beta', password: 'StrongPassword!123', add: true },
   });
 
@@ -149,7 +149,7 @@ test('Multi-Tab Race Resilience & Dead Active Slot Auto-Healing: stale sibling c
   // Tab 1 switches to `a` (consuming Tab 2's older refresh token in D1!)
   const t1Switch = await jarTab1.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { id: 'a' },
   });
   assert.equal(t1Switch.status, 200);
@@ -158,7 +158,7 @@ test('Multi-Tab Race Resilience & Dead Active Slot Auto-Healing: stale sibling c
   // MUST succeed cleanly with 200 OK instead of falsely deleting slot `a` with 409!
   const t2Switch = await jarTab2.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { id: 'a' },
   });
   assert.equal(t2Switch.status, 200);
@@ -167,7 +167,7 @@ test('Multi-Tab Race Resilience & Dead Active Slot Auto-Healing: stale sibling c
   // Now switch Tab 1 to `b`, then revoke ONLY `b`'s session row in D1 (simulating remote sign-out)
   await jarTab1.fetch(env, '/api/auth/switch', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { id: 'b' },
   });
   const betaUser = await env.DB.prepare('SELECT id FROM users WHERE username = ?').bind('beta').first();
@@ -189,7 +189,7 @@ test('Google `/u/0` & `/u/1` Multi-Tab Isolation + First-Party `GET /api/auth/sw
   await seedAccount(env, { username: 'tabone', firstName: 'Tab', lastName: 'One' });
   await jar.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'tabone', password: 'StrongPassword!123', add: true },
   });
 
@@ -206,29 +206,29 @@ test('Google `/u/0` & `/u/1` Multi-Tab Isolation + First-Party `GET /api/auth/sw
   // Updating profile from `/u/0/me` updates ONLY `tabzero` even while `gothwad_active` is `b`!
   const upd0 = await jar.fetch(env, '/api/auth/update-profile', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     headers: { 'X-Gothwad-Authuser': '0' },
     body: { first_name: 'UpdatedZero' },
   });
   assert.equal(upd0.status, 200);
   const check0 = await (await jar.fetch(env, '/api/auth/me?authuser=0')).json();
-  const check1 = await (await jar.fetch(env, '/api/auth/me?authuser=tabone@gothwadtech.com')).json();
+  const check1 = await (await jar.fetch(env, '/api/auth/me?authuser=tabone@bansify.com')).json();
   assert.equal(check0.user.first_name, 'UpdatedZero');
   assert.equal(check1.user.first_name, 'Tab');
 
-  // Top-level Google cross-app switch link (`GET /api/auth/switch?authuser=0&next=https://mail.gothwadtech.com/?authuser=0`)
+  // Top-level Google cross-app switch link (`GET /api/auth/switch?authuser=0&next=https://mail.bansify.com/?authuser=0`)
   const jumpRes = await jar.fetch(
     env,
-    `/api/auth/switch?authuser=0&next=${encodeURIComponent('https://mail.gothwadtech.com/?authuser=0')}`,
+    `/api/auth/switch?authuser=0&next=${encodeURIComponent('https://mail.bansify.com/?authuser=0')}`,
   );
   assert.equal(jumpRes.status, 302);
-  assert.equal(jumpRes.headers.get('Location'), 'https://mail.gothwadtech.com/?authuser=0');
+  assert.equal(jumpRes.headers.get('Location'), 'https://mail.bansify.com/?authuser=0');
   assert.equal(jar.cookies.get('gothwad_active'), 'a');
 
   // Open-redirect attack on `GET /api/auth/switch?authuser=0&next=https://evil.example` falls back safely to `/u/0/me`
   const evilJump = await jar.fetch(env, '/api/auth/switch?authuser=0&next=https%3A%2F%2Fevil.example%2Fphish');
   assert.equal(evilJump.status, 302);
-  assert.equal(evilJump.headers.get('Location'), 'https://accounts.gothwadtech.com/u/0/me');
+  assert.equal(evilJump.headers.get('Location'), 'https://accounts.bansify.com/u/0/me');
 
   // Cross-site navigation (`Sec-Fetch-Site: cross-site`) is blocked with 403
   const crossJump = await jar.fetch(env, '/api/auth/switch?authuser=0', {

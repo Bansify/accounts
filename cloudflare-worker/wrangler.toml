@@ -1,5 +1,5 @@
 # =============================================================================
-# GOTHWAD ACCOUNTS — 100% CLOUDFLARE NATIVE WORKER CONFIG
+# BANSIFY ACCOUNTS — 100% CLOUDFLARE NATIVE WORKER CONFIG
 # =============================================================================
 # Zero Supabase. Powered by Cloudflare Workers + Cloudflare D1 + Optional R2.
 #
@@ -32,10 +32,10 @@ database_id = "392aacf8-1b43-490a-9519-ced4daf5a40f"
 # -----------------------------------------------------------------------------
 # Default (commented out): Avatars store directly inside D1 `user_avatars` +
 # Cloudflare Global Edge Cache (`0` credit card required!).
-# Future optional upgrade: Create R2 bucket `gothwad-avatars` & uncomment below:
+# Future optional upgrade: Create R2 bucket `bansify-avatars` & uncomment below:
 # [[r2_buckets]]
 # binding = "AVATARS_BUCKET"
-# bucket_name = "gothwad-avatars"
+# bucket_name = "bansify-avatars"
 
 # -----------------------------------------------------------------------------
 # 3. PUBLIC CONFIGURATION VARIABLES (No secrets here!)
@@ -43,17 +43,17 @@ database_id = "392aacf8-1b43-490a-9519-ced4daf5a40f"
 [vars]
 # Rule #1: Domain is configured strictly here — never hardcoded in code or DB!
 # User email is derived automatically at runtime: username + "@" + APP_DOMAIN
-APP_DOMAIN = "gothwadtech.com"
+APP_DOMAIN = "bansify.com"
 
 # Frontend public URL (OAuth consent redirect + password reset link + avatars)
-AUTH_HUB_URL = "https://accounts.gothwadtech.com"
+AUTH_HUB_URL = "https://accounts.bansify.com"
 
 # Server-to-server Worker Custom Domain (Mail Worker & Kiwi Store Worker calls)
-API_DOMAIN = "api.gothwadtech.com"
+API_DOMAIN = "api.bansify.com"
 
 # Owner-selected outbound sender; verify noreply.<APP_DOMAIN> in Resend before use.
 # Keep this public value in source control so deployments retain the chosen sender.
-RESEND_FROM = "Gothwad Accounts <security@noreply.gothwadtech.com>"
+RESEND_FROM = "Bansify Accounts <security@noreply.bansify.com>"
 
 # ⚠️ MUST stay "false" in production! ("true" only in local `.dev.vars`)
 DEV_MODE = "false"

@@ -1,7 +1,7 @@
-# Surgical Follow-Up Hotfix Prompt for `GothwadTech/store` (Post-PR #8 Audit)
+# Surgical Follow-Up Hotfix Prompt for `Bansify/store` (Post-PR #8 Audit)
 
 ```text
-Work inside `GothwadTech/store` on the current branch from `main` (`e7758e2`).
+Work inside `Bansify/store` on the current branch from `main` (`e7758e2`).
 
 IMPORTANT ENGINEERING DIRECTIVE:
 Do NOT follow this prompt blindly — read the live files and run `npm test` + `npm run build` + `npm run lint` + `npm run test:ui` yourself first to verify every item below, and fix anything else you uncover while keeping every tracked file strictly `<= 500` lines and `100%` pure English (`ZERO` Hindi/Hinglish anywhere in code, UI, comments, SQL, or docs).
@@ -10,7 +10,7 @@ Do NOT follow this prompt blindly — read the live files and run `npm test` + `
 
 1. **`src/shared/AccountMenu.tsx` (`onSignOutAccount` contract bug — wipes ALL accounts instead of 1 slot!) + `+N` Avatar Badge:**
    - Look at `src/shared/AccountMenu.tsx` around line 148:
-     `https://accounts.gothwadtech.com/widget/account-menu.js` calls `onSignOutAccount(slotId, targetAccount)` where the 1st argument `slotId` is a primitive `string` (e.g. `"b"`).
+     `https://accounts.bansify.com/widget/account-menu.js` calls `onSignOutAccount(slotId, targetAccount)` where the 1st argument `slotId` is a primitive `string` (e.g. `"b"`).
      Currently `AccountMenu.tsx` writes:
      ```ts
      onSignOutAccount: async (acc) => {
@@ -25,7 +25,7 @@ Do NOT follow this prompt blindly — read the live files and run `npm test` + `
        if (slotId) await signOutSlot(slotId);
      },
      ```
-   - Also render a compact Google-style `+N` pill badge (`+{accounts.length - 1}`) on the top-right avatar trigger button in `src/shared/AccountMenu.tsx` whenever `accounts.length > 1` (matching `Gothwad Mail` and `Gothwad Accounts`), AND wire per-slot `Sign out` inside `src/shared/gothwadAccountMenuFallback.ts` so the offline fallback menu also supports single-slot sign-out cleanly.
+   - Also render a compact Google-style `+N` pill badge (`+{accounts.length - 1}`) on the top-right avatar trigger button in `src/shared/AccountMenu.tsx` whenever `accounts.length > 1` (matching `Bansify Mail` and `Bansify Accounts`), AND wire per-slot `Sign out` inside `src/shared/gothwadAccountMenuFallback.ts` so the offline fallback menu also supports single-slot sign-out cleanly.
    - Keep `extraActions` supporting both `{ id, label, href }` AND `onClick: () => { window.location.href = href; }` so navigation works across any cached or fresh version of `account-menu.js`.
 
 2. **Broken `npm ci && npm run build` (`package.json` `"typescript": "^7.0.2"` -> `sh: 1: tsc: not found`):**

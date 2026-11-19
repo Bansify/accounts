@@ -41,15 +41,15 @@ test('7. Legacy browser (ONLY pre-existing gothwad_at/gothwad_rt/gothwad_sid coo
   const authzRes = await oldBrowser.fetch(
     env,
     `/api/oauth/authorize?client_id=gothwad-mail&redirect_uri=${encodeURIComponent(
-      'https://mail.gothwadtech.com/auth/callback',
+      'https://mail.bansify.com/auth/callback',
     )}&response_type=code&scope=profile+email&code_challenge=${challenge}&code_challenge_method=S256`,
-    { host: 'accounts.gothwadtech.com' },
+    { host: 'accounts.bansify.com' },
   );
   assert.equal(authzRes.status, 200);
-  assert.match(await authzRes.text(), /legacyuser@gothwadtech\.com/);
+  assert.match(await authzRes.text(), /legacyuser@bansify\.com/);
 
   const internalRes = await worker.fetch(
-    new Request('https://api.gothwadtech.com/api/internal/usernames/legacyuser', {
+    new Request('https://api.bansify.com/api/internal/usernames/legacyuser', {
       headers: { Authorization: `Bearer ${env.MAIL_INTERNAL_TOKEN}` },
     }),
     env,
@@ -60,7 +60,7 @@ test('7. Legacy browser (ONLY pre-existing gothwad_at/gothwad_rt/gothwad_sid coo
   await seedAccount(env, { username: 'secondacct', firstName: 'Second', lastName: 'Account' });
   const addRes = await oldBrowser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'secondacct', password: 'StrongPassword!123', remember: true, add: true },
   });
   assert.equal(addRes.status, 200);
@@ -78,12 +78,12 @@ test('8. CSRF protection: POST /api/auth/switch and POST /api/auth/accounts/:id/
   const browser = new BrowserJar();
   await browser.fetch(env, '/api/auth/signin', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'csrfa', password: 'StrongPassword!123', remember: true },
   });
   await browser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'csrfb', password: 'StrongPassword!123', remember: true, add: true },
   });
 
@@ -91,8 +91,8 @@ test('8. CSRF protection: POST /api/auth/switch and POST /api/auth/accounts/:id/
     undefined,
     'null',
     'https://evil.example',
-    'https://gothwadtech.com.evil.example',
-    'http://mail.gothwadtech.com',
+    'https://bansify.com.evil.example',
+    'http://mail.bansify.com',
   ];
 
   for (const badOrigin of rejectedOrigins) {
@@ -124,7 +124,7 @@ test('9. Resilience & security invariants: 6-slot max cap, 503 JSON on DB error 
     await seedAccount(env, { username: uname, firstName: 'Slot', lastName: String(i) });
     const res = await browser.fetch(env, i === 0 ? '/api/auth/signin' : '/api/auth/signin?add=1', {
       method: 'POST',
-      origin: 'https://accounts.gothwadtech.com',
+      origin: 'https://accounts.bansify.com',
       body: { identifier: uname, password: 'StrongPassword!123', remember: true, add: i > 0 },
     });
     assert.equal(res.status, 200);
@@ -133,7 +133,7 @@ test('9. Resilience & security invariants: 6-slot max cap, 503 JSON on DB error 
   await seedAccount(env, { username: 'slotuser7', firstName: 'Overflow', lastName: 'Seven' });
   const seventhRes = await browser.fetch(env, '/api/auth/signin?add=1', {
     method: 'POST',
-    origin: 'https://accounts.gothwadtech.com',
+    origin: 'https://accounts.bansify.com',
     body: { identifier: 'slotuser7', password: 'StrongPassword!123', remember: true, add: true },
   });
   assert.equal(seventhRes.status, 409);
@@ -194,7 +194,7 @@ test('9. Resilience & security invariants: 6-slot max cap, 503 JSON on DB error 
       batch: (...args) => realDb.batch(...args),
     },
   };
-  await worker.fetch(new Request('https://api.gothwadtech.com/api/health'), { ...flakyEnv, DB: realDb });
+  await worker.fetch(new Request('https://api.bansify.com/api/health'), { ...flakyEnv, DB: realDb });
   const midFlightMe = await browser.fetch(flakyEnv, '/api/auth/me');
   assert.equal(midFlightMe.status, 503);
   assert.equal(midFlightMe.headers.getSetCookie().length, 0);

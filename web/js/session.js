@@ -46,7 +46,7 @@ async function loadSession() {
     };
   }
   if (res.status !== 401) {
-    throw new Error(res.error || 'Could not check your Gothwad session. Please retry.');
+    throw new Error(res.error || 'Could not check your Bansify session. Please retry.');
   }
   return { authenticated: false, user: null, activeId: null, authuser: 0, accounts: [] };
 }

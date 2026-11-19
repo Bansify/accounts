@@ -66,7 +66,7 @@ test('Turnstile fails closed for missing keys/tokens, rejects hostname/action mi
   const f = await nativeFixture();
   try {
     f.env.TURNSTILE_REQUIRED = 'true';
-    const request = new Request('https://accounts.gothwadtech.com/auth/signin', { method: 'POST' });
+    const request = new Request('https://accounts.bansify.com/auth/signin', { method: 'POST' });
     assert.equal((await verifyBot(request, f.env, 'token', 'signin')).status, 503);
     f.env.TURNSTILE_SITE_KEY = 'synthetic-public-key';
     f.env.TURNSTILE_SECRET_KEY = 'synthetic-private-key';
@@ -78,7 +78,7 @@ test('Turnstile fails closed for missing keys/tokens, rejects hostname/action mi
       return Response.json(result);
     });
     assert.equal((await verifyBot(request, f.env, 'token', 'signin')).status, 403);
-    result = { success: true, hostname: 'accounts.gothwadtech.com', action: 'signup' };
+    result = { success: true, hostname: 'accounts.bansify.com', action: 'signup' };
     assert.equal((await verifyBot(request, f.env, 'token', 'signin')).status, 403);
     result.action = 'signin';
     assert.equal(await verifyBot(request, f.env, 'token', 'signin'), null);
@@ -110,7 +110,7 @@ test('authorize, decision, signin, signup, token, revoke and mobile have persist
     }
     const policy = authRateLimitPolicy('GET', '/oauth/authorize');
     for (let i = 0; i <= policy.limit; i++) {
-      const request = new Request('https://api.gothwadtech.com/oauth/authorize', { headers: { 'X-Forwarded-For': `192.0.2.${i}` } });
+      const request = new Request('https://api.bansify.com/oauth/authorize', { headers: { 'X-Forwarded-For': `192.0.2.${i}` } });
       const result = await enforceAuthRateLimit(request, f.env.DB, f.env, '/oauth/authorize', 1800000000000);
       assert.equal(result?.status || 200, i === policy.limit ? 429 : 200);
     }

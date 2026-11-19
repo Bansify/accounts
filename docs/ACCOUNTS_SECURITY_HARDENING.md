@@ -1,7 +1,7 @@
 # Accounts Security Hardening: Findings A–F and Delivery Plan
 
 Updated: 2026-10-29. Owner instruction: build first; defer all configuration requests
-until one consolidated checklist after the coding phases; that checklist is now ready. Scope: `GothwadTech/accounts`, branch `arena/b5820242-accounts`.
+until one consolidated checklist after the coding phases; that checklist is now ready. Scope: `Bansify/accounts`, branch `arena/b5820242-accounts`.
 
 ## Scope and guarantees
 

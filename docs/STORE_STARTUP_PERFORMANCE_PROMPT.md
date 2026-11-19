@@ -1,9 +1,9 @@
 # Store / Console / Admin Startup — Standalone Implementation Prompt
 
-Paste into the coding agent working in `GothwadTech/store`:
+Paste into the coding agent working in `Bansify/store`:
 
 ```text
-Work in GothwadTech/store. Fix slow identity startup across Kiwi Store, Console,
+Work in Bansify/store. Fix slow identity startup across Kiwi Store, Console,
 and Admin. Prioritize Store and Console, but do not break Admin's authorization.
 
 Audit the current codebase and repository instructions independently. Do not

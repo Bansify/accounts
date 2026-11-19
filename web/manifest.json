@@ -1,7 +1,7 @@
 {
-  "name": "Gothwad Accounts",
-  "short_name": "Gothwad",
-  "description": "Unified account system for the Gothwad ecosystem \u2014 one login for Mail, Drive, Chat, Notes and more.",
+  "name": "Bansify Accounts",
+  "short_name": "Bansify",
+  "description": "Unified account system for the Bansify ecosystem \u2014 one login for Mail, Drive, Chat, Notes and more.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -8,7 +8,7 @@ export const TEST_MFA_KEY = Buffer.alloc(32, 7).toString('base64url');
 export const mfaCode = (secret, offset = 0) => new TOTP({ secret: Secret.fromBase32(secret), algorithm: 'SHA1', digits: 6, period: 30 })
   .generate({ timestamp: Date.now() + offset });
 export const mfaPost = (jar, env, route, body) => jar.fetch(env, `/api/auth/mfa/${route}`, {
-  method: 'POST', origin: 'https://accounts.gothwadtech.com', body,
+  method: 'POST', origin: 'https://accounts.bansify.com', body,
 });
 export async function mfaFixture() {
   const env = makeEnv({ MFA_ENCRYPTION_KEY: TEST_MFA_KEY });
@@ -30,7 +30,7 @@ export async function enroll(env, owner) {
 export async function startLogin(env, owner, extra = {}) {
   const jar = new BrowserJar();
   const response = await jar.fetch(env, '/api/auth/signin', {
-    method: 'POST', origin: 'https://accounts.gothwadtech.com',
+    method: 'POST', origin: 'https://accounts.bansify.com',
     body: { identifier: 'mfaowner', password: owner.password, ...extra },
   });
   assert.equal(response.status, 202);

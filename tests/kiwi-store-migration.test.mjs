@@ -10,7 +10,7 @@ const coreSchema = await readFile(new URL('../sql/01_core_schema.sql', import.me
 const migration = await readFile(new URL('../sql/04_kiwi_store_oauth_migration.sql', import.meta.url), 'utf8');
 const appCatalog = await readFile(new URL('../web/js/gothwad-apps.js', import.meta.url), 'utf8');
 
-const env = { DB: createLocalD1(':memory:'), APP_DOMAIN: 'gothwadtech.com', AUTH_HUB_URL: 'https://accounts.gothwadtech.com' };
+const env = { DB: createLocalD1(':memory:'), APP_DOMAIN: 'bansify.com', AUTH_HUB_URL: 'https://accounts.bansify.com' };
 
 test('Kiwi Store D1 migration registers exact production, local and Android callbacks and migrates legacy grants', async () => {
   const db = createLocalD1(':memory:');
@@ -30,14 +30,14 @@ test('Kiwi Store D1 migration registers exact production, local and Android call
   const row = await db.prepare("SELECT redirect_uris FROM ecosystem_apps WHERE id = 'kiwi-store'").first();
   const actual = JSON.parse(row.redirect_uris);
   assert.deepEqual(actual, [
-    'https://kiwistore.gothwadtech.com/auth/callback',
-    'https://kiwiconsole.gothwadtech.com/auth/callback',
-    'https://kiwiadmin.gothwadtech.com/auth/callback',
+    'https://kiwistore.bansify.com/auth/callback',
+    'https://kiwiconsole.bansify.com/auth/callback',
+    'https://kiwiadmin.bansify.com/auth/callback',
     'http://localhost:3000/auth/callback',
     'gothwadstore://oauth/callback',
     'kiwistore://oauth/callback',
   ]);
-  assert.equal(actual.includes('https://kiwiapp.gothwadtech.com/auth/callback'), false);
+  assert.equal(actual.includes('https://kiwiapp.bansify.com/auth/callback'), false);
 
   // Legacy grant preserved under `kiwi-store`, legacy codes deleted, legacy refresh revoked
   assert.equal(await db.prepare("SELECT COUNT(*) AS c FROM app_authorizations WHERE user_id = 'u1' AND app_id = 'kiwi-store'").first('c'), 1);
@@ -50,42 +50,42 @@ test('app chooser catalog points Store users to Kiwi Store', () => {
   assert.match(appCatalog, /id: 'kiwi-store'/);
   assert.match(appCatalog, /name: 'Kiwi Store'/);
   assert.equal(GOTHWAD_SERVICES.find(app => app.id === 'kiwi-store').url, `https://kiwistore.${GOTHWAD_CONFIG.APP_DOMAIN}`);
-  assert.doesNotMatch(appCatalog, /gothwad-store|Gothwad Store|https:\/\/store\.gothwadtech\.com/);
+  assert.doesNotMatch(appCatalog, /gothwad-store|Gothwad Store|https:\/\/store\.bansify\.com/);
 });
 
 test('session cookies retain a root-domain scope across all Gothwad subdomains', () => {
   for (const host of [
-    'accounts.gothwadtech.com',
-    'api.gothwadtech.com',
-    'mail.gothwadtech.com',
-    'kiwistore.gothwadtech.com',
-    'kiwiconsole.gothwadtech.com',
-    'kiwiadmin.gothwadtech.com',
-    'kiwiapp.gothwadtech.com',
+    'accounts.bansify.com',
+    'api.bansify.com',
+    'mail.bansify.com',
+    'kiwistore.bansify.com',
+    'kiwiconsole.bansify.com',
+    'kiwiadmin.bansify.com',
+    'kiwiapp.bansify.com',
   ]) {
-    assert.equal(cookieDomain(new Request(`https://${host}/`), env), '.gothwadtech.com', host);
+    assert.equal(cookieDomain(new Request(`https://${host}/`), env), '.bansify.com', host);
   }
   assert.equal(cookieDomain(new Request('https://unrelated.example/'), env), null);
 });
 
 test('CORS allows Gothwad subdomains without host-specific configuration and rejects lookalikes', () => {
   for (const origin of [
-    'https://mail.gothwadtech.com',
-    'https://kiwistore.gothwadtech.com',
-    'https://kiwiconsole.gothwadtech.com',
-    'https://kiwiadmin.gothwadtech.com',
-    'https://kiwiapp.gothwadtech.com',
+    'https://mail.bansify.com',
+    'https://kiwistore.bansify.com',
+    'https://kiwiconsole.bansify.com',
+    'https://kiwiadmin.bansify.com',
+    'https://kiwiapp.bansify.com',
   ]) {
     const headers = buildCorsHeaders(
-      new Request('https://api.gothwadtech.com/oauth/userinfo', { headers: { Origin: origin } }),
+      new Request('https://api.bansify.com/oauth/userinfo', { headers: { Origin: origin } }),
       env,
     );
     assert.equal(headers.get('Access-Control-Allow-Origin'), origin);
     assert.equal(headers.get('Access-Control-Allow-Credentials'), 'true');
   }
   const rejected = buildCorsHeaders(
-    new Request('https://api.gothwadtech.com/oauth/userinfo', {
-      headers: { Origin: 'https://gothwadtech.com.attacker.example' },
+    new Request('https://api.bansify.com/oauth/userinfo', {
+      headers: { Origin: 'https://bansify.com.attacker.example' },
     }),
     env,
   );

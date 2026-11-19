@@ -1,10 +1,10 @@
-# 🚀 Master Prompt for `GothwadTech/mail` — Universal Google-Style Account Switcher & Seamless Auto-SSO
+# 🚀 Master Prompt for `Bansify/mail` — Universal Google-Style Account Switcher & Seamless Auto-SSO
 
-You are an autonomous Principal Full-Stack & Frontend Architect working inside **`GothwadTech/mail`**.
+You are an autonomous Principal Full-Stack & Frontend Architect working inside **`Bansify/mail`**.
 
 **STRICT LANGUAGE MANDATE (`RULE #0 — 100% PURE ENGLISH ONLY EVERYWHERE`):**
 - Every single UI label, button, modal, toast, error message, TypeScript/CSS/SQL comment, test, Markdown document, `AGENTS.md`, AND chat explanation MUST be written in **100% pure, idiomatic English ONLY**.
-- **NEVER write a single word of Hindi or Hinglish anywhere** — even if the user writes a quick message in casual Hinglish in chat! Also scan the entire `GothwadTech/mail` repository (`src/**`, `worker/**`, `sql/**`, `tests/**`, `*.md`, `docs/*.md`) and rewrite any remaining Hindi/Hinglish strings or comments into pure English, backed by an automated test check.
+- **NEVER write a single word of Hindi or Hinglish anywhere** — even if the user writes a quick message in casual Hinglish in chat! Also scan the entire `Bansify/mail` repository (`src/**`, `worker/**`, `sql/**`, `tests/**`, `*.md`, `docs/*.md`) and rewrite any remaining Hindi/Hinglish strings or comments into pure English, backed by an automated test check.
 
 ---
 
@@ -12,14 +12,14 @@ You are an autonomous Principal Full-Stack & Frontend Architect working inside *
 
 1. **Zero Blind Trust — Perform Your Own Full Live Code Audit First:**
    - Treat this document as an engineering brief — **NOT blind dogma**. Before editing a single line, **inspect EVERY relevant live file yourself** in:
-     1. **`GothwadTech/mail`** (`src/components/Header.tsx`, `src/components/AccountSheet.tsx`, `src/context/MailContext.tsx`, `src/context/useAccountsSwitcher.ts`, `src/hooks/useSession.ts`, `src/services/mailApi.ts`, `src/services/authRedirect.ts`, `src/services/authuser.ts`, `worker/src/*`, `worker/test/*`, and all `.md` docs).
-     2. **Live `GothwadTech/accounts` (`main` branch)** (`gh api` / `git clone --depth=1`): specifically **`web/widget/account-menu.js`**, **`web/widget/account-menu-styles.js`**, **`cloudflare-worker/src/http.ts`**, and **`cloudflare-worker/src/browser-slots.ts`** so you see the exact live `window.GothwadAccountMenu` API, options, CSS variables, and CORS headers!
+     1. **`Bansify/mail`** (`src/components/Header.tsx`, `src/components/AccountSheet.tsx`, `src/context/MailContext.tsx`, `src/context/useAccountsSwitcher.ts`, `src/hooks/useSession.ts`, `src/services/mailApi.ts`, `src/services/authRedirect.ts`, `src/services/authuser.ts`, `worker/src/*`, `worker/test/*`, and all `.md` docs).
+     2. **Live `Bansify/accounts` (`main` branch)** (`gh api` / `git clone --depth=1`): specifically **`web/widget/account-menu.js`**, **`web/widget/account-menu-styles.js`**, **`cloudflare-worker/src/http.ts`**, and **`cloudflare-worker/src/browser-slots.ts`** so you see the exact live `window.GothwadAccountMenu` API, options, CSS variables, and CORS headers!
 2. **Full Engineering Autonomy — Give Your 100% Best Effort:**
    - Use your sharpest judgment. If you uncover any subtle edge case (offline/slow network loading of external script, mobile viewport safe areas, keyboard focus restoration, unread count reactivity, dark-mode sync, multi-tab `/u/0..5` URL preservation), **implement the cleanest, fastest, most resilient engineering solution possible**.
 3. **Hard Ecosystem Rules (Never Violate):**
    - **Zero Credit Card / Zero R2 / Zero Supabase** (keep existing native Cloudflare D1 `mail` architecture 100% intact).
    - **Domain-agnostic (`APP_DOMAIN` / configured `accountUrl` origin — never hardcode domains in app logic)**.
-   - **Zero tokens in `localStorage` or `sessionStorage`** (`.gothwadtech.com` `HttpOnly` cookies only).
+   - **Zero tokens in `localStorage` or `sessionStorage`** (`.bansify.com` `HttpOnly` cookies only).
    - **Every file in the repository strictly `<= 500` lines.**
    - **Keep all documentation (`README.md`, `TASK.md`, `PLAN.md`, `docs/*`) 100% clean, honest, and up to date.**
 
@@ -33,10 +33,10 @@ On Google (`google.com`, `Gmail`, `Keep/Notes`, `Play Store`, `Firebase Console`
 
 ---
 
-## 🛠️ 2. EXACT IMPLEMENTATION GOALS IN `GothwadTech/mail`
+## 🛠️ 2. EXACT IMPLEMENTATION GOALS IN `Bansify/mail`
 
 1. **Dynamic Central Widget Loader (`src/services/accountWidget.ts`):**
-   - Derive `accountsWebOrigin` dynamically from `accountUrl` / session config (never hardcoded `gothwadtech.com`, falling back cleanly in local dev).
+   - Derive `accountsWebOrigin` dynamically from `accountUrl` / session config (never hardcoded `bansify.com`, falling back cleanly in local dev).
    - Dynamically load ES module `${accountsWebOrigin}/widget/account-menu.js` once (`import(/* @vite-ignore */ `${accountsWebOrigin}/widget/account-menu.js`)`), returning `window.GothwadAccountMenu`.
    - **Resilience requirement:** Preload the script quietly right after session boot (`requestIdleCallback` / `setTimeout`) so when the user taps their profile avatar (or presses **`Shift+A`**!), **the sheet opens in `0ms` with ZERO network wait**! Include a tiny clean fallback only if offline so tapping the avatar NEVER fails silently.
 2. **Replace Custom `AccountSheet.tsx` UI with Central `GothwadAccountMenu` (`src/components/AccountSheet.tsx` & `src/components/Header.tsx`):**
@@ -56,7 +56,7 @@ On Google (`google.com`, `Gmail`, `Keep/Notes`, `Play Store`, `Firebase Console`
      - `onSignOutAll`: signs out all accounts cleanly and redirects to sign-in.
    - Keep Mail's **Settings** (`⚙️`) and **Theme Toggle** (`☀️/🌙`) accessible right in `Header.tsx` / `MobileDrawer.tsx` (and/or via clean `extraActions` passed to `GothwadAccountMenu.open` if helpful on mobile where header space is compact — verify both mobile & desktop layouts!).
 3. **Verify Auto-SSO Sign-In Flow:**
-   - Ensure Mail NEVER shows any third-party `"Sign in with..."` consent screen — unauthenticated visitors redirect cleanly to `${accountsWebOrigin}/signin?next=${encodeURIComponent(window.location.href)}`, and authenticated `.gothwadtech.com` browser sessions load the inbox automatically with zero clicks!
+   - Ensure Mail NEVER shows any third-party `"Sign in with..."` consent screen — unauthenticated visitors redirect cleanly to `${accountsWebOrigin}/signin?next=${encodeURIComponent(window.location.href)}`, and authenticated `.bansify.com` browser sessions load the inbox automatically with zero clicks!
 
 ---
 

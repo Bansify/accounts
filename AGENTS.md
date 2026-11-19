@@ -25,7 +25,7 @@
 
 ## 🔥 TECH STACK (v2.4 — 100% CLOUDFLARE NATIVE, MODULAR, ZERO SUPABASE!)
 
-> ⚠️ **IMPORTANT:** Supabase has been **100% removed** from `GothwadTech/accounts`, `GothwadTech/mail`, and `GothwadTech/store`. (`PlusTube`, `Indogram`, and `GrixChat` remain on their own separate Supabase projects — never touch those three repos.)
+> ⚠️ **IMPORTANT:** Supabase has been **100% removed** from `Bansify/accounts`, `Bansify/mail`, and `Bansify/store`. (`PlusTube`, `Indogram`, and `GrixChat` remain on their own separate Supabase projects — never touch those three repos.)
 
 | Layer | Technology | Free Tier / Design |
 |-------|------------|--------------------|
@@ -43,7 +43,7 @@
 ## 📏 ALL 9 HARD ARCHITECTURAL RULES (NEVER VIOLATE!)
 
 0. **100% Pure English Everywhere (`RULE #0`):** Zero Hindi / Hinglish anywhere in UI strings, errors, code comments, SQL comments, tests, or documentation.
-1. **Domain-Agnostic Code (`RULE #1`):** Never hardcode `gothwadtech.com` in runtime logic. Read `APP_DOMAIN` solely from `web/js/config.js` and `cloudflare-worker/wrangler.toml` `[vars]`.
+1. **Domain-Agnostic Code (`RULE #1`):** Never hardcode `bansify.com` in runtime logic. Read `APP_DOMAIN` solely from `web/js/config.js` and `cloudflare-worker/wrangler.toml` `[vars]`.
 2. **100% Pure Username DB (`RULE #2`):** `users` and `profiles` contain **zero `email` columns**. Primary email is always derived dynamically as `username + "@" + APP_DOMAIN`.
 3. **Zero Secrets or Auth Tokens in Browser Storage (`RULE #3`):** `JWT_SECRET`, `MAIL_INTERNAL_TOKEN`, and `RESEND_API_KEY` live strictly in Cloudflare Worker Secrets; browsers never store session/OAuth tokens in `localStorage` or `sessionStorage` (`gothwad-theme` only).
 4. **Strict Token & Cookie Contract (`RULE #4`):**

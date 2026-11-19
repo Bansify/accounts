@@ -5,13 +5,13 @@ import { buildCorsHeaders } from '../cloudflare-worker/src/http.ts';
 import { verifyCsrfOrigin, resolveSafeRedirectTarget } from '../cloudflare-worker/src/cookies.ts';
 import { authenticatedProxy, sessionResponse } from '../cloudflare-worker/src/sso-policy.ts';
 import { makeEnv, seedAccount } from './helpers/multi-account-harness.mjs';
-const host = 'https://api.gothwadtech.com';
+const host = 'https://api.bansify.com';
 
 test('SSO trusts explicit core services, not arbitrary or nested sibling hosts', () => {
   const env = makeEnv();
   try {
-    for (const origin of ['https://unclaimed.gothwadtech.com', 'https://nested.mail.gothwadtech.com',
-      'https://mail.gothwadtech.com:8443']) {
+    for (const origin of ['https://unclaimed.bansify.com', 'https://nested.mail.bansify.com',
+      'https://mail.bansify.com:8443']) {
       const request = new Request(`${host}/api/auth/switch`, { headers: { Origin: origin } });
       assert.equal(buildCorsHeaders(request, env).has('Access-Control-Allow-Origin'), false);
       assert.equal(verifyCsrfOrigin(request, env), false);
@@ -60,6 +60,6 @@ test('session credential JSON is server-authenticated only; browser evidence alw
 test('proxy secrets never override explicitly hostile browser evidence', async () => {
   const env = makeEnv({ DB: undefined });
   const request = new Request(`${host}/api/auth/signout`, { method: 'POST', headers: {
-    'X-Gothwad-Proxy-Token': env.SSO_PROXY_TOKEN, Origin: 'https://unclaimed.gothwadtech.com' } });
+    'X-Gothwad-Proxy-Token': env.SSO_PROXY_TOKEN, Origin: 'https://unclaimed.bansify.com' } });
   assert.equal((await worker.fetch(request, env)).status, 403);
 });

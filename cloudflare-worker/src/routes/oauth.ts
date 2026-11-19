@@ -201,7 +201,7 @@ export async function handleOAuthRoute(
     if (!appId) return withCors(apiError('app_id is required'));
     if (CORE_GOTHWAD_SERVICES.has(appId)) {
       return withCors(
-        apiError('Gothwad Services stay connected to your account and cannot be disconnected.', 403),
+        apiError('Bansify Services stay connected to your account and cannot be disconnected.', 403),
       );
     }
 

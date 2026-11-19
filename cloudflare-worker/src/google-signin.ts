@@ -31,7 +31,7 @@ export async function handleGoogleFinish(request: Request, db: D1Database, env: 
   // Explicit choice is mandatory. Never silently pick the first linked account.
   const action = body.action;
   if (!['select', 'create'].includes(action)) return wrap(json({ error: 'selection_required',
-    message: 'Choose a Gothwad Account or add a new account.' }, 400));
+    message: 'Choose a Bansify Account or add a new account.' }, 400));
   let account = action === 'select' ? await db.prepare(`SELECT u.id, u.username, u.password_hash
     FROM auth_google_methods e JOIN users u ON u.id = e.user_id
     WHERE e.issuer = ? AND e.subject = ? AND e.user_id = ?`)

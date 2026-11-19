@@ -29,7 +29,7 @@ test('migration 14 preserves old registrations/grants/disabled status, defaults 
     assert.equal(updated.first_party, 0, 'runtime must not undo operator deapproval');
     assert.equal(updated.active, 0);
     assert.equal(updated.android_cert_sha256, JSON.stringify(['a'.repeat(64)]));
-    assert.equal(readFileSync('migrations/0014_first_party_native.sql', 'utf8'), generateFirstPartySql('gothwadtech.com'));
+    assert.equal(readFileSync('migrations/0014_first_party_native.sql', 'utf8'), generateFirstPartySql('bansify.com'));
   } finally { db.close(); }
 });
 
@@ -72,7 +72,7 @@ test('authorize and decision reject wildcard/near redirects, unknown and privile
     f.env.DEV_MODE = 'true';
     const invalid = [
       { redirect_uri: callback(accountsClient) + '/' }, { redirect_uri: 'http://localhost:9191/unregistered' },
-      { redirect_uri: 'https://accounts.gothwadtech.com/*' }, { redirect_uri: callback(accountsClient) + '#fragment' },
+      { redirect_uri: 'https://accounts.bansify.com/*' }, { redirect_uri: callback(accountsClient) + '#fragment' },
       { code_challenge: '' }, { code_challenge_method: 'plain' }, { code_challenge: 'bad' },
       { scope: 'profile totally.unknown' }, { scope: 'profile mail' },
     ];

@@ -217,7 +217,7 @@ export function selectSlotBySelector(
   if (isAccountSlot(selector)) {
     return validSlots.find((s) => s.slot === selector);
   }
-  const domainSuffix = `@${(env.APP_DOMAIN || 'gothwadtech.com').toLowerCase()}`;
+  const domainSuffix = `@${(env.APP_DOMAIN || 'bansify.com').toLowerCase()}`;
   const normalizedUsername = selector.endsWith(domainSuffix)
     ? selector.slice(0, -domainSuffix.length)
     : selector;

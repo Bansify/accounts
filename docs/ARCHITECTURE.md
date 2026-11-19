@@ -1,7 +1,7 @@
 # 🏗️ ARCHITECTURE.md — Technical Deep Dive (v2.3 — Google-Grade `u/0..5` Multi-Account Cloudflare Native)
 
 > **Updated: 2026-11-05 — module map and documentation consolidation**
-> Gothwad Accounts runs **100% on Cloudflare (`Pages` + `Workers` + `D1 SQLite` + `Global Edge Cache` + optional `R2`)**.
+> Bansify Accounts runs **100% on Cloudflare (`Pages` + `Workers` + `D1 SQLite` + `Global Edge Cache` + optional `R2`)**.
 > Master roadmap: [`PLAN.md`](../PLAN.md) · Setup: [`SETUP.md`](SETUP.md) · OAuth: [`OAUTH.md`](OAUTH.md) · Mail Contract: [`MAIL_INTERNAL.md`](MAIL_INTERNAL.md)
 
 ---
@@ -22,11 +22,11 @@ from browser authentication so the latter works without migration 14. See
 ```text
 ┌────────────────────────────────────────────────────────┐
 │  BROWSER (Modular Static Vanilla HTML + CSS + ESM JS)  │
-│  accounts.gothwadtech.com  (Cloudflare Pages + ETag)   │
+│  accounts.bansify.com  (Cloudflare Pages + ETag)   │
 │  Routes: /u/0/me .. /u/5/me · /signin · /signup        │
 │  web/_redirects (`200` rewrite) + web/_headers (`304`) │
 └───────────────────────────┬────────────────────────────┘
-                            │ fetch('/api/*') — HttpOnly `.gothwadtech.com` Slots (`a`..`f`) + `X-Gothwad-Authuser`
+                            │ fetch('/api/*') — HttpOnly `.bansify.com` Slots (`a`..`f`) + `X-Gothwad-Authuser`
 ┌───────────────────────────▼────────────────────────────┐
 │  CLOUDFLARE WORKER (`accounts` — Modular TypeScript)  │
 │  cloudflare-worker/src/worker.ts → index.ts router  │
@@ -84,7 +84,7 @@ Every source, stylesheet, SQL migration, test, and active documentation file acr
 | Layer | Algorithm / Design | Security Guarantee |
 | :--- | :--- | :--- |
 | **Password Storage** | `PBKDF2-HMAC-SHA256` (`100,000` iter, 16B random salt) | Stored as `pbkdf2_sha256$100000$<salt>$<hash>`; constant-time compare. |
-| **Multi-Account Slots (`a`..`f`)** | `gothwad_sess_a`..`f` + `gothwad_active` + HMAC `gothwad_accounts` | Up to 6 simultaneous accounts per browser across `*.gothwadtech.com`; **zero tokens in `localStorage`/`sessionStorage`**; CSRF-checked `/auth/switch` & per-slot signout. |
+| **Multi-Account Slots (`a`..`f`)** | `gothwad_sess_a`..`f` + `gothwad_active` + HMAC `gothwad_accounts` | Up to 6 simultaneous accounts per browser across `*.bansify.com`; **zero tokens in `localStorage`/`sessionStorage`**; CSRF-checked `/auth/switch` & per-slot signout. |
 | **Account Access & Refresh** | `HS256` (`token_use: "session"`, 1h) + `SHA-256` refresh hash in D1 | Live session check in D1 + atomic single-winner rotation + 10s parallel tab grace window. |
 | **OAuth 2.0 + S256 PKCE** | `HS256` (`token_use: "oauth_access"`) + atomic `UPDATE ... RETURNING` | Public clients require S256 PKCE; OAuth tokens strictly rejected on `/api/auth/*`. |
 | **Internal Mail Lookup** | `GET https://api.<APP_DOMAIN>/api/internal/usernames/:username` | Called by Mail Worker **`mail`** (`client_id = gothwad-mail`) using constant-time `Bearer MAIL_INTERNAL_TOKEN`. |

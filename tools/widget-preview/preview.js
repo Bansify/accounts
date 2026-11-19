@@ -23,7 +23,7 @@ function openMenu() {
   GothwadAccountMenu.open({ user: current, accounts, activeId, authuser: current.authuser }, {
     theme,
     accountsWebOrigin: location.origin,
-    ecosystemName: 'Gothwad',
+    ecosystemName: 'Bansify',
     anchorEl: anchor,
     badges: host === 'mail' ? { studio: 8, work: 2 } : {},
     extraActions: host === 'store' ? [{ label: 'Kiwi Console', onClick: () => notify('Preview: Kiwi Console selected.') }] : [],

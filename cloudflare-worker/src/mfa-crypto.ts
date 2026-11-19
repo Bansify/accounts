@@ -35,7 +35,7 @@ export async function decryptMfaSeed(env: Env, userId: string, value: string): P
 }
 export function newAuthenticator(username: string, domain: string) {
   const secret = new OTPAuth.Secret({ size: 20 });
-  const totp = new OTPAuth.TOTP({ issuer: 'Gothwad Accounts', label: `${username}@${domain}`,
+  const totp = new OTPAuth.TOTP({ issuer: 'Bansify Accounts', label: `${username}@${domain}`,
     algorithm: 'SHA1', digits: 6, period: 30, secret });
   return { secret: secret.base32, uri: totp.toString() };
 }

@@ -1,31 +1,31 @@
-# Gothwad Accounts Android (`GothwadTech/accountsapp`) — Native Auth, Zero-Browser SSO & Full Native Management Prompt
+# Bansify Accounts Android (`Bansify/accountsapp`) — Native Auth, Zero-Browser SSO & Full Native Management Prompt
 
-> **How to use:** Copy and paste the prompt below into the Arena coding agent working inside **`GothwadTech/accountsapp`**.
+> **How to use:** Copy and paste the prompt below into the Arena coding agent working inside **`Bansify/accountsapp`**.
 
 ---
 
 ```markdown
-You are working inside `GothwadTech/accountsapp` (`com.gothwad.accounts`).
+You are working inside `Bansify/accountsapp` (`com.gothwad.accounts`).
 
 ## Standing Rules
 1. **100% Pure English** across all Kotlin code, Compose UI, strings, comments, tests, and docs.
 2. **Preserve Everything That Currently Works:** Keep the existing Browser / Chrome Custom Tabs OAuth 2.0 + S256 PKCE flow (`GothwadAccounts.signIn` / `OAuthClient`), existing `TokenStore`, `AccountDirectoryProvider` query cursor, `PeerBrokerClient`, and existing tests working as a secondary fallback (`signInWithBrowser`).
 3. **Upgrade to 100% Native Direct Worker Authentication, Zero-Browser Cross-App Silent SSO, and 100% Native Account & Security Management:**
    - Do **not** force users into a web browser for sign-in, sign-up, password reset, profile photo, phone number, recovery email, password change, 2-Step Verification (TOTP MFA), session revocation, data export, or account deletion.
-   - Connect directly to the Cloudflare Worker JSON API at `https://accounts.gothwadtech.com/api` via `OkHttp`.
+   - Connect directly to the Cloudflare Worker JSON API at `https://accounts.bansify.com/api` via `OkHttp`.
 
 ---
 
 ## 1. Direct Native Android Authentication (`/api/mobile/auth/*` — Zero Browser Required)
 
-The `GothwadTech/accounts` Cloudflare Worker (`https://accounts.gothwadtech.com/api`) now provides cookie-free, direct JSON authentication endpoints for official first-party Android clients (`client_id = "gothwad-accounts-android"`, `scope = "profile email offline_access drive.read account.read account.profile.write"`):
+The `Bansify/accounts` Cloudflare Worker (`https://accounts.bansify.com/api`) now provides cookie-free, direct JSON authentication endpoints for official first-party Android clients (`client_id = "gothwad-accounts-android"`, `scope = "profile email offline_access drive.read account.read account.profile.write"`):
 
 1. **`POST /api/mobile/auth/check-identifier`**
    - Request JSON: `{ "identifier": "<username | email | phone>" }`
    - Response JSON (`200`): `{ "ok": true, "exists": true, "kind": "username" | "email" | "phone", "error"?: "..." }`
 2. **`POST /api/mobile/auth/check-username`**
    - Request JSON: `{ "username": "<desired_username>" }`
-   - Response JSON (`200`): `{ "ok": true, "available": true, "valid": true, "username": "...", "email": "...@gothwadtech.com", "error"?: "..." }`
+   - Response JSON (`200`): `{ "ok": true, "available": true, "valid": true, "username": "...", "email": "...@bansify.com", "error"?: "..." }`
 3. **`POST /api/mobile/auth/signin`**
    - Request JSON:
      ```json
@@ -103,7 +103,7 @@ The `GothwadTech/accounts` Cloudflare Worker (`https://accounts.gothwadtech.com/
 
 ## 2. Zero-Browser Automatic Cross-App Silent SSO (`POST /api/mobile/auth/peer-code`)
 
-When a user is signed into `Gothwad Accounts` (`com.gothwad.accounts`) or `Gothwad Mail` (`com.gothwad.mail`) on the phone, the other app must be able to sign in **automatically in <1 second without opening any browser or permissions screen**:
+When a user is signed into `Bansify Accounts` (`com.gothwad.accounts`) or `Bansify Mail` (`com.gothwad.mail`) on the phone, the other app must be able to sign in **automatically in <1 second without opening any browser or permissions screen**:
 
 1. **Server Endpoint (`POST /api/mobile/auth/peer-code`):**
    - Requires `Authorization: Bearer <caller_valid_first_party_access_token>`.
@@ -174,7 +174,7 @@ Update `MobileAccountClient.kt`, `SessionManager.kt`, `AccountDashboardViewModel
    - Clicking "Export your account data" in `DataPrivacyTabScreen` fetches `/api/mobile/export` and opens the native Android Share sheet (`Intent.ACTION_SEND` with `text/plain` / `application/json`) or saves via `CreateDocument`.
 8. **Delete Account (`POST /api/mobile/delete-account`):**
    - Request JSON: `{ "password": "...", "mfa_code"?: "..." }` -> `{ "ok": true, "message": "Account deleted" }`.
-   - Clicking "Delete your Gothwad Account" in `DataPrivacyTabScreen` opens a native Compose confirmation dialog; on success, remove the account from `TokenStore` and refresh state.
+   - Clicking "Delete your Bansify Account" in `DataPrivacyTabScreen` opens a native Compose confirmation dialog; on success, remove the account from `TokenStore` and refresh state.
 
 ---
 

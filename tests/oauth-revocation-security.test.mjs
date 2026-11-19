@@ -25,10 +25,10 @@ async function consent(f) {
 const exchange = (f, code) => token(f, { grant_type: 'authorization_code', client_id: client,
   redirect_uri: redirect, code, code_verifier: verifier });
 async function token(f, body) {
-  return worker.fetch(new Request('https://api.gothwadtech.com/api/oauth/token', {
+  return worker.fetch(new Request('https://api.bansify.com/api/oauth/token', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }), f.env);
 }
-const userinfo = (f, access) => worker.fetch(new Request('https://api.gothwadtech.com/api/oauth/userinfo',
+const userinfo = (f, access) => worker.fetch(new Request('https://api.bansify.com/api/oauth/userinfo',
   { headers: { Authorization: `Bearer ${access}` } }), f.env);
 async function tokens(f) {
   const response = await exchange(f, await consent(f));

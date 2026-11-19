@@ -17,7 +17,7 @@ async function fixture(t, configured = true) {
 
 async function requestChange(env, owner, email = 'replacement@example.test', password = owner.password) {
   return owner.jar.fetch(env, '/api/auth/recovery-email/request', {
-    method: 'POST', origin: 'https://accounts.gothwadtech.com',
+    method: 'POST', origin: 'https://accounts.bansify.com',
     body: { recovery_email: email, current_password: password },
   });
 }
@@ -27,7 +27,7 @@ function tokenFrom(message) {
 }
 async function verify(env, token, jar = new BrowserJar()) {
   return jar.fetch(env, '/api/auth/recovery-email/verify', {
-    method: 'POST', origin: 'https://accounts.gothwadtech.com', body: { token },
+    method: 'POST', origin: 'https://accounts.bansify.com', body: { token },
   });
 }
 async function address(env) {

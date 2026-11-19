@@ -36,7 +36,7 @@ async function exportData() {
     if (!response.ok) { const body = await response.json().catch(() => null); throw new Error(body?.error || 'Export could not be prepared. Try again.'); }
     const blob = await response.blob(); if (!valid()) return;
     const url = URL.createObjectURL(blob), link = document.createElement('a');
-    link.href = url; link.download = 'gothwad-account-data.json'; document.body.appendChild(link); link.click(); link.remove();
+    link.href = url; link.download = 'bansify-account-data.json'; document.body.appendChild(link); link.click(); link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     toast('Accounts JSON download prepared. Check your browser downloads; keep the file private.');
   } catch (error) { if (valid()) toast(error.message || 'Export failed. Use Download to retry.', 'error'); }

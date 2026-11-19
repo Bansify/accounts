@@ -43,8 +43,8 @@ export async function openMfaSettings() {
     el('mfa-codes-saved').addEventListener('change', () => { el('mfa-done').disabled = !el('mfa-codes-saved').checked; });
     el('mfa-download').addEventListener('click', () => {
       if (!current()) return;
-      const url = URL.createObjectURL(new Blob(['Gothwad Accounts recovery codes\nKeep offline. Each code works once.\n\n' + data.recovery_codes.join('\n')], { type: 'text/plain' }));
-      const link = document.createElement('a'); link.href = url; link.download = 'gothwad-recovery-codes.txt'; link.click();
+      const url = URL.createObjectURL(new Blob(['Bansify Accounts recovery codes\nKeep offline. Each code works once.\n\n' + data.recovery_codes.join('\n')], { type: 'text/plain' }));
+      const link = document.createElement('a'); link.href = url; link.download = 'bansify-recovery-codes.txt'; link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     });
     el('mfa-done').addEventListener('click', () => { if (el('mfa-codes-saved').checked) { closeDialog(); toast('Authenticator recovery codes acknowledged. Keep the saved copy private.'); } });

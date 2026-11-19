@@ -22,7 +22,7 @@ CREATE TRIGGER IF NOT EXISTS validate_android_certs_1 BEFORE UPDATE OF android_c
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-accounts-android', 'gothwad-accounts-android', 'Gothwad Accounts Android', 1, 'com.gothwad.accounts', '["https://accounts.gothwadtech.com/oauth/callback","com.gothwad.accounts:/oauth/callback"]', '["profile","email","offline_access","drive.read","account.read","account.profile.write"]', 1)
+VALUES ('gothwad-accounts-android', 'gothwad-accounts-android', 'Bansify Accounts Android', 1, 'com.gothwad.accounts', '["https://accounts.bansify.com/oauth/callback","com.gothwad.accounts:/oauth/callback"]', '["profile","email","offline_access","drive.read","account.read","account.profile.write"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (
@@ -49,7 +49,7 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-mail', 'gothwad-mail', 'Gothwad Mail', 1, 'com.gothwad.mail', '["https://mail.gothwadtech.com/oauth/callback","com.gothwad.mail:/oauth/callback"]', '["profile","email","offline_access","mail"]', 1)
+VALUES ('gothwad-mail', 'gothwad-mail', 'Bansify Mail', 1, 'com.gothwad.mail', '["https://mail.bansify.com/oauth/callback","com.gothwad.mail:/oauth/callback"]', '["profile","email","offline_access","mail"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (
@@ -58,7 +58,7 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-drive', 'gothwad-drive', 'Gothwad Drive', 1, 'com.gothwad.drive', '["https://drive.gothwadtech.com/oauth/callback","com.gothwad.drive:/oauth/callback"]', '["profile","email","offline_access","drive","drive.read"]', 1)
+VALUES ('gothwad-drive', 'gothwad-drive', 'Bansify Drive', 1, 'com.gothwad.drive', '["https://drive.bansify.com/oauth/callback","com.gothwad.drive:/oauth/callback"]', '["profile","email","offline_access","drive","drive.read"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (
@@ -67,7 +67,7 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('kiwi-store', 'kiwi-store', 'Kiwi Store', 1, 'com.gothwad.store', '["kiwistore://oauth/callback","https://kiwistore.gothwadtech.com/oauth/callback","com.gothwad.store:/oauth/callback"]', '["profile","email","offline_access"]', 1)
+VALUES ('kiwi-store', 'kiwi-store', 'Kiwi Store', 1, 'com.gothwad.store', '["kiwistore://oauth/callback","https://kiwistore.bansify.com/oauth/callback","com.gothwad.store:/oauth/callback"]', '["profile","email","offline_access"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (
@@ -76,7 +76,7 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-tube', 'gothwad-tube', 'Gothwad Tube', 1, 'com.gothwad.tube', '["https://tube.gothwadtech.com/oauth/callback","com.gothwad.tube:/oauth/callback"]', '["profile","email","offline_access"]', 1)
+VALUES ('gothwad-tube', 'gothwad-tube', 'Bansify Tube', 1, 'com.gothwad.tube', '["https://tube.bansify.com/oauth/callback","com.gothwad.tube:/oauth/callback"]', '["profile","email","offline_access"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (

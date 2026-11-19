@@ -11,7 +11,7 @@ export const RESERVED_USERNAMES = new Set([
   'admin', 'administrator', 'api', 'app', 'assets', 'mail', 'email', 'smtp', 'imap', 'pop',
   'support', 'help', 'root', 'security', 'billing', 'legal', 'abuse', 'postmaster',
   'webmaster', 'hostmaster', 'noreply', 'no-reply', 'donotreply', 'www', 'web', 'ftp',
-  'cdn', 'static', 'status', 'dev', 'test', 'staging', 'gothwad', 'gothwadtech',
+  'cdn', 'static', 'status', 'dev', 'test', 'staging', 'bansify', 'gothwad', 'gothwadtech',
   'login', 'signin', 'signup', 'logout', 'account', 'accounts', 'auth', 'oauth',
   'me', 'everyone', 'team', 'official', 'pay', 'payments', 'wallet', 'store', 'shop',
 ]);

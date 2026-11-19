@@ -178,7 +178,7 @@ export async function handleMobileAuthRoute(
       raw = String(body.identifier || raw || '').trim();
     }
     if (!raw) return wrap(apiError('Please enter your username, email or phone number.', 400));
-    const appDomain = (env.APP_DOMAIN || 'gothwadtech.com').toLowerCase();
+    const appDomain = (env.APP_DOMAIN || 'bansify.com').toLowerCase();
     if (!identifierLooksLikePhone(raw) && raw.includes('@') && !raw.toLowerCase().endsWith(`@${appDomain}`)) {
       return wrap(json({ ok: false, exists: false, error: `Only @${appDomain} suffix is allowed.`, isThirdParty: true }, 400));
     }
@@ -186,7 +186,7 @@ export async function handleMobileAuthRoute(
     if (!found.exists) {
       const msg =
         found.kind === 'phone'
-          ? "This phone number isn't registered with Gothwad Accounts."
+          ? "This phone number isn't registered with Bansify Accounts."
           : "This username doesn't exist. Check the spelling, or create a new account.";
       return wrap(json({ ok: true, exists: false, error: msg }));
     }
@@ -221,7 +221,7 @@ export async function handleMobileAuthRoute(
     if (password.length > 128 || rawIdentifier.length > 254) return wrap(apiError('Sign-in input is too long', 400));
     if (!rawIdentifier || !password) return wrap(apiError('Username, email or phone and password are required', 400));
 
-    const appDomain = (env.APP_DOMAIN || 'gothwadtech.com').toLowerCase();
+    const appDomain = (env.APP_DOMAIN || 'bansify.com').toLowerCase();
     if (!identifierLooksLikePhone(rawIdentifier) && rawIdentifier.includes('@') && !rawIdentifier.toLowerCase().endsWith(`@${appDomain}`)) {
       return wrap(apiError(`Only @${appDomain} suffix is allowed.`, 400));
     }
@@ -230,7 +230,7 @@ export async function handleMobileAuthRoute(
     if (!found.exists) {
       const msg =
         found.kind === 'phone'
-          ? "This phone number isn't registered with Gothwad Accounts."
+          ? "This phone number isn't registered with Bansify Accounts."
           : "This username doesn't exist. Check the spelling, or create a new account.";
       return wrap(apiError(msg, 404));
     }
@@ -368,7 +368,7 @@ export async function handleMobileAuthRoute(
       throw err;
     }
 
-    await logActivity(db, userId, 'signup', 'Account created', `Welcome to Gothwad, ${firstName}!`, request);
+    await logActivity(db, userId, 'signup', 'Account created', `Welcome to Bansify, ${firstName}!`, request);
     return wrap(
       await mintNativeOAuthSession(
         request,

@@ -194,15 +194,15 @@ export function parseUserAgent(ua: string): { device_name: string; browser: stri
 export async function sendResetEmail(env: Env, toEmail: string, resetLink: string): Promise<boolean> {
   if (!env.RESEND_API_KEY) return false;
 
-  const from = env.RESEND_FROM || `Gothwad Accounts <no-reply@${env.APP_DOMAIN}>`;
+  const from = env.RESEND_FROM || `Bansify Accounts <no-reply@${env.APP_DOMAIN}>`;
   const html = `
     <div style="font-family:Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#202124;">
       <div style="text-align:center;margin-bottom:24px;">
-        <div style="font-size:22px;color:#5f6368;font-weight:400;">Gothwad Accounts</div>
+        <div style="font-size:22px;color:#5f6368;font-weight:400;">Bansify Accounts</div>
       </div>
       <h2 style="font-size:20px;font-weight:400;margin:0 0 16px;">Reset your password</h2>
       <p style="font-size:14px;line-height:1.6;color:#5f6368;margin:0 0 24px;">
-        Hi, we received a request to reset the password for your Gothwad Account.
+        Hi, we received a request to reset the password for your Bansify Account.
         Click the button below and set a new password within 15 minutes.
       </p>
       <p style="text-align:center;margin:0 0 24px;">
@@ -212,7 +212,7 @@ export async function sendResetEmail(env: Env, toEmail: string, resetLink: strin
         If you didn't ask to reset your password, you can ignore this email — no action needed.
       </p>
       <hr style="border:none;border-top:1px solid #dadce0;margin:24px 0;" />
-      <p style="font-size:11px;color:#9aa0a6;margin:0;">Gothwad Tech · This is an automated security email.</p>
+      <p style="font-size:11px;color:#9aa0a6;margin:0;">Bansify · This is an automated security email.</p>
     </div>`;
 
   try {
@@ -226,7 +226,7 @@ export async function sendResetEmail(env: Env, toEmail: string, resetLink: strin
       body: JSON.stringify({
         from,
         to: [toEmail],
-        subject: 'Reset your Gothwad Account password',
+        subject: 'Reset your Bansify Account password',
         html,
       }),
     });

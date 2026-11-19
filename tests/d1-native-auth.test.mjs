@@ -2,7 +2,7 @@
  * Comprehensive End-to-End Test Suite for 100% Cloudflare Native (D1 + Worker Auth)
  * Covers:
  *   1. All numbered SQL files (`01` -> `05`) executed twice against real SQLite D1
- *   2. Pure Username-Only Rule (#2) + Dynamic Domain Change (`gothwadtech.com` -> `gothwad.in`)
+ *   2. Pure Username-Only Rule (#2) + Dynamic Domain Change (`bansify.com` -> `gothwad.in`)
  *   3. Signup, duplicate detection, reserved usernames, live availability & identifier checks
  *   4. Signin via username, email, AND phone number + wrong password handling
  *   5. Session resolution, API_DOMAIN 401 vs browser 200 when signed out, refresh rotation
@@ -23,9 +23,9 @@ import worker from '../cloudflare-worker/src/index.ts';
 function makeTestEnv(overrides = {}) {
   return {
     DB: createLocalD1(':memory:'),
-    APP_DOMAIN: 'gothwadtech.com',
-    AUTH_HUB_URL: 'https://accounts.gothwadtech.com',
-    API_DOMAIN: 'api.gothwadtech.com',
+    APP_DOMAIN: 'bansify.com',
+    AUTH_HUB_URL: 'https://accounts.bansify.com',
+    API_DOMAIN: 'api.bansify.com',
     JWT_SECRET: 'test-production-grade-random-secret-key-48-chars-long',
     SSO_PROXY_TOKEN: 'synthetic-proxy-secret-for-tests-only-2026',
     MAIL_INTERNAL_TOKEN: 'mail-shared-internal-secret-token',
@@ -34,7 +34,7 @@ function makeTestEnv(overrides = {}) {
   };
 }
 
-async function apiCall(env, path, { method = 'GET', body, headers = {}, host = 'accounts.gothwadtech.com' } = {}) {
+async function apiCall(env, path, { method = 'GET', body, headers = {}, host = 'accounts.bansify.com' } = {}) {
   const reqHeaders = new Headers(headers);
   reqHeaders.set('X-Gothwad-Proxy-Token', env.SSO_PROXY_TOKEN);
   if (body !== undefined && !reqHeaders.has('Content-Type')) {
@@ -78,14 +78,14 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
   assert.equal((await (await apiCall(env, '/api/auth/check-username?username=admin')).json()).available, false);
   const availBefore = await (await apiCall(env, '/api/auth/check-username?username=pawan')).json();
   assert.equal(availBefore.available, true);
-  assert.equal(availBefore.email, 'pawan@gothwadtech.com');
+  assert.equal(availBefore.email, 'pawan@bansify.com');
 
   // 2. Signed-out `/api/auth/me` behavior: 401 `{authenticated:false}` consistently across all hosts
   const meBrowserOut = await apiCall(env, '/api/auth/me');
   assert.equal(meBrowserOut.status, 401);
   assert.equal((await meBrowserOut.json()).authenticated, false);
 
-  const meApiOut = await apiCall(env, '/api/auth/me', { host: 'api.gothwadtech.com' });
+  const meApiOut = await apiCall(env, '/api/auth/me', { host: 'api.bansify.com' });
   assert.equal(meApiOut.status, 401);
   assert.equal((await meApiOut.json()).authenticated, false);
 
@@ -108,7 +108,7 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
   const signupData = await signupRes.json();
   assert.equal(signupData.ok, true);
   assert.equal(signupData.user.username, 'pawan');
-  assert.equal(signupData.user.email, 'pawan@gothwadtech.com');
+  assert.equal(signupData.user.email, 'pawan@bansify.com');
   assert.ok(signupData.access_token && signupData.refresh_token && signupData.session_id);
 
   // Verify Rule #2: ZERO email column in `users` or `profiles`, and changing APP_DOMAIN updates email dynamically!
@@ -188,7 +188,7 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
   });
   assert.equal(avatarUp.status, 200);
   const avatarData = await avatarUp.json();
-  assert.match(avatarData.avatar_url, /^https:\/\/accounts\.gothwadtech\.com\/api\/avatars\//);
+  assert.match(avatarData.avatar_url, /^https:\/\/accounts\.bansify\.com\/api\/avatars\//);
 
   const avatarPath = new URL(avatarData.avatar_url).pathname + new URL(avatarData.avatar_url).search;
   const avatarFetch1 = await apiCall(env, avatarPath);
@@ -241,7 +241,7 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
   //   - `/oauth/userinfo` succeeds
   //   - `/api/auth/me` and `/api/auth/delete-account` REJECT the OAuth access token!
   await env.DB.prepare("UPDATE ecosystem_apps SET first_party = 1, allowed_scopes = '[\"profile\",\"email\",\"offline_access\"]', redirect_uris = ? WHERE id = 'gothwad-chat'")
-    .bind(JSON.stringify(['https://grixchat.gothwadtech.com/auth/callback']))
+    .bind(JSON.stringify(['https://grixchat.bansify.com/auth/callback']))
     .run();
   const verifier = 'k'.repeat(48);
   const challenge = createHash('sha256').update(verifier).digest('base64url');
@@ -251,7 +251,7 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
     body: {
       approved: true,
       client_id: 'gothwad-chat',
-      redirect_uri: 'https://grixchat.gothwadtech.com/auth/callback',
+      redirect_uri: 'https://grixchat.bansify.com/auth/callback',
       scope: 'profile email offline_access',
       state: 'xyz',
       code_challenge: challenge,
@@ -264,7 +264,7 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
     body: {
       grant_type: 'authorization_code',
       client_id: 'gothwad-chat',
-      redirect_uri: 'https://grixchat.gothwadtech.com/auth/callback',
+      redirect_uri: 'https://grixchat.bansify.com/auth/callback',
       code: oauthCode,
       code_verifier: verifier,
     },
@@ -278,7 +278,7 @@ test('full account lifecycle: signup, pure username DB, domain switch, signin vi
     })
   ).json();
   assert.equal(userinfoOk.preferred_username, 'pawan');
-  assert.equal(userinfoOk.email, 'pawan@gothwadtech.com');
+  assert.equal(userinfoOk.email, 'pawan@bansify.com');
 
   const oauthAbuseDelete = await apiCall(env, '/api/auth/delete-account', {
     method: 'POST',

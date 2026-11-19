@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { sha256Hex, verifyPassword } from '../cloudflare-worker/src/crypto.ts';
 import { BrowserJar, makeEnv, seedAccount } from './helpers/multi-account-harness.mjs';
 
-const origin = 'https://accounts.gothwadtech.com';
+const origin = 'https://accounts.bansify.com';
 
 test('signup and sign-in accept exactly eight repeated letters or digits without composition rules', async () => {
   for (const password of ['aaaaaaaa', '12345678']) {

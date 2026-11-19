@@ -52,8 +52,8 @@ export async function handleRecoveryChangeRoute(
       session.authUser.id, account.password_hash, session.authUser.sessionId, ...proofGate.bindings).first();
     if (!stored) return withCors(apiError('Security state changed. Verify again before retrying.', 409));
     const link = `${env.AUTH_HUB_URL.replace(/\/+$/, '')}/verify-recovery/#token=${encodeURIComponent(token)}`;
-    const delivered = await sendSecurityEmail(env, newEmail, 'Verify your Gothwad recovery email',
-      `Confirm the replacement recovery email for your Gothwad Account within 15 minutes:\n\n${link}\n\nIf you did not request this change, ignore this message. Your existing recovery address remains unchanged.`);
+    const delivered = await sendSecurityEmail(env, newEmail, 'Verify your Bansify recovery email',
+      `Confirm the replacement recovery email for your Bansify Account within 15 minutes:\n\n${link}\n\nIf you did not request this change, ignore this message. Your existing recovery address remains unchanged.`);
     if (!delivered) {
       await db.prepare('DELETE FROM recovery_email_changes WHERE token_hash = ?').bind(hash).run();
       return withCors(json({ error: 'email_unavailable', message: 'Could not send verification. Your current recovery email has not changed.' }, 503));
@@ -104,8 +104,8 @@ export async function handleRecoveryChangeRoute(
     const changed = results[0].results?.[0] as { user_id: string; new_email: string; previous_email: string | null } | undefined;
     if (!changed) return withCors(apiError('Verification link is invalid or expired', 400));
     const notified = changed.previous_email
-      ? await sendSecurityEmail(env, changed.previous_email, 'Your Gothwad recovery email changed',
-        'Your Gothwad Account recovery email was replaced after password and destination verification. If you did not authorize this, open Gothwad Accounts directly and review your password and signed-in devices.')
+      ? await sendSecurityEmail(env, changed.previous_email, 'Your Bansify recovery email changed',
+        'Your Bansify Account recovery email was replaced after password and destination verification. If you did not authorize this, open Bansify Accounts directly and review your password and signed-in devices.')
       : true;
     await logActivity(db, changed.user_id, 'recovery_email_verified', 'Recovery email changed',
       notified ? 'Replacement address verified; previous address notified when present' : 'Replacement verified; previous-address notification could not be delivered', request);

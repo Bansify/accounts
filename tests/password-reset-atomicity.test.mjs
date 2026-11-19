@@ -12,7 +12,7 @@ async function fixture() {
   return { env, owner, token };
 }
 const reset = (env, token) => new BrowserJar().fetch(env, '/api/auth/reset-password', {
-  method: 'POST', origin: 'https://accounts.gothwadtech.com',
+  method: 'POST', origin: 'https://accounts.bansify.com',
   body: { token, password: 'ReplacementPassword!456' },
 });
 

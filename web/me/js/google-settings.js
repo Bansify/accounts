@@ -30,9 +30,9 @@ export async function openGoogleSettings() {
     <button type="button" class="btn btn-ghost btn-sm" data-google-remove="${index}"
       ${!passwordSet && links.length === 1 ? 'disabled aria-disabled="true"' : ''}>Remove</button></div>`).join('');
   const root = modal({ title: 'Google accounts',
-    sub: 'Each connected Google account can sign in to this same Gothwad Account. Connect only accounts you control.',
+    sub: 'Each connected Google account can sign in to this same Bansify Account. Connect only accounts you control.',
     body: `<form id="google-method-form"><p>Review methods → Verify this account → Choose a Google account → Return here to confirm the connection.</p>${!available ? '<p role="status">Google linking is not available on this site right now. Existing methods are unchanged; try again later or use another registered method.</p>' : ''}${rows || '<p>No Google accounts connected.</p>'}
-      <p>${links.length} of ${limit} Google accounts connected. Your Gothwad MFA still applies.</p>
+      <p>${links.length} of ${limit} Google accounts connected. Your Bansify MFA still applies.</p>
       ${!passwordSet && links.length === 1 ? '<p>Add a password before removing the last Google account. A passkey can sign in, but cannot yet verify security-setting changes on its own.</p>' : ''}
       <p>Removing a method signs out other devices and invalidates pending security proofs. It does not change your recovery email. A removed Google email can still receive password-reset messages if it remains your recovery address. Change that address separately if it is compromised.</p>
       ${credentialField(account, 'google-method-password')}${mfaActionField(owner, 'google-method-mfa')}
