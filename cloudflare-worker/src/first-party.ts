@@ -20,13 +20,13 @@ export const FIRST_PARTY_CERT_SCHEMA = ['INSERT', 'UPDATE OF android_cert_sha256
 export function officialClients(domain: string) {
   const profile = ['profile', 'email', 'offline_access'];
   return [
-    { id: ACCOUNTS_ANDROID, name: 'Bansify Accounts Android', package: 'com.gothwad.accounts',
-      redirects: [`https://accounts.${domain}/oauth/callback`, 'com.gothwad.accounts:/oauth/callback'],
+    { id: ACCOUNTS_ANDROID, name: 'Bansify Accounts Android', package: 'com.bansify.accounts',
+      redirects: [`https://accounts.${domain}/oauth/callback`, 'com.bansify.accounts:/oauth/callback', 'com.gothwad.accounts:/oauth/callback'],
       scopes: [...profile, 'drive.read', 'account.read', 'account.profile.write'] },
     ...['alpha', 'beta'].map(part => ({ id: `gothwad-accounts-sample-${part}`, name: `Accounts Sample ${part}`,
-      package: `com.gothwad.accounts.sample.${part}`, redirects: [`com.gothwad.accounts.sample.${part}:/oauth/callback`], scopes: profile })),
-    { id: 'gothwad-mail', name: 'Bansify Mail', package: 'com.gothwad.mail',
-      redirects: [`https://mail.${domain}/oauth/callback`, 'com.gothwad.mail:/oauth/callback'], scopes: [...profile, 'mail'] },
+      package: `com.bansify.accounts.sample.${part}`, redirects: [`com.bansify.accounts.sample.${part}:/oauth/callback`, `com.gothwad.accounts.sample.${part}:/oauth/callback`], scopes: profile })),
+    { id: 'gothwad-mail', name: 'Bansify Mail', package: 'com.bansify.mail',
+      redirects: [`https://mail.${domain}/oauth/callback`, 'com.bansify.mail:/oauth/callback', 'com.gothwad.mail:/oauth/callback'], scopes: [...profile, 'mail'] },
     { id: 'gothwad-drive', name: 'Bansify Drive', package: 'com.gothwad.drive',
       redirects: [`https://drive.${domain}/oauth/callback`, 'com.gothwad.drive:/oauth/callback'], scopes: [...profile, 'drive', 'drive.read'] },
     { id: 'kiwi-store', name: 'Kiwi Store', package: 'com.gothwad.store',

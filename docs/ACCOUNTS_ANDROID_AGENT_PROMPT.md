@@ -17,10 +17,10 @@ An incomplete open PR (`#6`) in `Bansify/accountsapp` only touched `strings.xml`
 ## Mandatory Compatibility Invariants (Do NOT Change These!)
 
 To preserve backward compatibility with installed apps, Android Keystore storage, cross-app ContentProvider discovery, and `Bansify/accounts` D1 `ecosystem_apps` registrations:
-1. **Keep Android `applicationId` & namespaces unchanged:** `com.gothwad.accounts` (and sample apps `com.gothwad.accounts.sample.alpha`, `com.gothwad.accounts.sample.beta`).
+1. **Android `applicationId` and namespaces are now `com.bansify.accounts`** (sample apps `com.bansify.accounts.sample.alpha`, `com.bansify.accounts.sample.beta`). Keep them at these values; the Accounts Worker's first-party client seeds, D1 `ecosystem_apps.android_package` rows and `web/.well-known/assetlinks.json` are aligned with them.
 2. **Keep Kotlin `package` declarations and public SDK class/object/method names unchanged:** `package com.gothwad.accounts.*`, `GothwadAccounts`, `GothwadConfig`, `GothwadAccount`, `KnownGothwadApps`, etc.
 3. **Keep OAuth `client_id` slugs unchanged:** `"gothwad-accounts-android"`, `"gothwad-mail"`, `"gothwad-drive"`, `"kiwi-store"`, `"gothwad-tube"`, etc.
-4. **Keep ContentProvider authority & custom-scheme URI unchanged:** `${applicationId}.gothwad.account.directory` and `com.gothwad.accounts:/oauth/callback`.
+4. **ContentProvider authority is `${applicationId}.bansify.account.directory`** and the custom-scheme URI is `com.bansify.accounts:/oauth/callback`. Legacy `com.gothwad.*` redirect URIs stay registered server-side so existing installs keep working.
 5. **Keep `ui/src/main/res/values/strings.xml` and `ui/src/main/res/values-hi/strings.xml` resource `@string/gothwad_*` key names identical** across both files (`tools/check_android_scaffold.py` enforces `strings[0] == strings[1]`). Only update the string *values* inside the tags.
 
 ---

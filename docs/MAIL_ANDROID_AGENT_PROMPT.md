@@ -17,10 +17,10 @@ An incomplete open PR (`#6`) in `Bansify/mailapp` only updated a few UI labels t
 ## Mandatory Compatibility Invariants (Enforced by `tools/check_android_scaffold.py` & `Bansify/accounts`)
 
 Do **NOT** change any of the following technical identifiers:
-1. **`applicationId = "com.gothwad.mail"`** in `app/build.gradle.kts` (and `applicationIdSuffix = ".debug"`).
+1. **`applicationId = "com.bansify.mail"`** in `app/build.gradle.kts` (and `applicationIdSuffix = ".debug"`).
 2. **Kotlin `package com.gothwad.mail.*` declarations and class/file names** (`GothwadMailAuth`, `GothwadEndpoints`, `KnownGothwadApps`, etc. — `.github/workflows/android-ci.yml` and `tools/check_android_scaffold.py` reference them).
 3. **OAuth `CLIENT_ID = "gothwad-mail"`** and custom scheme **`com.gothwad.mail:/oauth/callback`** (`${gothwadRedirectScheme}`).
-4. **ContentProvider authority `${applicationId}.gothwad.account.directory`** and `<queries>` package `com.gothwad.accounts` (`tools/check_android_scaffold.py` enforces both).
+4. **ContentProvider authority `${applicationId}.bansify.account.directory`** and `<queries>` package `com.bansify.accounts` (`tools/check_android_scaffold.py` enforces both).
 5. **Required `README.md` sections and documented secrets/endpoints** enforced by `tools/check_docs.py` (`## Architecture`, `### Endpoints used`, `## Build and test`, `## Manual device checks`, and the 4 `RELEASE_KEYSTORE_BASE64` / `KEYSTORE_PASSWORD` / `KEY_ALIAS` / `KEY_PASSWORD` secret names).
 
 ---
