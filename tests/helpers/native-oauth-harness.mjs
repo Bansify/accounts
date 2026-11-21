@@ -15,7 +15,7 @@ export async function nativeFixture() {
   return { env, owner };
 }
 export function callback(client) {
-  return client === accountsClient ? 'com.gothwad.accounts:/oauth/callback' :
+  return client === accountsClient ? 'com.bansify.accounts:/oauth/callback' :
     client === 'gothwad-mail' ? 'com.gothwad.mail:/oauth/callback' :
     client === 'kiwi-store' ? 'com.gothwad.store:/oauth/callback' : `com.gothwad.accounts.sample.${client.endsWith('beta') ? 'beta' : 'alpha'}:/oauth/callback`;
 }

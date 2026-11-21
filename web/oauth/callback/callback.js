@@ -1,12 +1,12 @@
 /**
  * Native Android App Link fallback bridge for `/oauth/callback`.
  * When Chrome Custom Tabs performs a same-host navigation to `https://<host>/oauth/callback`,
- * this bridge hands the exact HTTPS callback URI to `com.gothwad.accounts` (`AccountCallbackActivity`).
+ * this bridge hands the exact HTTPS callback URI to `com.bansify.accounts` (`AccountCallbackActivity`).
  */
 export function buildAndroidCallbackIntentUrl(host = location.host, search = location.search || '') {
   return (
     `intent://${host}/oauth/callback${search}` +
-    '#Intent;scheme=https;package=com.gothwad.accounts;' +
+    '#Intent;scheme=https;package=com.bansify.accounts;' +
     'action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end'
   );
 }

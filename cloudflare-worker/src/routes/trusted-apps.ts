@@ -32,16 +32,16 @@ export async function assetLinks(db: D1Database, env: Env) {
     if (env.ANDROID_ASSETLINKS_JSON) {
       links = JSON.parse(env.ANDROID_ASSETLINKS_JSON);
       if (!Array.isArray(links) || !links.every(item => item?.target?.namespace === 'android_app' &&
-        item.target.package_name === 'com.gothwad.accounts' && Array.isArray(item.relation) &&
+        item.target.package_name === 'com.bansify.accounts' && Array.isArray(item.relation) &&
         item.relation.length === 1 && item.relation[0] === 'delegate_permission/common.handle_all_urls' &&
         Array.isArray(item.target.sha256_cert_fingerprints) && item.target.sha256_cert_fingerprints.length > 0 &&
         item.target.sha256_cert_fingerprints.every((v: unknown) => typeof v === 'string' && /^(?:[A-Fa-f0-9]{2}:){31}[A-Fa-f0-9]{2}$/.test(v)))) throw new Error('Invalid asset links');
     } else {
       const row = await db.prepare(`SELECT android_cert_sha256 FROM ecosystem_apps
-        WHERE id = 'gothwad-accounts-android' AND first_party = 1 AND active = 1 AND android_package = 'com.gothwad.accounts'`).first();
+        WHERE id = 'gothwad-accounts-android' AND first_party = 1 AND active = 1 AND android_package = 'com.bansify.accounts'`).first();
       const certs = validFingerprints(row?.android_cert_sha256);
       links = certs.length ? [{ relation: ['delegate_permission/common.handle_all_urls'], target: {
-        namespace: 'android_app', package_name: 'com.gothwad.accounts',
+        namespace: 'android_app', package_name: 'com.bansify.accounts',
         sha256_cert_fingerprints: certs.map(c => c.match(/../g)!.join(':').toUpperCase()),
       } }] : [];
     }

@@ -2,8 +2,8 @@
  * =============================================================================
  * DIRECT NATIVE ANDROID AUTHENTICATION & CROSS-APP PEER SSO (`/api/mobile/auth/*`)
  * =============================================================================
- * Allows official first-party Android apps (`com.gothwad.accounts`,
- * `com.gothwad.mail`, etc.) to authenticate directly against the Cloudflare
+ * Allows official first-party Android apps (`com.bansify.accounts`,
+ * `com.bansify.mail`, etc.) to authenticate directly against the Cloudflare
  * Worker over HTTPS JSON (`OkHttp`) with ZERO browser / ZERO WebView required,
  * and to silently mint PKCE authorization codes across installed verified peer
  * apps on the same device without opening a browser or consent screen.
