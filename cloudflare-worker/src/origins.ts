@@ -31,7 +31,7 @@ export function isTrustedOrigin(
 
   const domain = (env.APP_DOMAIN || '').trim().toLowerCase();
   // Explicit, audited first-party services. Unknown or nested siblings are not trusted.
-  const services = ['', 'accounts', 'api', 'mail', 'meet', 'drive', 'notes', 'calendar',
+  const services = ['', 'www', 'accounts', 'api', 'mail', 'meet', 'drive', 'notes', 'calendar',
     'contacts', 'kiwistore', 'kiwiconsole', 'kiwiadmin', 'kiwiapp'];
   return !!domain && !parsed.port && services.some(service =>
     parsed.origin === `https://${service ? service + '.' : ''}${domain}`);
