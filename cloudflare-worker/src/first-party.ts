@@ -26,7 +26,9 @@ export function officialClients(domain: string) {
     ...['alpha', 'beta'].map(part => ({ id: `gothwad-accounts-sample-${part}`, name: `Accounts Sample ${part}`,
       package: `com.bansify.accounts.sample.${part}`, redirects: [`com.bansify.accounts.sample.${part}:/oauth/callback`, `com.gothwad.accounts.sample.${part}:/oauth/callback`], scopes: profile })),
     { id: 'gothwad-mail', name: 'Bansify Mail', package: 'com.bansify.mail',
-      redirects: [`https://mail.${domain}/oauth/callback`, 'com.bansify.mail:/oauth/callback', 'com.gothwad.mail:/oauth/callback'], scopes: [...profile, 'mail'] },
+      redirects: [`https://mail.${domain}/oauth/callback`, 'com.bansify.mail:/oauth/callback', 'com.gothwad.mail:/oauth/callback'],
+      // Mail hosts the shared in-app account centre, so it needs the mobile management scopes too.
+      scopes: [...profile, 'mail', 'account.read', 'account.profile.write'] },
     { id: 'gothwad-drive', name: 'Bansify Drive', package: 'com.gothwad.drive',
       redirects: [`https://drive.${domain}/oauth/callback`, 'com.gothwad.drive:/oauth/callback'], scopes: [...profile, 'drive', 'drive.read'] },
     { id: 'kiwi-store', name: 'Kiwi Store', package: 'com.gothwad.store',
