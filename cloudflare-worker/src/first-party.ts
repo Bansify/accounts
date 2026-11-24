@@ -29,6 +29,12 @@ export function officialClients(domain: string) {
       redirects: [`https://mail.${domain}/oauth/callback`, 'com.bansify.mail:/oauth/callback', 'com.gothwad.mail:/oauth/callback'],
       // Mail hosts the shared in-app account centre, so it needs the mobile management scopes too.
       scopes: [...profile, 'mail', 'account.read', 'account.profile.write'] },
+    // Bansify AI — the same account signs you in on ai.bansify.com and in the
+    // Android app (com.bansify.ai). The AI Worker accepts tokens minted for this
+    // client id only, so a Mail or Store token can never read chat history.
+    { id: 'gothwad-ai', name: 'Bansify AI', package: 'com.bansify.ai',
+      redirects: [`https://ai.${domain}/oauth/callback`, 'com.bansify.ai:/oauth/callback', 'com.gothwad.ai:/oauth/callback'],
+      scopes: profile },
     { id: 'gothwad-drive', name: 'Bansify Drive', package: 'com.gothwad.drive',
       redirects: [`https://drive.${domain}/oauth/callback`, 'com.gothwad.drive:/oauth/callback'], scopes: [...profile, 'drive', 'drive.read'] },
     { id: 'kiwi-store', name: 'Kiwi Store', package: 'com.gothwad.store',
