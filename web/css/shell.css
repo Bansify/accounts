@@ -1,149 +1,319 @@
 /*
- * Bansify shell for the Accounts dashboard.
- *
- * Matches bansify.com and mail: one thin panel on the left, one app dock on the
- * right, content in between. The dashboard's own app bar and sidebar are hidden on
- * desktop — their markup stays, so the existing JavaScript keeps driving them.
+ * Bansify shell for the Accounts dashboard — the same five cards as bansify.com, Mail
+ * and AI: rail, search pill + social card, content, app dock. The dashboard's own app
+ * bar and sidebar stay in the DOM (their JavaScript keeps driving them) but are hidden
+ * on desktop; everything the user sees is these cards.
  */
 
-.bs-panel,
-.bs-dock {
+:root {
+  --bs-canvas: #f5f6f7;
+  --bs-card: #ffffff;
+  --bs-border: #e5e7eb;
+  --bs-ink: #17181a;
+  --bs-muted: #5f6368;
+  --bs-pill: #f4f4f5;
+  --bs-pill-hover: #e7e7e9;
+  --bs-brand: #0494f4;
+  --bs-radius: 16px;
+  --bs-panel: 260px;
+  --bs-rail: 64px;
+  --bs-dock: 64px;
+  --bs-gap: 12px;
+  --bs-top: 48px;
+}
+
+html[data-theme='dark'],
+body.dark {
+  --bs-canvas: #212121;
+  --bs-card: #2a2a2a;
+  --bs-border: #333333;
+  --bs-ink: #e8eaed;
+  --bs-muted: #9aa0a6;
+  --bs-pill: #303030;
+  --bs-pill-hover: #3a3a3a;
+}
+
+body.bs-shell-on {
+  background: var(--bs-canvas) !important;
+  padding: var(--bs-gap) !important;
+  color: var(--bs-ink);
+}
+
+/* ── content card ─────────────────────────────────────────────────────── */
+body.bs-shell-on #dash-root {
+  margin: 0 0 0 calc(var(--bs-panel) + var(--bs-gap)) !important;
+  padding: 0 !important;
+  height: calc(100dvh - (var(--bs-gap) * 2) - var(--bs-top) - var(--bs-gap));
+  overflow-y: auto;
+  background: var(--bs-card);
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius);
+}
+body.bs-shell-on.bs-collapsed #dash-root {
+  margin-left: calc(var(--bs-rail) + var(--bs-gap)) !important;
+}
+body.bs-shell-on #dash-root > * {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* the dashboard's own chrome is replaced by the shell on desktop */
+body.bs-shell-on .appbar,
+body.bs-shell-on .me-sidebar,
+body.bs-shell-on .me-appbar {
+  display: none !important;
+}
+
+/* ── top row: search pill + social card ───────────────────────────────── */
+.bs-top {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  z-index: 60;
-  display: none;
-  flex-direction: column;
-  background: var(--surface, #fff);
-  border-color: var(--border, #dadce0);
+  top: var(--bs-gap);
+  left: calc(var(--bs-panel) + var(--bs-gap) * 2);
+  right: calc(var(--bs-dock) + var(--bs-gap) * 2);
+  height: var(--bs-top);
+  display: flex;
+  gap: var(--bs-gap);
+  z-index: 55;
+}
+body.bs-collapsed .bs-top {
+  left: calc(var(--bs-rail) + var(--bs-gap) * 2);
 }
 
-.bs-panel {
-  left: 0;
-  width: 240px;
-  border-right: 1px solid var(--border, #dadce0);
-  transition: width 0.2s ease;
-}
-
-.bs-dock {
-  right: 0;
-  width: 56px;
-  border-left: 1px solid var(--border, #dadce0);
+.bs-search {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
   align-items: center;
-  padding: 12px 0;
-  gap: 4px;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--bs-border);
+  background: var(--bs-card);
+}
+.bs-search .msym {
+  font-size: 18px;
+  color: var(--bs-muted);
+}
+.bs-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--bs-ink);
+  font-size: 13px;
 }
 
-/* Brand */
+.bs-social {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: var(--bs-radius);
+  border: 1px solid var(--bs-border);
+  background: var(--bs-card);
+}
+.bs-social a {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  transition: filter 0.15s ease;
+}
+.bs-social a:hover {
+  filter: brightness(1.1);
+}
+
+/* ── left panel ───────────────────────────────────────────────────────── */
+.bs-panel {
+  position: fixed;
+  top: var(--bs-gap);
+  bottom: var(--bs-gap);
+  left: var(--bs-gap);
+  width: var(--bs-panel);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius);
+  background: var(--bs-card);
+  overflow: hidden;
+}
+body.bs-collapsed .bs-panel {
+  width: var(--bs-rail);
+}
+
 .bs-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 56px;
-  padding: 0 16px;
-  flex-shrink: 0;
+  height: 64px;
+  padding: 0 12px;
+  flex: 0 0 auto;
+}
+body.bs-collapsed .bs-brand {
+  justify-content: center;
+  padding: 0;
 }
 .bs-brand-mark {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
-  display: grid;
-  place-items: center;
+  background: var(--bs-brand);
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 800;
   font-size: 15px;
-  background: #0494f4;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  overflow: hidden;
 }
 .bs-brand-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   letter-spacing: -0.02em;
-  color: #0494f4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-brand-name b {
+  color: var(--bs-brand);
+  font-weight: 900;
+}
+body.bs-collapsed .bs-brand-name,
+body.bs-collapsed .bs-collapse {
+  display: none;
 }
 .bs-collapse {
   margin-left: auto;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
   border: 0;
+  border-radius: 8px;
   background: transparent;
-  color: var(--text-muted, #5f6368);
+  color: var(--bs-muted);
   cursor: pointer;
-  display: grid;
-  place-items: center;
-}
-.bs-collapse:hover { background: var(--hover, rgba(0, 0, 0, 0.06)); }
-
-.bs-divider {
-  height: 1px;
-  background: var(--border, #dadce0);
-  margin: 0 12px;
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Navigation */
+/* nav rows are pills, inset 2px, exactly like the other apps */
 .bs-nav {
-  padding: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 12px 8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  overflow-y: auto;
+}
+body.bs-collapsed .bs-nav {
+  padding: 0;
+  align-items: center;
 }
 .bs-nav-item {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  height: 40px;
   width: 100%;
-  padding: 8px 10px;
   border: 0;
-  border-radius: 12px;
   background: transparent;
-  color: var(--text-muted, #5f6368);
-  font: inherit;
-  font-size: 13px;
-  text-align: left;
+  border-radius: 12px;
   cursor: pointer;
+  color: var(--bs-ink);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0;
+  text-align: left;
 }
-.bs-nav-item:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); }
-.bs-nav-item.is-active {
-  background: rgba(4, 148, 244, 0.12);
-  color: #0494f4;
-  font-weight: 600;
+body.bs-collapsed .bs-nav-item {
+  width: 40px;
+  justify-content: center;
 }
-.bs-nav-item.is-active::before {
+.bs-nav-item::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 6px;
-  bottom: 6px;
-  width: 3px;
-  border-radius: 3px;
-  background: #0494f4;
+  right: 0;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 12px;
+  background: var(--bs-pill);
+  transition: background 0.15s ease;
 }
-.bs-nav-item .msym { font-size: 18px; }
+.bs-nav-item:hover::before {
+  background: var(--bs-pill-hover);
+}
+.bs-nav-item.is-active::before {
+  background: var(--bs-brand);
+  box-shadow: 0 1px 3px rgba(4, 148, 244, 0.25);
+}
+.bs-nav-item.is-active {
+  color: #fff;
+  font-weight: 600;
+}
+.bs-nav-item .msym {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  font-size: 18px;
+}
+.bs-nav-item > span:last-child {
+  position: relative;
+  margin-left: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.bs-collapsed .bs-nav-item > span:last-child {
+  display: none;
+}
 
-/* Footer */
-.bs-footer { margin-top: auto; }
+/* footer: divider, theme, account */
+.bs-footer {
+  flex: 0 0 auto;
+}
+.bs-divider {
+  height: 1px;
+  background: var(--bs-border);
+  margin: 0 12px;
+}
 .bs-utils {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
 }
-.bs-util {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  border: 0;
-  background: transparent;
-  color: var(--text-muted, #5f6368);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
+body.bs-collapsed .bs-utils {
+  justify-content: center;
+  padding: 8px 0;
 }
-.bs-util:hover { background: var(--hover, rgba(0, 0, 0, 0.06)); }
+.bs-util {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bs-util:hover {
+  background: var(--bs-pill);
+}
 
 .bs-profile {
   display: flex;
@@ -157,100 +327,214 @@
   text-align: left;
   color: inherit;
 }
-.bs-profile:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); }
+body.bs-collapsed .bs-profile {
+  justify-content: center;
+  padding: 12px 0;
+}
 .bs-avatar {
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: #0494f4;
+  background: var(--bs-brand);
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
   font-weight: 700;
-  flex-shrink: 0;
+  flex: 0 0 auto;
   overflow: hidden;
 }
-.bs-profile-text { min-width: 0; }
+.bs-profile-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+body.bs-collapsed .bs-profile-text {
+  display: none;
+}
 .bs-profile-name {
-  display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--text, #202124);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .bs-profile-email {
-  display: block;
   font-size: 11px;
-  color: var(--text-muted, #5f6368);
+  color: var(--bs-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.bs-theme-inline {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+body.bs-collapsed .bs-theme-inline {
+  display: none;
+}
 
-/* Dock */
+/* ── right dock ───────────────────────────────────────────────────────── */
+.bs-dock {
+  position: fixed;
+  top: var(--bs-gap);
+  bottom: var(--bs-gap);
+  right: var(--bs-gap);
+  width: var(--bs-dock);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius);
+  background: var(--bs-card);
+  overflow-y: auto;
+}
 .bs-dock-avatar {
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: #0494f4;
+  background: var(--bs-brand);
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
   font-weight: 700;
-  margin-bottom: 4px;
-  flex-shrink: 0;
+  text-decoration: none;
+  overflow: hidden;
+  flex: 0 0 auto;
 }
 .bs-dock-divider {
-  width: 24px;
+  width: 20px;
   height: 1px;
-  background: var(--border, #dadce0);
-  margin: 4px 0;
+  background: var(--bs-border);
+  flex: 0 0 auto;
 }
 .bs-dock-app {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  color: var(--text-muted, #5f6368);
-  text-decoration: none;
-  font-size: 20px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--bs-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transition: filter 0.15s ease;
 }
-.bs-dock-app:hover { background: var(--hover, rgba(0, 0, 0, 0.06)); }
+.bs-dock-app:hover {
+  filter: brightness(1.1);
+}
+.bs-dock-app img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bs-dock-app .msym {
+  color: #fff;
+  font-size: 17px;
+}
 
-/* Collapsed panel */
-body.bs-collapsed .bs-panel { width: 68px; }
-body.bs-collapsed .bs-brand { justify-content: center; padding: 0; }
-body.bs-collapsed .bs-brand-name,
-body.bs-collapsed .bs-nav-item span:not(.msym),
-body.bs-collapsed .bs-profile-text { display: none; }
-body.bs-collapsed .bs-nav-item { justify-content: center; padding: 10px 0; }
-body.bs-collapsed .bs-utils { flex-direction: column; }
-body.bs-collapsed .bs-profile { justify-content: center; }
+/* ── in-app pane ──────────────────────────────────────────────────────── */
+.bs-pane {
+  position: fixed;
+  top: var(--bs-gap);
+  bottom: var(--bs-gap);
+  right: calc(var(--bs-dock) + var(--bs-gap) * 2);
+  width: 40%;
+  max-width: 560px;
+  z-index: 58;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius);
+  background: var(--bs-card);
+  overflow: hidden;
+}
+.bs-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--bs-border);
+  flex: 0 0 auto;
+}
+.bs-pane-title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-pane-btn {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bs-pane-btn:hover {
+  background: var(--bs-pill);
+}
+.bs-pane iframe {
+  flex: 1 1 auto;
+  width: 100%;
+  border: 0;
+  background: #fff;
+}
+body.bs-has-pane #dash-root,
+body.bs-has-pane .bs-top {
+  margin-right: 0 !important;
+  right: calc(var(--bs-dock) + var(--bs-gap) * 2 + 40% + var(--bs-gap));
+}
 
-@media (min-width: 768px) {
-  .bs-panel { display: flex; }
-  .bs-dock { display: flex; }
-
-  /* The dashboard's own chrome steps aside for the shell */
-  .me-appbar { display: none !important; }
-  #me-sidebar { display: none !important; }
-
-  .me-body {
-    margin-left: 240px;
-    margin-right: 56px;
+@media (max-width: 1023px) {
+  .bs-pane {
+    display: none;
   }
-  body.bs-collapsed .me-body { margin-left: 68px; }
 }
 
-/* Dark theme follows the dashboard's own variables */
-html[data-theme='dark'] .bs-panel,
-html[data-theme='dark'] .bs-dock {
-  background: #212121;
-  border-color: #333333;
+@media (max-width: 767px) {
+  body.bs-shell-on {
+    padding: 0 !important;
+  }
+  .bs-panel,
+  .bs-dock {
+    display: none;
+  }
+  .bs-top {
+    display: none;
+  }
+  body.bs-shell-on #dash-root {
+    margin: 0 !important;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
 }
-html[data-theme='dark'] .bs-panel .bs-brand-name { color: #4cb4ff; }
