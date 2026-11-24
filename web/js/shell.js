@@ -1,9 +1,10 @@
 /*
  * Bansify shell for the Accounts dashboard.
  *
- * Renders the same left panel and right app dock as bansify.com and Mail, then drives
- * the dashboard's existing controls (the original nav buttons, theme toggle and account
- * menu) instead of replacing them, so no behaviour is lost.
+ * The same five cards as bansify.com, Mail and AI: the left panel, a search pill and the
+ * social card above the content, the dashboard in the content card, and the app dock.
+ * The dashboard's own nav buttons, theme toggle and account menu are still the controls
+ * behind the shell, so no behaviour is reimplemented.
  */
 (function () {
   'use strict';
@@ -25,7 +26,16 @@
     { label: 'AI', icon: 'auto_awesome', url: 'https://ai.bansify.com' },
     { label: 'Store', icon: 'storefront', url: 'https://store.bansify.com' },
     { label: 'GitPlus', icon: 'code', url: 'https://gitplus.bansify.com' },
-    { label: 'Website', icon: 'public', url: 'https://bansify.com' },
+  ];
+
+  var SOCIAL = [
+    { label: 'Facebook', glyph: 'f', color: '#1877F2', url: 'https://facebook.com/bansifyofficial' },
+    { label: 'Instagram', glyph: '◎', color: '#E1306C', url: 'https://instagram.com/bansifyofficial' },
+    { label: 'YouTube', glyph: '▶', color: '#FF0000', url: 'https://youtube.com/@bansifyofficial' },
+    { label: 'X', glyph: '𝕏', color: '#0F1419', url: 'https://x.com/bansifyofficial' },
+    { label: 'LinkedIn', glyph: 'in', color: '#0A66C2', url: 'https://linkedin.com/company/bansifyofficial' },
+    { label: 'Telegram', glyph: '✈', color: '#229ED9', url: 'https://t.me/bansifyofficial' },
+    { label: 'GitHub', glyph: '⌨', color: '#181717', url: 'https://github.com/Bansify' },
   ];
 
   function el(tag, className, html) {
@@ -51,33 +61,96 @@
     });
   }
 
+  function toggleTheme() {
+    var toggle = document.querySelector('[data-theme-toggle]');
+    if (toggle) toggle.click();
+    setTimeout(paintThemeIcon, 60);
+  }
+
+  function paintThemeIcon() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark' || document.body.classList.contains('dark');
+    document.querySelectorAll('.bs-theme-inline').forEach(function (btn) {
+      btn.innerHTML = sym(dark ? 'light_mode' : 'dark_mode');
+    });
+  }
+
+  function openPane(app) {
+    var existing = document.querySelector('.bs-pane');
+    if (existing) existing.remove();
+
+    var pane = el('section', 'bs-pane');
+    pane.setAttribute('aria-label', app.label);
+
+    var head = el('div', 'bs-pane-head');
+    var mark = el('span', 'bs-dock-app', app.icon ? sym(app.icon) : '');
+    if (app.logo) mark.innerHTML = '<img src="' + app.logo + '" alt="" />';
+    head.appendChild(mark);
+    head.appendChild(el('span', 'bs-pane-title', app.label));
+
+    var open = el('a', 'bs-pane-btn', sym('open_in_new'));
+    open.href = app.url;
+    open.target = '_blank';
+    open.rel = 'noopener noreferrer';
+    open.title = 'Open in tab';
+    open.setAttribute('aria-label', 'Open in a new tab');
+    head.appendChild(open);
+
+    var close = el('button', 'bs-pane-btn', sym('close'));
+    close.type = 'button';
+    close.title = 'Close';
+    close.setAttribute('aria-label', 'Close');
+    close.addEventListener('click', function () {
+      pane.remove();
+      document.body.classList.remove('bs-has-pane');
+    });
+    head.appendChild(close);
+
+    var frame = document.createElement('iframe');
+    frame.src = app.url;
+    frame.title = app.label;
+    frame.loading = 'lazy';
+
+    pane.appendChild(head);
+    pane.appendChild(frame);
+    document.body.appendChild(pane);
+    document.body.classList.add('bs-has-pane');
+  }
+
   function buildPanel() {
     var panel = el('aside', 'bs-panel');
     panel.setAttribute('aria-label', 'Account navigation');
 
     var brand = el('div', 'bs-brand');
-    brand.appendChild(el('span', 'bs-brand-mark', 'B'));
-    brand.appendChild(el('span', 'bs-brand-name', 'Account'));
+    var mark = el('button', 'bs-brand-mark', 'B');
+    mark.type = 'button';
+    mark.setAttribute('aria-label', 'Toggle panel');
+    mark.addEventListener('click', function () {
+      document.body.classList.toggle('bs-collapsed');
+      try {
+        localStorage.setItem('bs-shell-collapsed', document.body.classList.contains('bs-collapsed') ? '1' : '0');
+      } catch (e) {}
+    });
+    brand.appendChild(mark);
+    brand.appendChild(el('span', 'bs-brand-name', '<b>Bansify</b> Account'));
+
     var collapse = el('button', 'bs-collapse', sym('chevron_left'));
     collapse.type = 'button';
     collapse.setAttribute('aria-label', 'Collapse panel');
     collapse.addEventListener('click', function () {
-      var next = !document.body.classList.contains('bs-collapsed');
-      document.body.classList.toggle('bs-collapsed', next);
-      collapse.innerHTML = sym(next ? 'chevron_right' : 'chevron_left');
+      document.body.classList.add('bs-collapsed');
       try {
-        localStorage.setItem('bs-shell-collapsed', next ? '1' : '0');
+        localStorage.setItem('bs-shell-collapsed', '1');
       } catch (e) {}
     });
     brand.appendChild(collapse);
     panel.appendChild(brand);
-    panel.appendChild(el('div', 'bs-divider'));
 
     var nav = el('nav', 'bs-nav');
     SECTIONS.forEach(function (section) {
       var btn = el('button', 'bs-nav-item', sym(section.icon) + '<span>' + section.label + '</span>');
       btn.type = 'button';
       btn.dataset.section = section.id;
+      btn.title = section.label;
       btn.addEventListener('click', function () {
         selectSection(section.id);
       });
@@ -88,29 +161,6 @@
     var footer = el('div', 'bs-footer');
     footer.appendChild(el('div', 'bs-divider'));
 
-    var utils = el('div', 'bs-utils');
-    var theme = el('button', 'bs-util', sym('dark_mode'));
-    theme.type = 'button';
-    theme.setAttribute('aria-label', 'Toggle theme');
-    theme.addEventListener('click', function () {
-      var toggle = document.querySelector('[data-theme-toggle]');
-      if (toggle) toggle.click();
-    });
-    var bell = el('button', 'bs-util', sym('notifications'));
-    bell.type = 'button';
-    bell.setAttribute('aria-label', 'Notifications');
-    var settings = el('button', 'bs-util', sym('settings'));
-    settings.type = 'button';
-    settings.setAttribute('aria-label', 'Settings');
-    settings.addEventListener('click', function () {
-      selectSection('security');
-    });
-    utils.appendChild(bell);
-    utils.appendChild(theme);
-    utils.appendChild(settings);
-    footer.appendChild(utils);
-    footer.appendChild(el('div', 'bs-divider'));
-
     var profile = el('button', 'bs-profile');
     profile.type = 'button';
     var avatar = el('span', 'bs-avatar', 'B');
@@ -119,8 +169,17 @@
     var email = el('span', 'bs-profile-email', '');
     text.appendChild(name);
     text.appendChild(email);
+    var theme = el('span', 'bs-theme-inline', sym('dark_mode'));
+    theme.setAttribute('role', 'button');
+    theme.setAttribute('tabindex', '0');
+    theme.setAttribute('aria-label', 'Toggle theme');
+    theme.addEventListener('click', function (event) {
+      event.stopPropagation();
+      toggleTheme();
+    });
     profile.appendChild(avatar);
     profile.appendChild(text);
+    profile.appendChild(theme);
     profile.addEventListener('click', function () {
       var menu = document.getElementById('acct-switch-btn');
       if (menu) menu.click();
@@ -128,24 +187,57 @@
     footer.appendChild(profile);
     panel.appendChild(footer);
 
-    // keep the block in step with the dashboard's own account data
     function refreshProfile() {
       var srcAvatar = document.getElementById('appbar-avatar');
       var srcName = document.getElementById('menu-name');
       var srcEmail = document.getElementById('menu-email');
-      var avatarText = (srcAvatar && srcAvatar.textContent) || 'B';
-      var nameText = (srcName && srcName.textContent) || 'Account';
-      var emailText = (srcEmail && srcEmail.textContent) || '';
-      avatar.textContent = avatarText.trim().slice(0, 1).toUpperCase() || 'B';
-      name.textContent = nameText.trim() || 'Account';
-      email.textContent = emailText.trim() === '…' ? '' : emailText.trim();
+      var avatarText = ((srcAvatar && srcAvatar.textContent) || 'B').trim().slice(0, 1).toUpperCase() || 'B';
+      var nameText = ((srcName && srcName.textContent) || 'Account').trim() || 'Account';
+      var emailText = ((srcEmail && srcEmail.textContent) || '').trim();
+      avatar.textContent = avatarText;
+      name.textContent = nameText;
+      email.textContent = emailText === '…' ? '' : emailText;
       var dockAvatar = document.querySelector('.bs-dock-avatar');
-      if (dockAvatar) dockAvatar.textContent = avatar.textContent;
+      if (dockAvatar) dockAvatar.textContent = avatarText;
     }
     refreshProfile();
     setInterval(refreshProfile, 2000);
 
     return panel;
+  }
+
+  function buildTop() {
+    var top = el('div', 'bs-top');
+
+    var search = el('div', 'bs-search', sym('search'));
+    var input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = 'Search account settings';
+    input.setAttribute('aria-label', 'Search account settings');
+    input.addEventListener('input', function () {
+      var q = input.value.trim().toLowerCase();
+      document.querySelectorAll('.bs-nav-item').forEach(function (btn) {
+        var label = (btn.textContent || '').toLowerCase();
+        btn.style.display = !q || label.indexOf(q) !== -1 ? '' : 'none';
+      });
+    });
+    search.appendChild(input);
+    top.appendChild(search);
+
+    var social = el('div', 'bs-social');
+    SOCIAL.forEach(function (item) {
+      var link = el('a', null, item.glyph);
+      link.href = item.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.title = item.label + ' · @bansifyofficial';
+      link.setAttribute('aria-label', item.label + ' @bansifyofficial');
+      link.style.background = item.color;
+      social.appendChild(link);
+    });
+    top.appendChild(social);
+
+    return top;
   }
 
   function buildDock() {
@@ -158,15 +250,26 @@
     dock.appendChild(avatar);
     dock.appendChild(el('div', 'bs-dock-divider'));
 
-    APPS.forEach(function (app, index) {
-      if (index === Math.ceil(APPS.length / 2)) dock.appendChild(el('div', 'bs-dock-divider'));
-      var link = el('a', 'bs-dock-app', sym(app.icon));
-      link.href = app.url;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.title = app.label;
-      link.setAttribute('aria-label', app.label);
-      dock.appendChild(link);
+    APPS.forEach(function (app) {
+      var button = el('button', 'bs-dock-app');
+      button.type = 'button';
+      button.title = app.label;
+      button.setAttribute('aria-label', 'Open ' + app.label);
+      var logo = app.url.replace(/\/+$/, '') + '/icon-192.png';
+      var img = document.createElement('img');
+      img.src = logo;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.onerror = function () {
+        button.innerHTML = sym(app.icon);
+      };
+      button.appendChild(img);
+      app.logo = logo;
+      button.addEventListener('click', function () {
+        openPane(app);
+      });
+      dock.appendChild(button);
+      dock.appendChild(el('div', 'bs-dock-divider'));
     });
 
     return dock;
@@ -176,24 +279,25 @@
     var root = document.getElementById('dash-root');
     if (!root) return;
 
+    document.body.classList.add('bs-shell-on');
     document.body.appendChild(buildPanel());
+    document.body.appendChild(buildTop());
     document.body.appendChild(buildDock());
 
     try {
       if (localStorage.getItem('bs-shell-collapsed') === '1') {
         document.body.classList.add('bs-collapsed');
-        var collapse = document.querySelector('.bs-collapse');
-        if (collapse) collapse.innerHTML = sym('chevron_right');
       }
     } catch (e) {}
 
-    // mirror the dashboard's own active section into the new panel
     document.querySelectorAll('.me-nav-item[data-section]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         syncActive(btn.dataset.section);
       });
     });
     syncActive('home');
+    paintThemeIcon();
+    setInterval(paintThemeIcon, 2000);
   }
 
   if (document.readyState === 'loading') {
