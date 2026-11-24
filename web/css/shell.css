@@ -41,8 +41,10 @@ body.bs-shell-on {
 
 /* ── content card ─────────────────────────────────────────────────────── */
 body.bs-shell-on #dash-root {
-  margin: 0 0 0 calc(var(--bs-panel) + var(--bs-gap)) !important;
-  padding: 0 !important;
+  /* the card sits below the search/social row and stops before the dock */
+  margin: calc(var(--bs-top) + var(--bs-gap)) calc(var(--bs-dock) + var(--bs-gap) * 2) 0
+    calc(var(--bs-panel) + var(--bs-gap) * 2) !important;
+  padding: 8px 0 16px !important;
   height: calc(100dvh - (var(--bs-gap) * 2) - var(--bs-top) - var(--bs-gap));
   overflow-y: auto;
   background: var(--bs-card);
@@ -50,7 +52,7 @@ body.bs-shell-on #dash-root {
   border-radius: var(--bs-radius);
 }
 body.bs-shell-on.bs-collapsed #dash-root {
-  margin-left: calc(var(--bs-rail) + var(--bs-gap)) !important;
+  margin-left: calc(var(--bs-rail) + var(--bs-gap) * 2) !important;
 }
 body.bs-shell-on #dash-root > * {
   padding-left: 16px;
@@ -508,10 +510,12 @@ body.bs-collapsed .bs-theme-inline {
   border: 0;
   background: #fff;
 }
-body.bs-has-pane #dash-root,
+/* a pane takes room from the content and from the top row, so nothing is covered */
+body.bs-has-pane #dash-root {
+  margin-right: calc(var(--bs-dock) + var(--bs-gap) * 3 + 40%) !important;
+}
 body.bs-has-pane .bs-top {
-  margin-right: 0 !important;
-  right: calc(var(--bs-dock) + var(--bs-gap) * 2 + 40% + var(--bs-gap));
+  right: calc(var(--bs-dock) + var(--bs-gap) * 3 + 40%);
 }
 
 @media (max-width: 1023px) {
