@@ -223,6 +223,7 @@ body.bs-collapsed .bs-collapse {
   padding: 0 12px 8px;
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 body.bs-collapsed .bs-nav {
   padding: 0;
