@@ -117,7 +117,8 @@ const BOOTSTRAP_STATEMENTS: string[] = [
     ('gothwad-contacts', 'gothwad-contacts', 'Bansify Contacts',          'People and addresses',                    'users',          1, 1),
     ('gothwad-tube',     'gothwad-tube',     'Bansify Tube (PlusTube)',   'Video — PlusTube',                        'play',           1, 0),
     ('gothwad-chat',     'gothwad-chat',     'GrixChat (Bansify Chat)',   'Messaging',                               'message-circle', 1, 0),
-    ('gothwad-indogram', 'gothwad-indogram', 'Indogram',                  'Telegram-style chat',                     'send',           1, 0)
+    ('gothwad-indogram', 'gothwad-indogram', 'Indogram',                  'Telegram-style chat',                     'send',           1, 0),
+    ('gothwad-ai',       'gothwad-ai',       'Bansify AI',                'Chat with Bansify AI on web and Android', 'sparkles',       1, 1)
   ON CONFLICT (id) DO UPDATE SET name = excluded.name, description = excluded.description`,
   `CREATE TABLE IF NOT EXISTS app_authorizations (
     id           TEXT PRIMARY KEY,
@@ -196,6 +197,7 @@ function buildDefaultCallbackSeedStatements(db: D1Database, rawDomain?: string):
       ],
     ],
     ['gothwad-drive', [`https://drive.${domain}/auth/callback`, `https://drive.${domain}/oauth/callback`]],
+    ['gothwad-ai', [`https://ai.${domain}/oauth/callback`, `https://ai.${domain}/auth/callback`, 'com.bansify.ai:/oauth/callback']],
     ['gothwad-tube', [`https://plustube.${domain}/auth/callback`, `https://tube.${domain}/auth/callback`]],
     ['gothwad-chat', [`https://grixchat.${domain}/auth/callback`, `https://chat.${domain}/auth/callback`]],
     ['gothwad-indogram', [`https://indogram.${domain}/auth/callback`]],
