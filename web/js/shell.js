@@ -121,7 +121,7 @@
     panel.setAttribute('aria-label', 'Account navigation');
 
     var brand = el('div', 'bs-brand');
-    var mark = el('button', 'bs-brand-mark', 'B');
+    var mark = el('button', 'bs-brand-mark', '<img src="/icon-192.png" alt="Bansify Accounts" />');
     mark.type = 'button';
     mark.setAttribute('aria-label', 'Toggle panel');
     mark.addEventListener('click', function () {
