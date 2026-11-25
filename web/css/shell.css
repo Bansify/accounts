@@ -555,10 +555,10 @@ body.bs-has-pane .bs-top {
 
 
 /* ── inside the content card: one surface, no card-in-card ────────────── */
-body.bs-shell-on .bs-content .card,
-body.bs-shell-on .bs-content .app-card,
-body.bs-shell-on .bs-content .me-section,
-body.bs-shell-on .bs-content .me-card {
+body.bs-shell-on .me-content .card,
+body.bs-shell-on .me-content .app-card,
+body.bs-shell-on .me-section,
+body.bs-shell-on .me-content .me-card {
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -568,32 +568,32 @@ body.bs-shell-on .bs-content .me-card {
 }
 
 /* the card edge is the only container, so rows read as one list */
-body.bs-shell-on .bs-content .card + .card,
-body.bs-shell-on .bs-content .me-section + .me-section,
-body.bs-shell-on .bs-content section + section {
+body.bs-shell-on .me-content .card + .card,
+body.bs-shell-on .me-section + .me-section,
+body.bs-shell-on .me-content section + section {
   border-top: 1px solid var(--bs-border) !important;
   margin-top: 16px;
   padding-top: 16px;
 }
 
 /* the dashboard's own page title is the card's first line, not a second header */
-body.bs-shell-on .bs-content .me-appbar,
-body.bs-shell-on .bs-content .me-page-title {
+body.bs-shell-on .me-appbar,
+body.bs-shell-on .me-page-title {
   display: none !important;
 }
 
-body.bs-shell-on .bs-content {
+body.bs-shell-on .me-content {
   font-size: 13px;
 }
-body.bs-shell-on .bs-content h1,
-body.bs-shell-on .bs-content h2 {
+body.bs-shell-on .me-content h1,
+body.bs-shell-on .me-content h2 {
   font-size: 16px !important;
   font-weight: 800 !important;
   letter-spacing: -0.01em;
   margin: 0 0 8px !important;
 }
-body.bs-shell-on .bs-content h3,
-body.bs-shell-on .bs-content .card-title {
+body.bs-shell-on .me-content h3,
+body.bs-shell-on .card-title {
   font-size: 13px !important;
   font-weight: 700 !important;
 }
@@ -669,7 +669,7 @@ body.dark .me-splash-line {
 /* That sidebar is hidden, but the grid kept the space, so the content was squeezed into
    a thin strip on the right. Inside the shell the body is a plain block and the content
    fills the card, like the list in Mail. */
-body.bs-shell-on .bs-content .me-body {
+body.bs-shell-on .me-body {
   display: block !important;
   grid-template-columns: none !important;
   max-width: none !important;
@@ -678,28 +678,28 @@ body.bs-shell-on .bs-content .me-body {
   padding: 0 !important;
 }
 
-body.bs-shell-on .bs-content .me-content {
+body.bs-shell-on .me-content {
   max-width: none !important;
   width: 100% !important;
   padding: 20px 24px 32px !important;
   min-width: 0;
 }
 
-body.bs-shell-on .bs-content .me-section {
+body.bs-shell-on .me-section {
   max-width: none !important;
   width: 100% !important;
 }
 
 /* a steady rhythm between blocks, the way Mail separates its rows */
-body.bs-shell-on .bs-content .me-section + .me-section {
+body.bs-shell-on .me-section + .me-section {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid var(--bs-border);
 }
 
 /* headings sit on the card, not inside another surface */
-body.bs-shell-on .bs-content .me-section-title,
-body.bs-shell-on .bs-content .me-section-label {
+body.bs-shell-on .me-section-title,
+body.bs-shell-on .me-section-label {
   display: block;
   margin: 0 0 10px !important;
   padding: 0 !important;
@@ -713,8 +713,35 @@ body.bs-shell-on .bs-content .me-section-label {
 }
 
 /* rows inside a block line up full width */
-body.bs-shell-on .bs-content .card-header-row,
-body.bs-shell-on .bs-content .row,
-body.bs-shell-on .bs-content .list-row {
+body.bs-shell-on .card-header-row,
+body.bs-shell-on .row,
+body.bs-shell-on .list-row {
   width: 100%;
+}
+
+
+/* the sidebar column and the 920px limit are the two reasons the content was a strip */
+body.bs-shell-on .me-body {
+  display: block !important;
+  grid-template-columns: none !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+body.bs-shell-on .me-sidebar,
+body.bs-shell-on .me-body > .me-sidebar {
+  display: none !important;
+}
+body.bs-shell-on .me-content {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 20px 24px 32px !important;
+  margin: 0 !important;
+  display: block !important;
+}
+body.bs-shell-on .quick-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+  gap: 12px !important;
 }
