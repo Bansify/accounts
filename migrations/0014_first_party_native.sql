@@ -22,7 +22,7 @@ CREATE TRIGGER IF NOT EXISTS validate_android_certs_1 BEFORE UPDATE OF android_c
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-accounts-android', 'gothwad-accounts-android', 'Bansify Accounts Android', 1, 'com.gothwad.accounts', '["https://accounts.bansify.com/oauth/callback","com.gothwad.accounts:/oauth/callback"]', '["profile","email","offline_access","drive.read","account.read","account.profile.write"]', 1)
+VALUES ('gothwad-accounts-android', 'gothwad-accounts-android', 'Bansify Accounts Android', 1, 'com.bansify.accounts', '["https://accounts.bansify.com/oauth/callback","com.bansify.accounts:/oauth/callback","com.gothwad.accounts:/oauth/callback"]', '["profile","email","offline_access","drive.read","account.read","account.profile.write"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (
@@ -31,7 +31,7 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-accounts-sample-alpha', 'gothwad-accounts-sample-alpha', 'Accounts Sample alpha', 1, 'com.gothwad.accounts.sample.alpha', '["com.gothwad.accounts.sample.alpha:/oauth/callback"]', '["profile","email","offline_access"]', 1)
+VALUES ('gothwad-accounts-sample-alpha', 'gothwad-accounts-sample-alpha', 'Accounts Sample alpha', 1, 'com.bansify.accounts.sample.alpha', '["com.bansify.accounts.sample.alpha:/oauth/callback","com.gothwad.accounts.sample.alpha:/oauth/callback"]', '["profile","email","offline_access"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (
@@ -40,7 +40,7 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-accounts-sample-beta', 'gothwad-accounts-sample-beta', 'Accounts Sample beta', 1, 'com.gothwad.accounts.sample.beta', '["com.gothwad.accounts.sample.beta:/oauth/callback"]', '["profile","email","offline_access"]', 1)
+VALUES ('gothwad-accounts-sample-beta', 'gothwad-accounts-sample-beta', 'Accounts Sample beta', 1, 'com.bansify.accounts.sample.beta', '["com.bansify.accounts.sample.beta:/oauth/callback","com.gothwad.accounts.sample.beta:/oauth/callback"]', '["profile","email","offline_access"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (
@@ -49,7 +49,16 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
 
 INSERT INTO ecosystem_apps
   (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
-VALUES ('gothwad-mail', 'gothwad-mail', 'Bansify Mail', 1, 'com.gothwad.mail', '["https://mail.bansify.com/oauth/callback","com.gothwad.mail:/oauth/callback"]', '["profile","email","offline_access","mail"]', 1)
+VALUES ('gothwad-mail', 'gothwad-mail', 'Bansify Mail', 1, 'com.bansify.mail', '["https://mail.bansify.com/oauth/callback","com.bansify.mail:/oauth/callback","com.gothwad.mail:/oauth/callback"]', '["profile","email","offline_access","mail","account.read","account.profile.write"]', 1)
+ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
+  allowed_scopes = excluded.allowed_scopes,
+  redirect_uris = (SELECT json_group_array(value) FROM (
+    SELECT value FROM json_each(ecosystem_apps.redirect_uris)
+    UNION SELECT value FROM json_each(excluded.redirect_uris)));
+
+INSERT INTO ecosystem_apps
+  (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
+VALUES ('gothwad-ai', 'gothwad-ai', 'Bansify AI', 1, 'com.bansify.ai', '["https://ai.bansify.com/oauth/callback","com.bansify.ai:/oauth/callback","com.gothwad.ai:/oauth/callback"]', '["profile","email","offline_access"]', 1)
 ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
   allowed_scopes = excluded.allowed_scopes,
   redirect_uris = (SELECT json_group_array(value) FROM (

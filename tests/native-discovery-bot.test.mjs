@@ -17,7 +17,7 @@ test('assetlinks has exact Android relation/package and release hashes, empty wh
     assert.match(response.headers.get('Content-Type'), /application\/json/);
     const links = await response.json();
     assert.deepEqual(links, [{ relation: ['delegate_permission/common.handle_all_urls'], target: {
-      namespace: 'android_app', package_name: 'com.gothwad.accounts', sha256_cert_fingerprints: [fingerprint.match(/../g).join(':').toUpperCase()],
+      namespace: 'android_app', package_name: 'com.bansify.accounts', sha256_cert_fingerprints: [fingerprint.match(/../g).join(':').toUpperCase()],
     } }]);
     f.env.ANDROID_ASSETLINKS_JSON = JSON.stringify(links);
     assert.deepEqual(await (await nativeRequest(f, '/.well-known/assetlinks.json')).json(), links);
@@ -37,7 +37,7 @@ test('trusted apps are active first-party only, versioned/expiring, signed with 
     assert.equal(unsigned.signed, false);
     assert.equal(unsigned.version, 1);
     assert.equal(unsigned.expires_at - unsigned.issued_at, 900);
-    assert.equal(unsigned.apps.length, 6);
+    assert.equal(unsigned.apps.length, 7);
     assert.deepEqual(unsigned.apps.find(a => a.client_id === accountsClient).android_cert_sha256, [fingerprint]);
     assert.ok(unsigned.apps.every(a => a.android_package && !('secret_hash' in a)));
     for (const algorithm of [{ name: 'Ed25519' }, { name: 'ECDSA', namedCurve: 'P-256' }]) {

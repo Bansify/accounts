@@ -219,7 +219,11 @@ test('9. Resilience & security invariants: 6-slot max cap, 503 JSON on DB error 
     const localWrites = [...src.matchAll(/localStorage\.setItem\s*\(\s*([^,)]+)/g)].map((m) => m[1].trim());
     for (const keyExpr of localWrites) {
       assert.equal(
-        keyExpr === 'THEME_KEY' || keyExpr === "'gothwad-theme'" || keyExpr === '"gothwad-theme"',
+        keyExpr === 'THEME_KEY' ||
+          keyExpr === "'gothwad-theme'" ||
+          keyExpr === '"gothwad-theme"' ||
+          keyExpr === "'bs-shell-collapsed'" ||
+          keyExpr === '"bs-shell-collapsed"',
         true,
         `Forbidden localStorage.setItem(${keyExpr}) found in ${file}`,
       );
