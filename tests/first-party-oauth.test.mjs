@@ -21,7 +21,7 @@ test('migration 14 preserves old registrations/grants/disabled status, defaults 
     assert.ok(JSON.parse(row.redirect_uris).includes('https://legacy.example/cb'));
     assert.ok(JSON.parse(row.redirect_uris).includes('https://kiwistore.example.com/oauth/callback'));
     assert.equal(row.android_cert_sha256, '[]');
-    assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM ecosystem_apps WHERE first_party = 1').first()).n, 7);
+    assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM ecosystem_apps WHERE first_party = 1').first()).n, 8);
     assert.equal((await db.prepare("SELECT first_party FROM ecosystem_apps WHERE id = 'gothwad-chat'").first()).first_party, 0);
     await db.prepare("UPDATE ecosystem_apps SET first_party = 0, active = 0, android_cert_sha256 = ? WHERE id = 'kiwi-store'").bind(JSON.stringify(['a'.repeat(64)])).run();
     await getNativeDb(makeEnv({ DB: db, APP_DOMAIN: 'example.com' }));
