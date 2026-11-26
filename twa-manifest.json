@@ -20,6 +20,7 @@
     "path": "./android.keystore",
     "alias": "bansify"
   },
+  "appVersion": "1.0.0",
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
   "shortcuts": [],
