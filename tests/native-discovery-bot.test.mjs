@@ -37,7 +37,7 @@ test('trusted apps are active first-party only, versioned/expiring, signed with 
     assert.equal(unsigned.signed, false);
     assert.equal(unsigned.version, 1);
     assert.equal(unsigned.expires_at - unsigned.issued_at, 900);
-    assert.equal(unsigned.apps.length, 7);
+    assert.equal(unsigned.apps.length, 8);
     assert.deepEqual(unsigned.apps.find(a => a.client_id === accountsClient).android_cert_sha256, [fingerprint]);
     assert.ok(unsigned.apps.every(a => a.android_package && !('secret_hash' in a)));
     for (const algorithm of [{ name: 'Ed25519' }, { name: 'ECDSA', namedCurve: 'P-256' }]) {

@@ -108,9 +108,11 @@ class SheetOverlayController {
     if (!this.layerEl) return;
     this.layerEl.setAttribute('data-theme', detectHostTheme(this.opts.theme));
     const anchorRect = this.opts.anchorEl?.getBoundingClientRect?.();
-    if (anchorRect && globalThis.innerWidth) {
-      const top = Math.max(12, Math.round(anchorRect.bottom + 10));
-      const right = Math.max(12, Math.round(globalThis.innerWidth - anchorRect.right));
+    if (anchorRect && (anchorRect.width > 0 || anchorRect.height > 0) && globalThis.innerWidth) {
+      const maxTop = Math.max(12, (globalThis.innerHeight || 800) - 440);
+      const maxRight = Math.max(12, globalThis.innerWidth - 412);
+      const top = Math.max(12, Math.min(Math.round(anchorRect.bottom + 10), maxTop));
+      const right = Math.max(12, Math.min(Math.round(globalThis.innerWidth - anchorRect.right), maxRight));
       this.layerEl.style?.setProperty?.('--gw-top', `${top}px`);
       this.layerEl.style?.setProperty?.('--gw-right', `${right}px`);
     }

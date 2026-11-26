@@ -92,5 +92,14 @@ ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, s
     SELECT value FROM json_each(ecosystem_apps.redirect_uris)
     UNION SELECT value FROM json_each(excluded.redirect_uris)));
 
+INSERT INTO ecosystem_apps
+  (id, client_id, name, first_party, android_package, redirect_uris, allowed_scopes, is_verified)
+VALUES ('gothwad-files', 'gothwad-files', 'Bansify Files', 1, 'com.bansify.files', '["https://files.bansify.com/oauth/callback","com.bansify.files:/oauth/callback"]', '["profile","email","offline_access"]', 1)
+ON CONFLICT(id) DO UPDATE SET first_party = 1, client_id = excluded.client_id, secret_hash = NULL, android_package = excluded.android_package,
+  allowed_scopes = excluded.allowed_scopes,
+  redirect_uris = (SELECT json_group_array(value) FROM (
+    SELECT value FROM json_each(ecosystem_apps.redirect_uris)
+    UNION SELECT value FROM json_each(excluded.redirect_uris)));
+
 CREATE TABLE IF NOT EXISTS auth_schema_versions (version TEXT PRIMARY KEY);
 INSERT OR IGNORE INTO auth_schema_versions(version) VALUES ('14_first_party_native');

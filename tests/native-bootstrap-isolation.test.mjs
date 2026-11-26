@@ -70,7 +70,7 @@ test('native migration can recover in the same isolate after an initial missing-
     await assert.rejects(getNativeDb(f.env), /migration 14/);
     await f.db.exec(readFileSync('migrations/0014_first_party_native.sql', 'utf8'));
     const ready = await getNativeDb(f.env);
-    assert.equal((await ready.prepare('SELECT COUNT(*) AS n FROM ecosystem_apps WHERE first_party = 1').first()).n, 8);
+    assert.equal((await ready.prepare('SELECT COUNT(*) AS n FROM ecosystem_apps WHERE first_party = 1').first()).n, 9);
     const info = await f.jar.fetch(f.env, '/oauth/app-info?client_id=gothwad-accounts-android');
     assert.equal(info.status, 200);
     assert.equal((await f.jar.fetch(f.env, '/api/auth/check-identifier?identifier=legacyowner')).status, 200);

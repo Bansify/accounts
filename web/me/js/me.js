@@ -204,11 +204,19 @@ async function renderAccountMenu(user, preloaded = null) {
       authuser: currentAuthuser,
     });
   }
+  globalThis.window?.dispatchEvent?.(
+    new CustomEvent('bansify-user-updated', {
+      detail: { user, accounts: cachedAccounts, activeId: currentActiveSlot, authuser: currentAuthuser },
+    }),
+  );
 }
 
-function openUniversalAccountSheet() {
+function openUniversalAccountSheet(customAnchorEl = null) {
   if (!currentUser) return;
-  const menuBtnEl = document.getElementById('acct-switch-btn');
+  const menuBtnEl =
+    customAnchorEl ||
+    document.querySelector('.bs-dock-avatar') ||
+    document.getElementById('acct-switch-btn');
   if (GothwadAccountMenu.isOpen()) {
     GothwadAccountMenu.close();
     return;
@@ -228,15 +236,26 @@ function openUniversalAccountSheet() {
       onSignOutAccount: (slotId) => signOut({ slotId: slotId || currentActiveSlot }),
       onSignOutAll: () => signOut({ all: true }),
       onEditAvatar: () => {
-        document.querySelector('[data-section="personal"]')?.click();
+        if (typeof globalThis.window?.__BANSIFY_SELECT_TAB === 'function') {
+          globalThis.window.__BANSIFY_SELECT_TAB('personal');
+        } else {
+          document.querySelector('[data-section="personal"]')?.click();
+        }
         document.getElementById('pi-photo-edit')?.click();
       },
       onManageAccount: () => {
-        document.querySelector('[data-section="home"]')?.click();
+        if (typeof globalThis.window?.__BANSIFY_SELECT_TAB === 'function') {
+          globalThis.window.__BANSIFY_SELECT_TAB('home');
+        } else {
+          document.querySelector('[data-section="home"]')?.click();
+        }
       },
       onError: (msg) => toast(msg, 'error'),
     },
   );
+}
+if (globalThis.window) {
+  globalThis.window.__BANSIFY_OPEN_ACCOUNT_SHEET = openUniversalAccountSheet;
 }
 
 /* Browser Back / Forward between `/u/0/me` <-> `/u/1/me` */
