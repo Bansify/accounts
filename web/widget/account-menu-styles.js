@@ -78,33 +78,33 @@ export const ACCOUNT_MENU_CSS = `
 
 /* Sheet Overlay & Surface Tokens */
 .gw-layer {
-  --gw-surface: #eef3f8;
+  --gw-surface: #f5f6f7;
   --gw-card: #ffffff;
-  --gw-card-hover: #f5f8fc;
-  --gw-text: #1f1f1f;
-  --gw-subtext: #444746;
-  --gw-accent: #0b57d0;
+  --gw-card-hover: #f8f9fa;
+  --gw-text: #18181b;
+  --gw-subtext: #71717a;
+  --gw-accent: #0494f4;
   --gw-danger: #b3261e;
   --gw-danger-bg: #fceeee;
-  --gw-border: rgba(0, 0, 0, 0.06);
+  --gw-border: #e4e4e7;
   --gw-shadow: 0 12px 36px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
   position: fixed;
   inset: 0;
   z-index: 2147483000;
-  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--gw-text);
 }
 
 .gw-layer[data-theme="dark"] {
-  --gw-surface: #212121;
-  --gw-card: #2c2c2c;
-  --gw-card-hover: #363636;
-  --gw-text: #e3e3e3;
-  --gw-subtext: #c4c7c5;
-  --gw-accent: #8ab4f8;
+  --gw-surface: #2a2a2a;
+  --gw-card: #212121;
+  --gw-card-hover: #262626;
+  --gw-text: #e4e4e7;
+  --gw-subtext: #8e8e93;
+  --gw-accent: #0494f4;
   --gw-danger: #f28b82;
   --gw-danger-bg: #3c2525;
-  --gw-border: rgba(255, 255, 255, 0.08);
+  --gw-border: #333333;
   --gw-shadow: 0 16px 42px rgba(0, 0, 0, 0.56), 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
