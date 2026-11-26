@@ -3,8 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create account — Bansify Accounts</title>
-  <meta name="description" content="Create your Bansify Account — one identity for Mail, Drive, Chat, Notes and more." />
+  <title>Bansify Account | India's Account</title>
+  <meta name="application-name" content="Bansify Accounts" />
+  <meta name="apple-mobile-web-app-title" content="Bansify Accounts" />
+  <meta name="description" content="Bansify Account is India's unified digital identity for Bansify Mail, Drive, Meet, Pay, AI, and Notes — protected with passkeys and 2-Step Verification." />
+  <link rel="canonical" href="https://accounts.bansify.com/signup" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bansify Accounts" />
+  <meta property="og:title" content="Bansify Account | India's Account" />
+  <meta property="og:description" content="Bansify Account is India's unified digital identity for Bansify Mail, Drive, Meet, Pay, AI, and Notes — protected with passkeys and 2-Step Verification." />
+  <meta property="og:url" content="https://accounts.bansify.com/signup" />
+  <meta property="og:image" content="https://accounts.bansify.com/icon-512.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Bansify Account | India's Account" />
+  <meta name="twitter:description" content="Bansify Account is India's unified digital identity for Bansify Mail, Drive, Meet, Pay, AI, and Notes — protected with passkeys and 2-Step Verification." />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Bansify Accounts",
+    "alternateName": ["Bansify Account", "India's Account", "accounts.bansify.com"],
+    "url": "https://accounts.bansify.com/"
+  }
+  </script>
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.json" />
@@ -29,19 +50,20 @@
               <img src="/icon-192-maskable.png" alt="Bansify Accounts" class="auth-logo-img" />
             </div>
             <h1 class="auth-header-title">Bansify Accounts</h1>
-            <p class="auth-header-desc" id="signup-header-desc">
+            <p class="sr-only">Bansify Account is India's unified digital identity for Bansify Mail, Drive, Meet, Pay, AI, and Notes — protected with passkeys and 2-Step Verification.</p>
+            <p class="auth-header-desc" id="signup-header-desc" data-nosnippet>
               Enter your first and last name.
             </p>
           </div>
 
           <!-- ═══════════════ AUTH SWITCHER TABS ═══════════════ -->
-          <div class="auth-nav-tabs">
+          <div class="auth-nav-tabs" data-nosnippet>
             <a href="/signin" class="auth-tab-btn">Sign In</a>
             <a href="/signup" class="auth-tab-btn active">Create New</a>
           </div>
 
           <!-- ═══════════════ MULTI-STEP FORM ═══════════════ -->
-          <form id="signup-form" novalidate style="width: 100%;">
+          <form id="signup-form" novalidate style="width: 100%;" data-nosnippet>
             <div id="alert-signup" class="alert alert-error hidden" style="margin-bottom: 14px;"></div>
 
             <!-- ─── STEP 1: Your name ─── -->
@@ -156,7 +178,7 @@
           </form>
 
           <!-- ═══════════════ BOTTOM BRANDING CARD ═══════════════ -->
-          <div class="auth-info-card">
+          <div class="auth-info-card" data-nosnippet>
             <p class="auth-terms-text">
               By using <a href="https://bansify.com" target="_blank" rel="noopener noreferrer" class="accent-link">Bansify Accounts</a>, you agree to our <a href="/terms" class="accent-link">Terms of Service</a> &amp; <a href="/privacy" class="accent-link">Privacy Policy</a>.
             </p>

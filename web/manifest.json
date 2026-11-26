@@ -1,11 +1,11 @@
 {
   "name": "Bansify Accounts",
-  "short_name": "Bansify",
-  "description": "Unified account system for the Bansify ecosystem \u2014 one login for Mail, Drive, Chat, Notes and more.",
+  "short_name": "Bansify Accounts",
+  "description": "Bansify Account is India's unified digital identity for Bansify Mail, Drive, Meet, Pay, AI, and Notes — protected with passkeys and 2-Step Verification.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#212121",
+  "theme_color": "#0494f4",
   "icons": [
     {
       "src": "/favicon.ico",

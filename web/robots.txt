@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /oauth/callback
+Disallow: /verify-recovery
+
+Sitemap: https://accounts.bansify.com/sitemap.xml
