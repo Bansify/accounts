@@ -61,7 +61,7 @@ jobs:
           if [ -n "$KEYSTORE_B64" ]; then
             echo "$KEYSTORE_B64" | tr -d ' \n\r\t' | base64 --decode > android.keystore
             KS_PASS="${KEYSTORE_PASS}"
-            DETECTED_ALIAS=$(keytool -list -keystore android.keystore -storepass "$KS_PASS" 2>/dev/null | grep -i "PrivateKeyEntry" | head -n 1 | cut -d',' -f1 | tr -d ' ')
+            DETECTED_ALIAS=$(keytool -list -keystore android.keystore -storepass "$KS_PASS" 2>/dev/null | grep -i "PrivateKeyEntry" | head -n 1 | cut -d',' -f1 | tr -d ' ' || true)
             K_ALIAS="${DETECTED_ALIAS:-${KEY_ALIAS:-bansify}}"
             K_PASS="${KEY_PASS:-$KS_PASS}"
           else
@@ -91,10 +91,10 @@ jobs:
           VER_NAME: ${{ inputs.version_name || '1.0.0' }}
           VER_CODE: ${{ inputs.version_code || '1' }}
         run: |
-          mkdir -p twa-build
+          mkdir -p /tmp/twa-gen twa-build
           cp android.keystore twa-build/android.keystore
-          npm install --no-save @bubblewrap/core
-          node -e '
+          npm --prefix /tmp/twa-gen install --no-audit --no-fund @bubblewrap/core
+          NODE_PATH=/tmp/twa-gen/node_modules node -e '
             const fs = require("fs");
             const http = require("http");
             const path = require("path");
@@ -161,15 +161,16 @@ jobs:
                 );
               fs.writeFileSync("twa-build/app/build.gradle", gradle);
               process.exit(0);
-            })().catch((err) => { console.error(err); process.exit(1); });
+            })().catch((err) => {
+              console.error("::error title=Bubblewrap::" + (err && err.stack ? err.stack.replace(/\n/g, " | ") : err));
+              process.exit(1);
+            });
           '
           cd twa-build
           chmod +x gradlew
           if ! ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace > gradle.log 2>&1; then
-            echo "### Gradle Build Error Log" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            tail -n 120 gradle.log >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            ERR_SUMMARY=$(grep -E "FAILURE:|What went wrong:|^\* |Exception|Error" gradle.log | tail -n 15 | tr '\n' ' ')
+            echo "::error title=Gradle::${ERR_SUMMARY}"
             cat gradle.log
             exit 1
           fi
