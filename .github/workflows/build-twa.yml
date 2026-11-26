@@ -1,0 +1,170 @@
+name: Build Bansify TWA APK & Play Store AAB
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_slug:
+        description: 'Which Bansify app to package as TWA (accounts, mail, drive, meet, pay, ai, gitplus)'
+        required: true
+        default: 'accounts'
+        type: choice
+        options:
+          - accounts
+          - mail
+          - drive
+          - meet
+          - pay
+          - ai
+          - gitplus
+      version_name:
+        description: 'App version name (e.g. 1.0.0)'
+        required: true
+        default: '1.0.0'
+        type: string
+      version_code:
+        description: 'Play Store integer version code (e.g. 1)'
+        required: true
+        default: '1'
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-twa:
+    name: Build Signed TWA (${{ inputs.app_slug || 'accounts' }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Android Build-Tools 34.0.0 & Platform 34
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Prepare Release Keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.TWA_KEYSTORE_BASE64 }}
+          KEYSTORE_PASS: ${{ secrets.TWA_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.TWA_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.TWA_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 --decode > android.keystore
+            echo "KS_PASS=${KEYSTORE_PASS}" >> "$GITHUB_ENV"
+            echo "K_ALIAS=${KEY_ALIAS:-bansify}" >> "$GITHUB_ENV"
+            echo "K_PASS=${KEY_PASS:-$KEYSTORE_PASS}" >> "$GITHUB_ENV"
+          else
+            keytool -genkeypair -v \
+              -keystore android.keystore \
+              -alias bansify \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass bansifyrelease123 \
+              -keypass bansifyrelease123 \
+              -dname "CN=Bansify, OU=Mobile, O=Bansify, L=Kanpur, ST=UP, C=IN"
+            echo "KS_PASS=bansifyrelease123" >> "$GITHUB_ENV"
+            echo "K_ALIAS=bansify" >> "$GITHUB_ENV"
+            echo "K_PASS=bansifyrelease123" >> "$GITHUB_ENV"
+          fi
+          echo "### Signing Key SHA-256 Fingerprint" >> "$GITHUB_STEP_SUMMARY"
+          keytool -list -v -keystore android.keystore -storepass "${KS_PASS:-bansifyrelease123}" | grep -i "SHA256:" >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Generate TWA Android Project & Build Signed APK + AAB
+        env:
+          APP_SLUG: ${{ inputs.app_slug || 'accounts' }}
+          VER_NAME: ${{ inputs.version_name || '1.0.0' }}
+          VER_CODE: ${{ inputs.version_code || '1' }}
+        run: |
+          mkdir -p twa-build
+          cp android.keystore twa-build/android.keystore
+          node -e '
+            const fs = require("fs");
+            const slug = process.env.APP_SLUG || "accounts";
+            const titles = {
+              accounts: ["Bansify Accounts", "Accounts"],
+              mail: ["Bansify Mail", "Mail"],
+              drive: ["Bansify Drive", "Drive"],
+              meet: ["Bansify Meet", "Meet"],
+              pay: ["Bansify Pay", "Pay"],
+              ai: ["Bansify AI", "Bansify AI"],
+              gitplus: ["Bansify GitPlus", "GitPlus"]
+            };
+            const [fullName, shortName] = titles[slug] || ["Bansify Accounts", "Accounts"];
+            const host = `${slug}.bansify.com`;
+            const base = JSON.parse(fs.readFileSync("twa-manifest.json", "utf8"));
+            base.packageId = `com.bansify.${slug}`;
+            base.host = host;
+            base.name = fullName;
+            base.launcherName = shortName;
+            base.iconUrl = "https://accounts.bansify.com/icon-512.png";
+            base.maskableIconUrl = "https://accounts.bansify.com/icon-512-maskable.png";
+            base.webManifestUrl = `https://${host}/manifest.json`;
+            base.fullScopeUrl = `https://${host}/`;
+            base.appVersionName = process.env.VER_NAME || "1.0.0";
+            base.appVersionCode = Number(process.env.VER_CODE || 1);
+            base.signingKey = { path: "./android.keystore", alias: process.env.K_ALIAS || "bansify" };
+            fs.writeFileSync("twa-build/twa-manifest.json", JSON.stringify(base, null, 2));
+          '
+          npm install --no-save @bubblewrap/core @bubblewrap/cli
+          node -e '
+            const path = require("path");
+            const { TwaManifest, TwaGenerator } = require("@bubblewrap/core");
+            (async () => {
+              const manifest = await TwaManifest.fromFile(path.resolve("twa-build/twa-manifest.json"));
+              const generator = new TwaGenerator();
+              await generator.createTwaProject(path.resolve("twa-build"), manifest);
+            })().catch((err) => { console.error(err); process.exit(1); });
+          '
+          cd twa-build
+          chmod +x gradlew
+          ./gradlew assembleRelease bundleRelease
+          APK_UNSIGNED=$(find app/build/outputs/apk/release -name "*-unsigned.apk" | head -n 1)
+          APK_SIGNED="bansify-${APP_SLUG}-release.apk"
+          if [ -n "$APK_UNSIGNED" ]; then
+            "$ANDROID_HOME/build-tools/34.0.0/zipalign" -v -p 4 "$APK_UNSIGNED" aligned.apk
+            "$ANDROID_HOME/build-tools/34.0.0/apksigner" sign \
+              --ks android.keystore \
+              --ks-key-alias "$K_ALIAS" \
+              --ks-pass "pass:$KS_PASS" \
+              --key-pass "pass:$K_PASS" \
+              --out "../$APK_SIGNED" \
+              aligned.apk
+          else
+            APK_READY=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
+            cp "$APK_READY" "../$APK_SIGNED"
+          fi
+          AAB_FILE=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          if [ -n "$AAB_FILE" ]; then
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+              -keystore android.keystore \
+              -storepass "$KS_PASS" \
+              -keypass "$K_PASS" \
+              "$AAB_FILE" "$K_ALIAS"
+            cp "$AAB_FILE" "../bansify-${APP_SLUG}-release.aab"
+          fi
+
+      - name: Upload Signed APK & Play Store AAB Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bansify-${{ inputs.app_slug || 'accounts' }}-twa-release
+          path: |
+            bansify-*.apk
+            bansify-*.aab
+          retention-days: 30

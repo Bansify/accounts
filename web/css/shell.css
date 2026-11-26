@@ -4,20 +4,20 @@
  *   1. Left collapsible navigation card (8 focused account sections, 4px row gap)
  *   2. Top search pill card
  *   3. Top social links card
- *   4. Main content card with top section header bar + flat borderless inner layout
+ *   4. Main content card with top section header bar + responsive inner subcards
  *   5. Right app dock card with Universal Account Switcher trigger
  */
 :root {
-  --bs-canvas: #f5f6f7;
+  --bs-canvas: #f3f4f6;
   --bs-card: #ffffff;
   --bs-content-bg: #ffffff;
-  --bs-subcard: #fafafa;
+  --bs-subcard: #f8f9fb;
   --bs-border: rgba(0, 0, 0, 0.075);
   --bs-subborder: rgba(0, 0, 0, 0.055);
   --bs-ink: #18181b;
   --bs-muted: #71717a;
-  --bs-pill: #f4f4f5;
-  --bs-pill-hover: #e7e7e9;
+  --bs-pill: #eff1f5;
+  --bs-pill-hover: #e4e7ed;
   --bs-brand: #0494f4;
   --bs-brand-hover: #0382d6;
   --bs-brand-soft: rgba(4, 148, 244, 0.12);
@@ -32,22 +32,23 @@ html[data-theme='dark'],
 body.dark {
   --bs-canvas: #212121;
   --bs-card: #2a2a2a;
-  --bs-content-bg: #212121;
-  --bs-subcard: #262626;
+  --bs-content-bg: #2a2a2a;
+  --bs-subcard: #212121;
   --bs-border: rgba(255, 255, 255, 0.055);
   --bs-subborder: rgba(255, 255, 255, 0.045);
   --bs-ink: #f4f4f5;
   --bs-muted: #a1a1aa;
-  --bs-pill: #303030;
-  --bs-pill-hover: #3a3a3a;
+  --bs-pill: #2c2c2c;
+  --bs-pill-hover: #353535;
 }
 /* Override legacy Google palette variables so zero bright borders ever leak through */
 html[data-theme='dark'] body.bs-shell-on,
 html[data-theme='light'] body.bs-shell-on,
 body.bs-shell-on {
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --bg: var(--bs-canvas);
-  --surface: var(--bs-content-bg);
+  --surface: var(--bs-card);
   --bg-panel: var(--bs-pill);
   --bg-elevated: var(--bs-subcard);
   --bg-input: var(--bs-subcard);
@@ -65,6 +66,7 @@ body.bs-shell-on {
   --accent-on: #ffffff;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
   background: var(--bs-canvas) !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -72,25 +74,21 @@ body.bs-shell-on {
   overflow: hidden;
   height: 100dvh;
 }
-/* Eliminate all focus outlines across the shell */
+body.bs-shell-on button,
+body.bs-shell-on input,
+body.bs-shell-on select,
+body.bs-shell-on textarea,
+body.bs-shell-on summary {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+}
 body.bs-shell-on *:focus,
 body.bs-shell-on *:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
-/* Sleek Mail-style scrollbars */
-body.bs-shell-on ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-body.bs-shell-on ::-webkit-scrollbar-track {
-  background: transparent;
-}
-body.bs-shell-on ::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.25);
-  border-radius: 4px;
-  border: 0;
-}
+body.bs-shell-on ::-webkit-scrollbar { width: 8px; height: 8px; }
+body.bs-shell-on ::-webkit-scrollbar-track { background: transparent; }
+body.bs-shell-on ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.25); border-radius: 4px; border: 0; }
 /* ── content card (fixed outer frame, inner scrollable body like Mail) ── */
 body.bs-shell-on #dash-root {
   position: fixed;
@@ -113,8 +111,8 @@ body.bs-shell-on.bs-collapsed #dash-root {
 }
 /* Mail-style content card top header bar */
 .bs-card-head {
-  height: 52px;
-  padding: 0 24px;
+  height: 54px;
+  padding: 0 22px;
   border-bottom: 1px solid var(--bs-subborder);
   display: flex;
   align-items: center;
@@ -123,15 +121,10 @@ body.bs-shell-on.bs-collapsed #dash-root {
   flex: 0 0 auto;
   background: var(--bs-content-bg);
 }
-.bs-card-head-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
+.bs-card-head-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .bs-card-head-icon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
   background: var(--bs-pill);
   color: #0494f4;
@@ -140,12 +133,8 @@ body.bs-shell-on.bs-collapsed #dash-root {
   justify-content: center;
   flex: 0 0 auto;
 }
-.bs-card-head-icon .msym {
-  font-size: 18px;
-}
-.bs-card-head-titles {
-  min-width: 0;
-}
+.bs-card-head-icon .msym { font-size: 18px; }
+.bs-card-head-titles { min-width: 0; }
 .bs-card-head-title {
   font-size: 14px;
   font-weight: 700;
@@ -177,19 +166,12 @@ body.bs-shell-on.bs-collapsed #dash-root {
   font-weight: 500;
   cursor: pointer;
   flex: 0 0 auto;
+  max-width: 240px;
   transition: background 0.15s, color 0.15s;
 }
-.bs-card-acct:hover {
-  background: var(--bs-pill-hover);
-  color: var(--bs-ink);
-}
-.bs-card-acct-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #0494f4;
-}
-/* Hide legacy chrome inside the shell */
+.bs-card-acct span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bs-card-acct:hover { background: var(--bs-pill-hover); color: var(--bs-ink); }
+.bs-card-acct-dot { width: 7px; height: 7px; border-radius: 50%; background: #0494f4; flex: 0 0 auto; }
 body.bs-shell-on .appbar,
 body.bs-shell-on .me-sidebar,
 body.bs-shell-on .me-appbar,
@@ -208,9 +190,7 @@ body.bs-shell-on .me-backdrop {
   gap: var(--bs-gap);
   z-index: 55;
 }
-body.bs-collapsed .bs-top {
-  left: calc(var(--bs-rail) + var(--bs-gap) * 2);
-}
+body.bs-collapsed .bs-top { left: calc(var(--bs-rail) + var(--bs-gap) * 2); }
 .bs-search {
   position: relative;
   flex: 1 1 auto;
@@ -218,15 +198,15 @@ body.bs-collapsed .bs-top {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 16px;
+  padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--bs-border);
   background: var(--bs-card);
 }
 .bs-mobile-menu {
   display: none;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -237,10 +217,25 @@ body.bs-collapsed .bs-top {
   padding: 0;
   flex: 0 0 auto;
 }
-.bs-search .msym {
-  font-size: 18px;
-  color: var(--bs-muted);
+.bs-mobile-avatar {
+  display: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--bs-brand);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  flex: 0 0 auto;
 }
+.bs-mobile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bs-search .msym { font-size: 18px; color: var(--bs-muted); }
 .bs-search input {
   flex: 1 1 auto;
   min-width: 0;
@@ -278,24 +273,10 @@ body.bs-collapsed .bs-top {
   cursor: pointer;
 }
 .bs-search-option:hover,
-.bs-search-option.is-selected {
-  background: var(--bs-pill);
-}
-.bs-search-option .msym {
-  color: #0494f4;
-  font-size: 19px;
-}
-.bs-search-option-title {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--bs-ink);
-}
-.bs-search-option-sub {
-  display: block;
-  font-size: 11px;
-  color: var(--bs-muted);
-}
+.bs-search-option.is-selected { background: var(--bs-pill); }
+.bs-search-option .msym { color: #0494f4; font-size: 19px; }
+.bs-search-option-title { display: block; font-size: 13px; font-weight: 600; color: var(--bs-ink); }
+.bs-search-option-sub { display: block; font-size: 11px; color: var(--bs-muted); }
 .bs-social {
   display: flex;
   align-items: center;
@@ -317,14 +298,8 @@ body.bs-collapsed .bs-top {
   font-size: 15px;
   transition: transform 0.15s ease, filter 0.15s ease;
 }
-.bs-social a:hover {
-  transform: translateY(-1px) scale(1.04);
-  filter: brightness(1.08);
-}
-.bs-social a svg {
-  display: block;
-  flex: 0 0 auto;
-}
+.bs-social a:hover { transform: translateY(-1px) scale(1.04); filter: brightness(1.08); }
+.bs-social a svg { display: block; flex: 0 0 auto; }
 /* ── left panel ───────────────────────────────────────────────────────── */
 .bs-panel {
   position: fixed;
@@ -340,21 +315,9 @@ body.bs-collapsed .bs-top {
   background: var(--bs-card);
   overflow: hidden;
 }
-body.bs-collapsed .bs-panel {
-  width: var(--bs-rail);
-}
-.bs-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 64px;
-  padding: 0 12px;
-  flex: 0 0 auto;
-}
-body.bs-collapsed .bs-brand {
-  justify-content: center;
-  padding: 0;
-}
+body.bs-collapsed .bs-panel { width: var(--bs-rail); }
+.bs-brand { display: flex; align-items: center; gap: 10px; height: 64px; padding: 0 12px; flex: 0 0 auto; }
+body.bs-collapsed .bs-brand { justify-content: center; padding: 0; }
 .bs-brand-mark {
   width: 36px;
   height: 36px;
@@ -370,28 +333,11 @@ body.bs-collapsed .bs-brand {
   border: 0;
   cursor: pointer;
 }
-.bs-brand-mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.bs-brand-name {
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bs-brand-name b {
-  color: var(--bs-brand);
-  font-weight: 900;
-}
+.bs-brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bs-brand-name { font-size: 16px; font-weight: 900; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bs-brand-name b { color: var(--bs-brand); font-weight: 900; }
 body.bs-collapsed .bs-brand-name,
-body.bs-collapsed .bs-collapse {
-  display: none;
-}
+body.bs-collapsed .bs-collapse { display: none; }
 .bs-collapse {
   margin-left: auto;
   width: 28px;
@@ -405,10 +351,7 @@ body.bs-collapsed .bs-collapse {
   align-items: center;
   justify-content: center;
 }
-.bs-collapse:hover {
-  background: var(--bs-pill);
-}
-/* nav rows are pills, inset 2px, with 4px gap matching MailShell.tsx */
+.bs-collapse:hover { background: var(--bs-pill); }
 .bs-nav {
   flex: 1 1 auto;
   min-height: 0;
@@ -418,10 +361,7 @@ body.bs-collapsed .bs-collapse {
   flex-direction: column;
   gap: 4px;
 }
-body.bs-collapsed .bs-nav {
-  padding: 0;
-  align-items: center;
-}
+body.bs-collapsed .bs-nav { padding: 0; align-items: center; }
 .bs-nav-item {
   position: relative;
   display: flex;
@@ -438,10 +378,7 @@ body.bs-collapsed .bs-nav {
   padding: 0;
   text-align: left;
 }
-body.bs-collapsed .bs-nav-item {
-  width: 40px;
-  justify-content: center;
-}
+body.bs-collapsed .bs-nav-item { width: 40px; justify-content: center; }
 .bs-nav-item::before {
   content: '';
   position: absolute;
@@ -453,17 +390,9 @@ body.bs-collapsed .bs-nav-item {
   background: var(--bs-pill);
   transition: background 0.15s ease;
 }
-.bs-nav-item:hover::before {
-  background: var(--bs-pill-hover);
-}
-.bs-nav-item.is-active::before {
-  background: var(--bs-brand);
-  box-shadow: 0 1px 3px rgba(4, 148, 244, 0.25);
-}
-.bs-nav-item.is-active {
-  color: #fff;
-  font-weight: 600;
-}
+.bs-nav-item:hover::before { background: var(--bs-pill-hover); }
+.bs-nav-item.is-active::before { background: var(--bs-brand); box-shadow: 0 1px 3px rgba(4, 148, 244, 0.25); }
+.bs-nav-item.is-active { color: #fff; font-weight: 600; }
 .bs-nav-item .msym {
   position: relative;
   width: 40px;
@@ -474,13 +403,5 @@ body.bs-collapsed .bs-nav-item {
   flex: 0 0 auto;
   font-size: 18px;
 }
-.bs-nav-item > span:last-child {
-  position: relative;
-  margin-left: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-body.bs-collapsed .bs-nav-item > span:last-child {
-  display: none;
-}
+.bs-nav-item > span:last-child { position: relative; margin-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.bs-collapsed .bs-nav-item > span:last-child { display: none; }

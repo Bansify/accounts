@@ -1,0 +1,418 @@
+/*
+ * Bansify Accounts (/me) — Inner Content Card UI for Desktop & Mobile (TWA / PWA)
+ * Keeps PR #62's ultra-low-contrast borders while providing crisp surface depth,
+ * responsive grids, compact buttons, and native mobile ergonomics.
+ */
+
+/* ── 8-tab shell visibility ───────────────────────────────────────────── */
+body.bs-shell-on [data-shell-tab] { display: none !important; }
+body.bs-shell-on[data-bs-tab='home'] [data-shell-tab='home'],
+body.bs-shell-on[data-bs-tab='personal'] [data-shell-tab='personal'],
+body.bs-shell-on[data-bs-tab='contact'] [data-shell-tab='contact'],
+body.bs-shell-on[data-bs-tab='security'] [data-shell-tab='security'],
+body.bs-shell-on[data-bs-tab='devices'] [data-shell-tab='devices'],
+body.bs-shell-on[data-bs-tab='activity'] [data-shell-tab='activity'],
+body.bs-shell-on[data-bs-tab='storage'] [data-shell-tab='storage'],
+body.bs-shell-on[data-bs-tab='data'] [data-shell-tab='data'] {
+  display: block !important;
+}
+body.bs-shell-on[data-bs-tab='home'] .dash-header[data-shell-tab='home'] {
+  display: flex !important;
+}
+
+/* ── Scrollable body & centered content container inside #dash-root ───── */
+body.bs-shell-on .me-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  display: block !important;
+  grid-template-columns: none !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+body.bs-shell-on .me-content {
+  max-width: 880px !important;
+  width: 100% !important;
+  padding: 20px 24px 32px !important;
+  margin: 0 auto !important;
+  display: block !important;
+  font-size: 13px;
+}
+body.bs-shell-on .me-section {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+body.bs-shell-on .me-section-label,
+body.bs-shell-on .me-section-title { display: none !important; }
+
+/* ── Home hero banner (.dash-header) & inline email pill ──────────────── */
+body.bs-shell-on .dash-header {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 14px !important;
+  padding: 18px 20px !important;
+  margin: 0 0 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  flex-wrap: nowrap !important;
+}
+body.bs-shell-on .dash-header > div { min-width: 0; flex: 1 1 auto; }
+body.bs-shell-on .dash-header .avatar {
+  width: 56px !important;
+  height: 56px !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  background: var(--bs-brand) !important;
+  color: #ffffff !important;
+  border-radius: 50% !important;
+  flex: 0 0 auto !important;
+}
+body.bs-shell-on .dash-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: var(--bs-ink) !important;
+  margin: 0 0 6px !important;
+  line-height: 1.25 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.bs-shell-on .email-chip {
+  display: inline-flex !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 6px 4px 12px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: var(--bs-pill) !important;
+  color: var(--bs-ink) !important;
+  margin: 0 !important;
+}
+body.bs-shell-on .email-chip .mono {
+  font-size: 12.5px !important;
+  color: var(--bs-muted) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body.bs-shell-on .copy-email {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: var(--bs-muted) !important;
+  flex: 0 0 auto !important;
+}
+body.bs-shell-on .copy-email:hover { background: var(--bs-pill-hover) !important; color: #0494f4 !important; }
+body.bs-shell-on .copy-email .msym { font-size: 15px !important; }
+
+/* ── Inner subcards (.me-content .card & .account-details) ────────────── */
+body.bs-shell-on .me-content .card {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  padding: 18px 20px !important;
+  margin: 0 0 14px !important;
+}
+body.bs-shell-on .me-content .card.card-danger { border-color: rgba(239, 68, 68, 0.25) !important; }
+body.bs-shell-on .account-details {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  padding: 8px 20px 18px !important;
+  margin: 0 0 14px !important;
+}
+body.bs-shell-on .card-header-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin-bottom: 12px !important;
+  flex-wrap: wrap !important;
+}
+body.bs-shell-on .card-header-row > div { min-width: 0; flex: 1 1 200px; }
+body.bs-shell-on .card-header-row .card-subtitle { margin-bottom: 0 !important; }
+body.bs-shell-on .card-title {
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  color: var(--bs-ink) !important;
+  margin-bottom: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+body.bs-shell-on .card-title .msym { color: #0494f4; font-size: 18px; }
+body.bs-shell-on .card-danger .card-title,
+body.bs-shell-on .card-danger .card-title .msym { color: #ef4444 !important; }
+body.bs-shell-on .card-subtitle {
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+  color: var(--bs-muted) !important;
+  margin-bottom: 12px !important;
+  max-width: none !important;
+}
+
+/* ── Compact buttons & tags inside .me-content ────────────────────────── */
+body.bs-shell-on .me-section .btn {
+  min-height: 34px !important;
+  height: auto !important;
+  padding: 7px 14px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  line-height: 1.3 !important;
+  flex-shrink: 0;
+}
+body.bs-shell-on .tag {
+  border: 0 !important;
+  background: var(--bs-pill) !important;
+  color: var(--bs-ink) !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+}
+body.bs-shell-on .tag.tag-accent { background: rgba(4, 148, 244, 0.14) !important; color: #0494f4 !important; }
+body.bs-shell-on .btn-tonal,
+body.bs-shell-on .btn-outline,
+body.bs-shell-on .btn-ghost {
+  border: 0 !important;
+  background: var(--bs-pill) !important;
+  color: var(--bs-ink) !important;
+}
+body.bs-shell-on .btn-tonal:hover:not(:disabled),
+body.bs-shell-on .btn-outline:hover:not(:disabled),
+body.bs-shell-on .btn-ghost:hover:not(:disabled) { background: var(--bs-pill-hover) !important; }
+body.bs-shell-on .btn-text { border: 0 !important; background: var(--bs-pill) !important; color: #0494f4 !important; }
+body.bs-shell-on .btn-text:hover:not(:disabled) { background: var(--bs-pill-hover) !important; }
+body.bs-shell-on .btn-danger { background: #ef4444 !important; color: #ffffff !important; border: 0 !important; }
+body.bs-shell-on .btn-danger-text { background: rgba(239, 68, 68, 0.12) !important; color: #ef4444 !important; border: 0 !important; }
+
+/* ── Setting rows, devices, activity items, recommendations ───────────── */
+body.bs-shell-on .setting-row,
+body.bs-shell-on .info-row,
+body.bs-shell-on .activity-item,
+body.bs-shell-on .device,
+body.bs-shell-on .home-recommendation {
+  min-height: 56px !important;
+  padding: 12px 6px !important;
+  gap: 14px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--bs-subborder) !important;
+  border-radius: 0 !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+body.bs-shell-on .setting-row:hover {
+  background: var(--bs-pill) !important;
+  border-radius: 10px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+body.bs-shell-on .setting-row:last-child,
+body.bs-shell-on .info-row:last-child,
+body.bs-shell-on .activity-item:last-child,
+body.bs-shell-on .device:last-child,
+body.bs-shell-on .home-recommendation:last-child { border-bottom: 0 !important; }
+body.bs-shell-on .setting-icon,
+body.bs-shell-on .activity-icon,
+body.bs-shell-on .device-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  background: var(--bs-pill) !important;
+  color: #0494f4 !important;
+  flex: 0 0 auto !important;
+}
+body.bs-shell-on .setting-icon .msym,
+body.bs-shell-on .activity-icon .msym,
+body.bs-shell-on .device-icon .msym { font-size: 18px !important; }
+body.bs-shell-on .setting-label,
+body.bs-shell-on .activity-title,
+body.bs-shell-on .device-name,
+body.bs-shell-on .home-recommendation strong {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--bs-ink) !important;
+  line-height: 1.35 !important;
+}
+body.bs-shell-on .setting-value,
+body.bs-shell-on .activity-detail,
+body.bs-shell-on .device-meta,
+body.bs-shell-on .home-recommendation p {
+  font-size: 12.5px !important;
+  color: var(--bs-muted) !important;
+  line-height: 1.4 !important;
+  margin-top: 2px !important;
+}
+body.bs-shell-on .setting-hint {
+  font-size: 11.5px !important;
+  color: var(--bs-muted) !important;
+  opacity: 0.85;
+  line-height: 1.4 !important;
+  margin-top: 3px !important;
+}
+body.bs-shell-on .home-recommendation .btn { margin-left: 0 !important; }
+body.bs-shell-on .current-session {
+  border: 0 !important;
+  border-bottom: 1px solid var(--bs-subborder) !important;
+  background: rgba(4, 148, 244, 0.08) !important;
+  border-radius: 10px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+body.bs-shell-on .optional-profile { border: 0 !important; margin-top: 4px; }
+body.bs-shell-on summary {
+  min-height: 40px !important;
+  padding: 8px 4px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--bs-ink) !important;
+}
+
+/* ── Quick access grid & stat tiles (distinct pill surface inside cards) ── */
+body.bs-shell-on .quick-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+body.bs-shell-on .quick-item {
+  background: var(--bs-pill) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 60px !important;
+  width: 100% !important;
+  text-align: left !important;
+}
+body.bs-shell-on .quick-item:hover { background: var(--bs-pill-hover) !important; }
+body.bs-shell-on .quick-item .setting-icon { background: var(--bs-subcard) !important; }
+body.bs-shell-on .quick-item > span:last-child {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--bs-ink) !important;
+  line-height: 1.3 !important;
+  min-width: 0;
+  flex: 1;
+}
+body.bs-shell-on .quick-item-sub {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: var(--bs-muted) !important;
+  margin-top: 2px !important;
+  line-height: 1.35 !important;
+}
+body.bs-shell-on .stat-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 10px !important;
+  margin: 8px 0 0 !important;
+}
+body.bs-shell-on .stat {
+  border: 1px solid var(--bs-subborder) !important;
+  background: var(--bs-pill) !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+}
+body.bs-shell-on .stat-label { font-size: 11.5px !important; color: var(--bs-muted) !important; font-weight: 500 !important; }
+body.bs-shell-on .stat-value { font-size: 13.5px !important; font-weight: 600 !important; color: var(--bs-ink) !important; margin-top: 3px !important; }
+
+/* ── Profile photo, security readiness, activity controls & modals ─────── */
+body.bs-shell-on .photo-preview-wrap { margin: 8px 0 4px !important; }
+body.bs-shell-on #pi-photo.avatar.lg {
+  width: 72px !important;
+  height: 72px !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  background: var(--bs-brand) !important;
+  color: #ffffff !important;
+}
+body.bs-shell-on #security-account-context {
+  background: var(--bs-subcard);
+  border: 1px solid var(--bs-subborder);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 0 0 12px !important;
+  font-size: 12.5px !important;
+  color: var(--bs-muted) !important;
+}
+body.bs-shell-on #security-readiness p { font-size: 12.5px !important; line-height: 1.5 !important; color: var(--bs-muted) !important; margin-bottom: 8px !important; }
+body.bs-shell-on #security-readiness .btn { margin-top: 4px !important; margin-right: 8px !important; }
+body.bs-shell-on .activity-controls { display: flex !important; align-items: center !important; gap: 10px !important; margin-bottom: 12px !important; flex-wrap: wrap !important; }
+body.bs-shell-on .activity-controls select.input {
+  background: var(--bs-pill) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 10px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  color: var(--bs-ink) !important;
+}
+body.bs-shell-on .activity-day {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bs-muted) !important;
+  padding: 14px 6px 4px !important;
+}
+body.bs-shell-on .modal {
+  background: var(--bs-card) !important;
+  border: 1px solid var(--bs-border) !important;
+  border-radius: 16px !important;
+  padding: 20px !important;
+  color: var(--bs-ink) !important;
+}
+body.bs-shell-on .modal-actions { background: var(--bs-card) !important; border-top: 1px solid var(--bs-subborder) !important; }
+body.bs-shell-on .modal-title { font-size: 17px !important; font-weight: 700 !important; color: var(--bs-ink) !important; }
+body.bs-shell-on .modal .input,
+body.bs-shell-on .modal .md-field input,
+body.bs-shell-on .modal .md-field select {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-border) !important;
+  border-radius: 10px !important;
+  color: var(--bs-ink) !important;
+}
+body.bs-shell-on .modal .btn { min-height: 38px !important; padding: 8px 16px !important; font-size: 13px !important; font-weight: 600 !important; border-radius: 10px !important; }
+
+/* ── Phone / Mobile App (TWA / PWA) responsive adjustments ────────────── */
+@media (max-width: 767px) {
+  body.bs-shell-on .me-content { padding: 12px 12px 24px !important; }
+  body.bs-shell-on .dash-header,
+  body.bs-shell-on .me-content .card,
+  body.bs-shell-on .account-details {
+    padding: 14px 14px !important;
+    margin: 0 0 10px !important;
+    border-radius: 12px !important;
+  }
+  body.bs-shell-on .dash-header { gap: 12px !important; }
+  body.bs-shell-on .dash-header .avatar { width: 46px !important; height: 46px !important; font-size: 18px !important; }
+  body.bs-shell-on .dash-title { font-size: 16px !important; }
+  body.bs-shell-on .quick-grid,
+  body.bs-shell-on .stat-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+  body.bs-shell-on .quick-item { padding: 11px 12px !important; min-height: 54px !important; }
+  body.bs-shell-on .setting-row,
+  body.bs-shell-on .info-row,
+  body.bs-shell-on .activity-item,
+  body.bs-shell-on .device,
+  body.bs-shell-on .home-recommendation { padding: 10px 4px !important; gap: 12px !important; min-height: 52px !important; }
+  body.bs-shell-on .device-info { min-width: 0 !important; gap: 12px !important; }
+}

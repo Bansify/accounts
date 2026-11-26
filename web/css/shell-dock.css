@@ -7,9 +7,17 @@
   background: var(--bs-subborder);
   margin: 0 12px;
 }
-body.bs-collapsed .bs-divider { margin: 0 8px; }
-.bs-expand-wrap { display: none; justify-content: center; padding: 8px 0 0; }
-body.bs-collapsed .bs-expand-wrap { display: flex; }
+body.bs-collapsed .bs-divider {
+  margin: 0 8px;
+}
+.bs-expand-wrap {
+  display: none;
+  justify-content: center;
+  padding: 8px 0 0;
+}
+body.bs-collapsed .bs-expand-wrap {
+  display: flex;
+}
 .bs-expand-btn {
   width: 32px;
   height: 32px;
@@ -22,8 +30,9 @@ body.bs-collapsed .bs-expand-wrap { display: flex; }
   align-items: center;
   justify-content: center;
 }
-.bs-expand-btn:hover { background: var(--bs-pill); }
-
+.bs-expand-btn:hover {
+  background: var(--bs-pill);
+}
 .bs-profile {
   display: flex;
   align-items: center;
@@ -239,139 +248,6 @@ body.bs-has-pane .bs-top {
   right: calc(var(--bs-dock) + var(--bs-gap) * 3 + 38%) !important;
 }
 
-/* ── 8-tab shell visibility & Mail-style inner content card layout ─────── */
-body.bs-shell-on [data-shell-tab] {
-  display: none !important;
-}
-body.bs-shell-on[data-bs-tab='home'] [data-shell-tab='home'],
-body.bs-shell-on[data-bs-tab='personal'] [data-shell-tab='personal'],
-body.bs-shell-on[data-bs-tab='contact'] [data-shell-tab='contact'],
-body.bs-shell-on[data-bs-tab='security'] [data-shell-tab='security'],
-body.bs-shell-on[data-bs-tab='devices'] [data-shell-tab='devices'],
-body.bs-shell-on[data-bs-tab='activity'] [data-shell-tab='activity'],
-body.bs-shell-on[data-bs-tab='storage'] [data-shell-tab='storage'],
-body.bs-shell-on[data-bs-tab='data'] [data-shell-tab='data'] {
-  display: block !important;
-}
-body.bs-shell-on[data-bs-tab='home'] .dash-header[data-shell-tab='home'] {
-  display: flex !important;
-}
-
-/* Inner scrollable body inside #dash-root */
-body.bs-shell-on .me-body {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow-y: auto !important;
-  display: block !important;
-  grid-template-columns: none !important;
-  max-width: none !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-body.bs-shell-on .me-content {
-  max-width: none !important;
-  width: 100% !important;
-  padding: 16px 24px 28px !important;
-  margin: 0 !important;
-  display: block !important;
-  font-size: 13px;
-}
-body.bs-shell-on .me-section {
-  max-width: none !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-body.bs-shell-on .me-section-label,
-body.bs-shell-on .me-section-title {
-  display: none !important;
-}
-
-/* Clean Mail SettingsModal-style subcards inside the #212121 content card with ultra-low-contrast borders */
-body.bs-shell-on .me-content .card {
-  background: var(--bs-subcard) !important;
-  border: 1px solid var(--bs-subborder) !important;
-  border-radius: 14px !important;
-  box-shadow: none !important;
-  padding: 18px 20px !important;
-  margin: 0 0 14px !important;
-}
-body.bs-shell-on .me-content .card.card-danger {
-  border-color: rgba(239, 68, 68, 0.25) !important;
-}
-body.bs-shell-on .account-details {
-  background: var(--bs-subcard) !important;
-  border: 1px solid var(--bs-subborder) !important;
-  border-radius: 14px !important;
-  box-shadow: none !important;
-  padding: 6px 20px 18px !important;
-  margin: 0 0 14px !important;
-}
-body.bs-shell-on .card-title { font-size: 14px !important; font-weight: 700 !important; color: var(--bs-ink); }
-body.bs-shell-on .card-title .msym { color: #0494f4; font-size: 18px; }
-body.bs-shell-on .card-danger .card-title,
-body.bs-shell-on .card-danger .card-title .msym { color: #ef4444; }
-body.bs-shell-on .card-subtitle { font-size: 12.5px !important; color: var(--bs-muted) !important; margin-bottom: 12px !important; }
-body.bs-shell-on .setting-row,
-body.bs-shell-on .info-row,
-body.bs-shell-on .activity-item,
-body.bs-shell-on .device,
-body.bs-shell-on .home-recommendation {
-  min-height: 58px;
-  padding: 12px 10px;
-  border: 0 !important;
-  border-bottom: 1px solid var(--bs-subborder) !important;
-  border-radius: 10px;
-}
-body.bs-shell-on .setting-row:last-child,
-body.bs-shell-on .info-row:last-child,
-body.bs-shell-on .activity-item:last-child,
-body.bs-shell-on .device:last-child {
-  border-bottom: 0 !important;
-}
-body.bs-shell-on .current-session {
-  border: 0 !important;
-  background: rgba(4, 148, 244, 0.08) !important;
-}
-body.bs-shell-on .optional-profile {
-  border: 0 !important;
-  margin-top: 4px;
-}
-body.bs-shell-on .email-chip,
-body.bs-shell-on .tag,
-body.bs-shell-on .btn-tonal,
-body.bs-shell-on .btn-outline,
-body.bs-shell-on .btn-ghost {
-  border: 0 !important;
-  background: var(--bs-pill) !important;
-  color: var(--bs-ink) !important;
-}
-body.bs-shell-on .btn-tonal:hover,
-body.bs-shell-on .btn-outline:hover,
-body.bs-shell-on .btn-ghost:hover {
-  background: var(--bs-pill-hover) !important;
-}
-body.bs-shell-on .stat {
-  border: 1px solid var(--bs-subborder) !important;
-  background: var(--bs-subcard) !important;
-  border-radius: 12px !important;
-}
-body.bs-shell-on .quick-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) !important;
-  gap: 10px !important;
-}
-body.bs-shell-on .quick-item {
-  background: var(--bs-subcard) !important;
-  border: 1px solid var(--bs-subborder) !important;
-  border-radius: 12px !important;
-  padding: 14px !important;
-}
-body.bs-shell-on .quick-item:hover {
-  background: var(--bs-pill) !important;
-}
-
 /* ── Mail-style startup screen ────────────────────────────────────────── */
 .me-splash-tile {
   width: 64px;
@@ -435,7 +311,7 @@ body.dark .me-splash-line {
   justify-content: center;
   gap: 12px;
   min-height: 100dvh;
-  background: var(--bs-canvas, #f5f6f7);
+  background: var(--bs-canvas, #f3f4f6);
 }
 
 /* ── responsive tablet & mobile drawer ────────────────────────────────── */
@@ -443,7 +319,7 @@ body.dark .me-splash-line {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 59;
 }
 body.bs-mobile-open .bs-drawer-backdrop {
@@ -460,17 +336,30 @@ body.bs-mobile-open .bs-drawer-backdrop {
   }
 }
 @media (max-width: 767px) {
-  .bs-mobile-menu {
+  :root {
+    --bs-gap: 8px;
+    --bs-top: 46px;
+    --bs-radius: 14px;
+  }
+  .bs-mobile-menu,
+  .bs-mobile-avatar {
     display: inline-flex;
   }
   .bs-social,
   .bs-card-acct {
-    display: none;
+    display: none !important;
+  }
+  .bs-search {
+    padding: 0 8px 0 10px;
+    gap: 6px;
   }
   .bs-panel {
     transform: translateX(-110%);
     transition: transform 0.2s ease;
-    width: 260px !important;
+    width: 268px !important;
+    top: 8px;
+    bottom: 8px;
+    left: 8px;
   }
   body.bs-mobile-open .bs-panel {
     transform: translateX(0);
@@ -481,5 +370,9 @@ body.bs-mobile-open .bs-drawer-backdrop {
   body.bs-shell-on.bs-collapsed #dash-root {
     left: var(--bs-gap) !important;
     right: var(--bs-gap) !important;
+  }
+  .bs-card-head {
+    height: 48px;
+    padding: 0 14px;
   }
 }
