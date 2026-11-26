@@ -196,8 +196,10 @@
     var cleanEmail = emailText === '…' ? '' : emailText;
     var panelAvatar = document.querySelector('.bs-avatar');
     var dockAvatar = document.querySelector('.bs-dock-avatar');
+    var mobileAvatar = document.querySelector('.bs-mobile-avatar');
     syncAvatarNode(panelAvatar, srcAvatar);
     syncAvatarNode(dockAvatar, srcAvatar);
+    syncAvatarNode(mobileAvatar, srcAvatar);
     var nameNode = document.querySelector('.bs-profile-name');
     var emailNode = document.querySelector('.bs-profile-email');
     var cardAcctEmail = document.getElementById('bs-card-acct-email');
@@ -358,6 +360,12 @@
     });
     document.addEventListener('click', function (e) { if (!search.contains(e.target)) closeSearch(); });
     search.appendChild(input);
+    var mobileAvatar = el('button', 'bs-mobile-avatar', 'B');
+    mobileAvatar.type = 'button';
+    mobileAvatar.title = 'Switch or manage Bansify Account';
+    mobileAvatar.setAttribute('aria-label', 'Account');
+    mobileAvatar.addEventListener('click', openAccountSheet);
+    search.appendChild(mobileAvatar);
     search.appendChild(resultsBox);
     top.appendChild(search);
     var social = el('div', 'bs-social');
@@ -440,6 +448,9 @@
     setInterval(refreshProfile, 1500);
     paintThemeIcon();
     setInterval(paintThemeIcon, 1500);
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();

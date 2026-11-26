@@ -1,0 +1,53 @@
+{
+  "packageId": "com.bansify.accounts",
+  "host": "accounts.bansify.com",
+  "name": "Bansify Accounts",
+  "launcherName": "Accounts",
+  "display": "standalone",
+  "themeColor": "#212121",
+  "themeColorDark": "#212121",
+  "navigationColor": "#212121",
+  "navigationColorDark": "#212121",
+  "navigationDividerColor": "#212121",
+  "navigationDividerColorDark": "#212121",
+  "backgroundColor": "#212121",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://accounts.bansify.com/icon-512.png",
+  "maskableIconUrl": "https://accounts.bansify.com/icon-512-maskable.png",
+  "splashScreenFadeOutDuration": 250,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "bansify"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://accounts.bansify.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://accounts.bansify.com/",
+  "minSdkVersion": 23,
+  "orientation": "default",
+  "fingerprints": [
+    {
+      "name": "Bansify Release Key",
+      "value": "50:4E:2F:C7:8A:B6:8E:01:8B:84:8F:C1:02:76:2E:44:99:A0:88:03:41:2E:66:A4:0B:2B:09:40:3C:61:49:B6"
+    }
+  ],
+  "additionalTrustedOrigins": [
+    "https://mail.bansify.com",
+    "https://drive.bansify.com",
+    "https://meet.bansify.com",
+    "https://pay.bansify.com",
+    "https://ai.bansify.com",
+    "https://gitplus.bansify.com"
+  ]
+}
