@@ -1,19 +1,25 @@
 /*
- * Bansify shell for the Accounts dashboard — the same five cards as bansify.com, Mail
- * and AI: rail, search pill + social card, content, app dock. The dashboard's own app
- * bar and sidebar stay in the DOM (their JavaScript keeps driving them) but are hidden
- * on desktop; everything the user sees is these cards.
+ * Bansify shell for the Accounts dashboard — identical five-card geometry and palette
+ * to Bansify Mail (MailShell.tsx + SettingsModal.tsx):
+ *   1. Left collapsible navigation card (8 focused account sections, 4px row gap)
+ *   2. Top search pill card
+ *   3. Top social links card
+ *   4. Main content card with Mail-style top section header bar + inner scrollable body
+ *   5. Right app dock card with Universal Account Switcher trigger
  */
-
 :root {
   --bs-canvas: #f5f6f7;
   --bs-card: #ffffff;
-  --bs-border: #e5e7eb;
-  --bs-ink: #17181a;
-  --bs-muted: #5f6368;
-  --bs-pill: #f4f4f5;
-  --bs-pill-hover: #e7e7e9;
+  --bs-subcard: #ffffff;
+  --bs-border: #e4e4e7;
+  --bs-subborder: #e4e4e7;
+  --bs-ink: #18181b;
+  --bs-muted: #71717a;
+  --bs-pill: rgba(244, 244, 245, 0.85);
+  --bs-pill-hover: rgba(228, 228, 231, 0.85);
   --bs-brand: #0494f4;
+  --bs-brand-hover: #0382d6;
+  --bs-brand-soft: rgba(4, 148, 244, 0.12);
   --bs-radius: 16px;
   --bs-panel: 260px;
   --bs-rail: 64px;
@@ -21,51 +27,179 @@
   --bs-gap: 12px;
   --bs-top: 48px;
 }
-
 html[data-theme='dark'],
 body.dark {
   --bs-canvas: #212121;
   --bs-card: #2a2a2a;
+  --bs-subcard: #262626;
   --bs-border: #333333;
-  --bs-ink: #e8eaed;
-  --bs-muted: #9aa0a6;
+  --bs-subborder: #383838;
+  --bs-ink: #f4f4f5;
+  --bs-muted: #a1a1aa;
   --bs-pill: #303030;
   --bs-pill-hover: #3a3a3a;
 }
-
+/* Override legacy Google palette variables so every inner control matches Bansify Mail */
 body.bs-shell-on {
+  --bg: var(--bs-canvas);
+  --surface: var(--bs-card);
+  --bg-panel: var(--bs-pill);
+  --bg-elevated: var(--bs-subcard);
+  --bg-input: var(--bs-subcard);
+  --bg-hover: var(--bs-pill-hover);
+  --chip: var(--bs-pill);
+  --border: var(--bs-border);
+  --border-strong: var(--bs-subborder);
+  --text: var(--bs-ink);
+  --text-muted: var(--bs-muted);
+  --text-faint: var(--bs-muted);
+  --accent: #0494f4;
+  --accent-hover: #0382d6;
+  --accent-soft: rgba(4, 148, 244, 0.12);
+  --accent-border: rgba(4, 148, 244, 0.3);
+  --accent-on: #ffffff;
   background: var(--bs-canvas) !important;
-  padding: var(--bs-gap) !important;
+  padding: 0 !important;
+  margin: 0 !important;
   color: var(--bs-ink);
+  overflow: hidden;
+  height: 100dvh;
 }
-
-/* ── content card ─────────────────────────────────────────────────────── */
+/* Eliminate glowing/shining focus outlines on programmatic focus targets and search input */
+body.bs-shell-on #me-content:focus,
+body.bs-shell-on #me-content:focus-visible,
+body.bs-shell-on .me-section h1:focus,
+body.bs-shell-on .me-section h1:focus-visible,
+body.bs-shell-on [tabindex='-1']:focus,
+body.bs-shell-on [tabindex='-1']:focus-visible,
+body.bs-shell-on .bs-search input:focus,
+body.bs-shell-on .bs-search input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+/* Sleek Mail-style scrollbars */
+body.bs-shell-on ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body.bs-shell-on ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.bs-shell-on ::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+  border: 0;
+}
+html[data-theme='dark'] body.bs-shell-on ::-webkit-scrollbar-thumb,
+body.bs-shell-on.dark ::-webkit-scrollbar-thumb {
+  background: #383838;
+}
+/* ── content card (fixed outer frame, inner scrollable body like Mail) ── */
 body.bs-shell-on #dash-root {
-  /* the card sits below the search/social row and stops before the dock */
-  margin: calc(var(--bs-top) + var(--bs-gap)) calc(var(--bs-dock) + var(--bs-gap) * 2) 0
-    calc(var(--bs-panel) + var(--bs-gap) * 2) !important;
-  padding: 8px 0 16px !important;
-  height: calc(100dvh - (var(--bs-gap) * 2) - var(--bs-top) - var(--bs-gap));
-  overflow-y: auto;
+  position: fixed;
+  top: calc(var(--bs-gap) * 2 + var(--bs-top));
+  bottom: var(--bs-gap);
+  left: calc(var(--bs-panel) + var(--bs-gap) * 2);
+  right: calc(var(--bs-dock) + var(--bs-gap) * 2);
+  margin: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden !important;
   background: var(--bs-card);
   border: 1px solid var(--bs-border);
   border-radius: var(--bs-radius);
 }
 body.bs-shell-on.bs-collapsed #dash-root {
-  margin-left: calc(var(--bs-rail) + var(--bs-gap) * 2) !important;
+  left: calc(var(--bs-rail) + var(--bs-gap) * 2);
 }
-body.bs-shell-on #dash-root > * {
-  padding-left: 16px;
-  padding-right: 16px;
+/* Mail-style content card top header bar */
+.bs-card-head {
+  height: 58px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--bs-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+  background: var(--bs-card);
 }
-
-/* the dashboard's own chrome is replaced by the shell on desktop */
+.bs-card-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.bs-card-head-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(4, 148, 244, 0.14);
+  color: #0494f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.bs-card-head-icon .msym {
+  font-size: 19px;
+}
+.bs-card-head-titles {
+  min-width: 0;
+}
+.bs-card-head-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--bs-ink);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-card-head-sub {
+  font-size: 12px;
+  color: var(--bs-muted);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-card-acct {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--bs-subborder);
+  background: var(--bs-subcard);
+  color: var(--bs-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: border-color 0.15s, color 0.15s;
+}
+.bs-card-acct:hover {
+  border-color: #0494f4;
+  color: var(--bs-ink);
+}
+.bs-card-acct-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0494f4;
+}
+/* Hide legacy chrome inside the shell */
 body.bs-shell-on .appbar,
 body.bs-shell-on .me-sidebar,
-body.bs-shell-on .me-appbar {
+body.bs-shell-on .me-appbar,
+body.bs-shell-on #dash-root > .footer,
+body.bs-shell-on .me-backdrop {
   display: none !important;
 }
-
 /* ── top row: search pill + social card ───────────────────────────────── */
 .bs-top {
   position: fixed;
@@ -80,8 +214,8 @@ body.bs-shell-on .me-appbar {
 body.bs-collapsed .bs-top {
   left: calc(var(--bs-rail) + var(--bs-gap) * 2);
 }
-
 .bs-search {
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
@@ -91,6 +225,24 @@ body.bs-collapsed .bs-top {
   border-radius: 999px;
   border: 1px solid var(--bs-border);
   background: var(--bs-card);
+  transition: border-color 0.15s;
+}
+.bs-search:focus-within {
+  border-color: rgba(4, 148, 244, 0.55);
+}
+.bs-mobile-menu {
+  display: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex: 0 0 auto;
 }
 .bs-search .msym {
   font-size: 18px;
@@ -105,7 +257,52 @@ body.bs-collapsed .bs-top {
   color: var(--bs-ink);
   font-size: 13px;
 }
-
+.bs-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--bs-card);
+  border: 1px solid var(--bs-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 90;
+  padding: 6px;
+}
+.bs-search-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--bs-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.bs-search-option:hover,
+.bs-search-option.is-selected {
+  background: var(--bs-pill);
+}
+.bs-search-option .msym {
+  color: #0494f4;
+  font-size: 19px;
+}
+.bs-search-option-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bs-ink);
+}
+.bs-search-option-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--bs-muted);
+}
 .bs-social {
   display: flex;
   align-items: center;
@@ -125,12 +322,12 @@ body.bs-collapsed .bs-top {
   color: #fff;
   text-decoration: none;
   font-size: 15px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   transition: filter 0.15s ease;
 }
 .bs-social a:hover {
   filter: brightness(1.1);
 }
-
 /* ── left panel ───────────────────────────────────────────────────────── */
 .bs-panel {
   position: fixed;
@@ -149,7 +346,6 @@ body.bs-collapsed .bs-top {
 body.bs-collapsed .bs-panel {
   width: var(--bs-rail);
 }
-
 .bs-brand {
   display: flex;
   align-items: center;
@@ -172,8 +368,6 @@ body.bs-collapsed .bs-brand {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 15px;
   flex: 0 0 auto;
   overflow: hidden;
   border: 0;
@@ -214,8 +408,10 @@ body.bs-collapsed .bs-collapse {
   align-items: center;
   justify-content: center;
 }
-
-/* nav rows are pills, inset 2px, exactly like the other apps */
+.bs-collapse:hover {
+  background: var(--bs-pill);
+}
+/* nav rows are pills, inset 2px, with 4px gap matching MailShell.tsx */
 .bs-nav {
   flex: 1 1 auto;
   min-height: 0;
@@ -289,110 +485,5 @@ body.bs-collapsed .bs-nav-item {
   text-overflow: ellipsis;
 }
 body.bs-collapsed .bs-nav-item > span:last-child {
-  display: none;
-}
-
-/* footer: divider, theme, account */
-.bs-footer {
-  flex: 0 0 auto;
-}
-.bs-divider {
-  height: 1px;
-  background: var(--bs-border);
-  margin: 0 12px;
-}
-.bs-utils {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-}
-body.bs-collapsed .bs-utils {
-  justify-content: center;
-  padding: 8px 0;
-}
-.bs-util {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--bs-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.bs-util:hover {
-  background: var(--bs-pill);
-}
-
-.bs-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  text-align: left;
-  color: inherit;
-}
-body.bs-collapsed .bs-profile {
-  justify-content: center;
-  padding: 12px 0;
-}
-.bs-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: var(--bs-brand);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex: 0 0 auto;
-  overflow: hidden;
-}
-.bs-profile-text {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-body.bs-collapsed .bs-profile-text {
-  display: none;
-}
-.bs-profile-name {
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bs-profile-email {
-  font-size: 11px;
-  color: var(--bs-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bs-theme-inline {
-  margin-left: auto;
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--bs-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-}
-body.bs-collapsed .bs-theme-inline {
   display: none;
 }
