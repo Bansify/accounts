@@ -10,7 +10,8 @@
 :root {
   --bs-canvas: #f5f6f7;
   --bs-card: #ffffff;
-  --bs-subcard: transparent;
+  --bs-content-bg: #ffffff;
+  --bs-subcard: #fafafa;
   --bs-border: rgba(0, 0, 0, 0.075);
   --bs-subborder: rgba(0, 0, 0, 0.055);
   --bs-ink: #18181b;
@@ -31,7 +32,8 @@ html[data-theme='dark'],
 body.dark {
   --bs-canvas: #212121;
   --bs-card: #2a2a2a;
-  --bs-subcard: transparent;
+  --bs-content-bg: #212121;
+  --bs-subcard: #262626;
   --bs-border: rgba(255, 255, 255, 0.055);
   --bs-subborder: rgba(255, 255, 255, 0.045);
   --bs-ink: #f4f4f5;
@@ -43,11 +45,12 @@ body.dark {
 html[data-theme='dark'] body.bs-shell-on,
 html[data-theme='light'] body.bs-shell-on,
 body.bs-shell-on {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --bg: var(--bs-canvas);
-  --surface: var(--bs-card);
+  --surface: var(--bs-content-bg);
   --bg-panel: var(--bs-pill);
-  --bg-elevated: var(--bs-card);
-  --bg-input: var(--bs-pill);
+  --bg-elevated: var(--bs-subcard);
+  --bg-input: var(--bs-subcard);
   --bg-hover: var(--bs-pill-hover);
   --chip: var(--bs-pill);
   --border: var(--bs-subborder);
@@ -60,6 +63,8 @@ body.bs-shell-on {
   --accent-soft: rgba(4, 148, 244, 0.1);
   --accent-border: rgba(4, 148, 244, 0.18);
   --accent-on: #ffffff;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
   background: var(--bs-canvas) !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -99,7 +104,7 @@ body.bs-shell-on #dash-root {
   display: flex !important;
   flex-direction: column;
   overflow: hidden !important;
-  background: var(--bs-card);
+  background: var(--bs-content-bg);
   border: 1px solid var(--bs-border);
   border-radius: var(--bs-radius);
 }
@@ -116,7 +121,7 @@ body.bs-shell-on.bs-collapsed #dash-root {
   justify-content: space-between;
   gap: 12px;
   flex: 0 0 auto;
-  background: var(--bs-card);
+  background: var(--bs-content-bg);
 }
 .bs-card-head-left {
   display: flex;

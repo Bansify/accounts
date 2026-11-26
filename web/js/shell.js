@@ -36,8 +36,7 @@
     { label: 'Meet', icon: 'videocam', url: 'https://meet.bansify.com' },
     { label: 'Pay', icon: 'payments', url: 'https://pay.bansify.com' },
     { label: 'AI', icon: 'auto_awesome', url: 'https://ai.bansify.com' },
-    { label: 'Store', icon: 'storefront', url: 'https://kiwistore.bansify.com' },
-    { label: 'GitPlus', icon: 'code', url: 'https://gitplus.bansify.com' },
+    { label: 'GitPlus', icon: 'code', url: 'https://gitplus.bansify.com', svg: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>' },
   ];
   var SOCIAL = [
     { label: 'Facebook', bg: 'linear-gradient(180deg,#18ACFE 0%,#0163E0 100%)', url: 'https://facebook.com/bansifyofficial', svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="#fff" d="M13.6 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.1H7.7v3h2.6V21h3.3z"/></svg>' },
@@ -395,7 +394,7 @@
       img.src = logo;
       img.alt = '';
       img.loading = 'lazy';
-      img.onerror = function () { button.innerHTML = sym(app.icon); };
+      img.onerror = function () { button.innerHTML = app.svg || sym(app.icon); };
       button.appendChild(img);
       app.logo = logo;
       button.addEventListener('click', function () { openPane(app); });
