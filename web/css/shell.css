@@ -1,63 +1,56 @@
 /*
- * Bansify five-card shell for the Accounts dashboard (/me).
- * Pixel-aligned with Bansify Mail (mail.bansify.com):
- *   - Outer canvas: #212121 (dark) / #f5f6f7 (light)
- *   - 4 outer chrome cards (left panel, search pill, social card, right dock): #2a2a2a / #333333 border
- *   - Center content card (#dash-root): #212121 (dark) / #ffffff (light) with #333333 outer border,
- *     48px top toolbar, and flat edge-to-edge rows separated by 1px #2e2e2e dividers (zero card-in-card borders).
+ * Bansify shell for the Accounts dashboard — identical five-card geometry and palette
+ * to Bansify Mail (MailShell.tsx + SettingsModal.tsx):
+ *   1. Left collapsible navigation card (8 focused account sections, 4px row gap)
+ *   2. Top search pill card
+ *   3. Top social links card
+ *   4. Main content card with Mail-style top section header bar + inner scrollable body
+ *   5. Right app dock card with Universal Account Switcher trigger
  */
-
 :root {
   --bs-canvas: #f5f6f7;
   --bs-card: #ffffff;
-  --bs-content-bg: #ffffff;
-  --bs-border: #e4e4e7;
-  --bs-row-border: #f1f3f4;
-  --bs-row-hover: #f8f9fa;
-  --bs-badge-bg: #f1f3f4;
-  --bs-badge-ink: #52525b;
+  --bs-subcard: #fafafa;
+  --bs-border: #e5e7eb;
+  --bs-subborder: #eceef1;
   --bs-ink: #18181b;
   --bs-muted: #71717a;
   --bs-pill: rgba(244, 244, 245, 0.85);
   --bs-pill-hover: rgba(228, 228, 231, 0.85);
   --bs-brand: #0494f4;
   --bs-brand-hover: #0382d6;
+  --bs-brand-soft: rgba(4, 148, 244, 0.12);
   --bs-radius: 16px;
   --bs-panel: 260px;
   --bs-rail: 64px;
   --bs-dock: 64px;
   --bs-gap: 12px;
   --bs-top: 48px;
-  --bs-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
-
 html[data-theme='dark'],
 body.dark {
   --bs-canvas: #212121;
   --bs-card: #2a2a2a;
-  --bs-content-bg: #212121;
+  --bs-subcard: #262626;
   --bs-border: #333333;
-  --bs-row-border: #2e2e2e;
-  --bs-row-hover: #262626;
-  --bs-badge-bg: #2e2e2e;
-  --bs-badge-ink: #d4d4d8;
-  --bs-ink: #e4e4e7;
-  --bs-muted: #8e8e93;
+  --bs-subborder: #313131;
+  --bs-ink: #f4f4f5;
+  --bs-muted: #a1a1aa;
   --bs-pill: #303030;
   --bs-pill-hover: #3a3a3a;
 }
-
+/* Override legacy Google palette variables so every inner control matches Bansify Mail */
 html[data-theme='dark'] body.bs-shell-on,
 html[data-theme='light'] body.bs-shell-on,
 body.bs-shell-on {
   --bg: var(--bs-canvas);
   --surface: var(--bs-card);
   --bg-panel: var(--bs-pill);
-  --bg-elevated: var(--bs-card);
-  --bg-input: var(--bs-content-bg);
-  --bg-hover: var(--bs-row-hover);
-  --chip: var(--bs-badge-bg);
-  --border: var(--bs-row-border);
+  --bg-elevated: var(--bs-subcard);
+  --bg-input: var(--bs-subcard);
+  --bg-hover: var(--bs-pill-hover);
+  --chip: var(--bs-pill);
+  --border: var(--bs-subborder);
   --border-strong: var(--bs-border);
   --text: var(--bs-ink);
   --text-muted: var(--bs-muted);
@@ -67,31 +60,43 @@ body.bs-shell-on {
   --accent-soft: rgba(4, 148, 244, 0.12);
   --accent-border: rgba(4, 148, 244, 0.28);
   --accent-on: #ffffff;
-  --font: var(--bs-font);
-  font-family: var(--bs-font) !important;
   background: var(--bs-canvas) !important;
   padding: 0 !important;
   margin: 0 !important;
   color: var(--bs-ink);
   overflow: hidden;
   height: 100dvh;
-  user-select: none;
 }
-
-/* Remove all high-contrast focus outlines across the shell */
-body.bs-shell-on *:focus,
-body.bs-shell-on *:focus-visible {
+/* Eliminate glowing/shining focus outlines on programmatic focus targets and search input */
+body.bs-shell-on #me-content:focus,
+body.bs-shell-on #me-content:focus-visible,
+body.bs-shell-on .me-section h1:focus,
+body.bs-shell-on .me-section h1:focus-visible,
+body.bs-shell-on [tabindex='-1']:focus,
+body.bs-shell-on [tabindex='-1']:focus-visible,
+body.bs-shell-on .bs-search input:focus,
+body.bs-shell-on .bs-search input:focus-visible {
   outline: none !important;
+  box-shadow: none !important;
 }
-
 /* Sleek Mail-style scrollbars */
-body.bs-shell-on ::-webkit-scrollbar { width: 8px; height: 8px; }
-body.bs-shell-on ::-webkit-scrollbar-track { background: transparent; }
-body.bs-shell-on ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; border: 0; }
+body.bs-shell-on ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body.bs-shell-on ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.bs-shell-on ::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+  border: 0;
+}
 html[data-theme='dark'] body.bs-shell-on ::-webkit-scrollbar-thumb,
-body.bs-shell-on.dark ::-webkit-scrollbar-thumb { background: #383838; }
-
-/* ── center content card (#212121 dark / #ffffff light, matching Mail EmailList) ── */
+body.bs-shell-on.dark ::-webkit-scrollbar-thumb {
+  background: #383838;
+}
+/* ── content card (fixed outer frame, inner scrollable body like Mail) ── */
 body.bs-shell-on #dash-root {
   position: fixed;
   top: calc(var(--bs-gap) * 2 + var(--bs-top));
@@ -104,91 +109,91 @@ body.bs-shell-on #dash-root {
   display: flex !important;
   flex-direction: column;
   overflow: hidden !important;
-  background: var(--bs-content-bg) !important;
-  border: 1px solid var(--bs-border) !important;
-  border-radius: var(--bs-radius) !important;
+  background: var(--bs-card);
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius);
 }
 body.bs-shell-on.bs-collapsed #dash-root {
   left: calc(var(--bs-rail) + var(--bs-gap) * 2);
 }
-
-/* Compact 48px Mail-style toolbar at the top of the content card */
+/* Mail-style content card top header bar */
 .bs-card-head {
-  height: 48px;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--bs-row-border);
+  height: 54px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--bs-subborder);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   flex: 0 0 auto;
-  background: var(--bs-content-bg);
+  background: var(--bs-card);
 }
 .bs-card-head-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   min-width: 0;
 }
 .bs-card-head-icon {
-  color: var(--bs-muted);
-  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(4, 148, 244, 0.14);
+  color: #0494f4;
+  display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
 }
-.bs-card-head-icon .msym { font-size: 17px; }
-.bs-card-head-dot {
-  color: var(--bs-muted);
-  font-size: 12px;
-  opacity: 0.6;
+.bs-card-head-icon .msym {
+  font-size: 19px;
+}
+.bs-card-head-titles {
+  min-width: 0;
 }
 .bs-card-head-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--bs-ink);
-  white-space: nowrap;
-}
-.bs-card-head-sub {
-  font-size: 12px;
-  color: var(--bs-muted);
+  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.bs-card-refresh {
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
+.bs-card-head-sub {
+  font-size: 12px;
   color: var(--bs-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex: 0 0 auto;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.bs-card-refresh:hover { background: var(--bs-row-hover); color: var(--bs-ink); }
-.bs-card-refresh .msym { font-size: 16px; }
 .bs-card-acct {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 8px;
-  border-radius: 8px;
-  border: 0;
-  background: transparent;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--bs-subborder);
+  background: var(--bs-subcard);
   color: var(--bs-muted);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   flex: 0 0 auto;
+  transition: border-color 0.15s, color 0.15s;
 }
-.bs-card-acct:hover { background: var(--bs-row-hover); color: var(--bs-ink); }
-.bs-card-acct .msym { font-size: 16px; }
-
+.bs-card-acct:hover {
+  border-color: #0494f4;
+  color: var(--bs-ink);
+}
+.bs-card-acct-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0494f4;
+}
 /* Hide legacy chrome inside the shell */
 body.bs-shell-on .appbar,
 body.bs-shell-on .me-sidebar,
@@ -197,7 +202,6 @@ body.bs-shell-on #dash-root > .footer,
 body.bs-shell-on .me-backdrop {
   display: none !important;
 }
-
 /* ── top row: search pill + social card ───────────────────────────────── */
 .bs-top {
   position: fixed;
@@ -212,7 +216,6 @@ body.bs-shell-on .me-backdrop {
 body.bs-collapsed .bs-top {
   left: calc(var(--bs-rail) + var(--bs-gap) * 2);
 }
-
 .bs-search {
   position: relative;
   flex: 1 1 auto;
@@ -224,6 +227,10 @@ body.bs-collapsed .bs-top {
   border-radius: 999px;
   border: 1px solid var(--bs-border);
   background: var(--bs-card);
+  transition: border-color 0.15s;
+}
+.bs-search:focus-within {
+  border-color: rgba(4, 148, 244, 0.45);
 }
 .bs-mobile-menu {
   display: none;
@@ -239,7 +246,10 @@ body.bs-collapsed .bs-top {
   padding: 0;
   flex: 0 0 auto;
 }
-.bs-search .msym { font-size: 16px; color: var(--bs-muted); }
+.bs-search .msym {
+  font-size: 18px;
+  color: var(--bs-muted);
+}
 .bs-search input {
   flex: 1 1 auto;
   min-width: 0;
@@ -247,10 +257,8 @@ body.bs-collapsed .bs-top {
   outline: 0;
   background: transparent;
   color: var(--bs-ink);
-  font-family: var(--bs-font);
   font-size: 13px;
 }
-.bs-search input::placeholder { color: var(--bs-muted); opacity: 0.85; }
 .bs-search-results {
   position: absolute;
   top: calc(100% + 8px);
@@ -259,7 +267,7 @@ body.bs-collapsed .bs-top {
   background: var(--bs-card);
   border: 1px solid var(--bs-border);
   border-radius: 14px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
   max-height: 320px;
   overflow-y: auto;
   z-index: 90;
@@ -270,7 +278,7 @@ body.bs-collapsed .bs-top {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border: 0;
   border-radius: 10px;
   background: transparent;
@@ -278,11 +286,25 @@ body.bs-collapsed .bs-top {
   text-align: left;
   cursor: pointer;
 }
-.bs-search-option:hover { background: var(--bs-pill); }
-.bs-search-option .msym { color: #0494f4; font-size: 18px; }
-.bs-search-option-title { display: block; font-size: 13px; font-weight: 600; color: var(--bs-ink); }
-.bs-search-option-sub { display: block; font-size: 11px; color: var(--bs-muted); }
-
+.bs-search-option:hover,
+.bs-search-option.is-selected {
+  background: var(--bs-pill);
+}
+.bs-search-option .msym {
+  color: #0494f4;
+  font-size: 19px;
+}
+.bs-search-option-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bs-ink);
+}
+.bs-search-option-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--bs-muted);
+}
 .bs-social {
   display: flex;
   align-items: center;
@@ -302,15 +324,17 @@ body.bs-collapsed .bs-top {
   color: #fff;
   text-decoration: none;
   font-size: 15px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 1px 2px rgba(0, 0, 0, 0.22);
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 .bs-social a:hover {
   transform: translateY(-1px) scale(1.04);
   filter: brightness(1.08);
 }
-.bs-social a svg { display: block; flex: 0 0 auto; }
-
+.bs-social a svg {
+  display: block;
+  flex: 0 0 auto;
+}
 /* ── left panel ───────────────────────────────────────────────────────── */
 .bs-panel {
   position: fixed;
@@ -326,8 +350,9 @@ body.bs-collapsed .bs-top {
   background: var(--bs-card);
   overflow: hidden;
 }
-body.bs-collapsed .bs-panel { width: var(--bs-rail); }
-
+body.bs-collapsed .bs-panel {
+  width: var(--bs-rail);
+}
 .bs-brand {
   display: flex;
   align-items: center;
@@ -336,7 +361,10 @@ body.bs-collapsed .bs-panel { width: var(--bs-rail); }
   padding: 0 12px;
   flex: 0 0 auto;
 }
-body.bs-collapsed .bs-brand { justify-content: center; padding: 0; }
+body.bs-collapsed .bs-brand {
+  justify-content: center;
+  padding: 0;
+}
 .bs-brand-mark {
   width: 36px;
   height: 36px;
@@ -352,18 +380,28 @@ body.bs-collapsed .bs-brand { justify-content: center; padding: 0; }
   border: 0;
   cursor: pointer;
 }
-.bs-brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bs-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .bs-brand-name {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.bs-brand-name b { color: var(--bs-brand); font-weight: 800; }
+.bs-brand-name b {
+  color: var(--bs-brand);
+  font-weight: 900;
+}
 body.bs-collapsed .bs-brand-name,
-body.bs-collapsed .bs-collapse { display: none; }
+body.bs-collapsed .bs-collapse {
+  display: none;
+}
 .bs-collapse {
   margin-left: auto;
   width: 28px;
@@ -377,10 +415,10 @@ body.bs-collapsed .bs-collapse { display: none; }
   align-items: center;
   justify-content: center;
 }
-.bs-collapse:hover { background: var(--bs-pill); }
-.bs-collapse .msym { font-size: 16px; }
-
-/* Navigation pills: 40px height, 2px top/bottom inset, 4px gap matching Mail */
+.bs-collapse:hover {
+  background: var(--bs-pill);
+}
+/* nav rows are pills, inset 2px, with 4px gap matching MailShell.tsx */
 .bs-nav {
   flex: 1 1 auto;
   min-height: 0;
@@ -390,7 +428,10 @@ body.bs-collapsed .bs-collapse { display: none; }
   flex-direction: column;
   gap: 4px;
 }
-body.bs-collapsed .bs-nav { padding: 0; align-items: center; }
+body.bs-collapsed .bs-nav {
+  padding: 0;
+  align-items: center;
+}
 .bs-nav-item {
   position: relative;
   display: flex;
@@ -402,13 +443,15 @@ body.bs-collapsed .bs-nav { padding: 0; align-items: center; }
   border-radius: 12px;
   cursor: pointer;
   color: var(--bs-ink);
-  font-family: var(--bs-font);
   font-size: 13px;
   font-weight: 500;
   padding: 0;
   text-align: left;
 }
-body.bs-collapsed .bs-nav-item { width: 40px; justify-content: center; }
+body.bs-collapsed .bs-nav-item {
+  width: 40px;
+  justify-content: center;
+}
 .bs-nav-item::before {
   content: '';
   position: absolute;
@@ -420,12 +463,17 @@ body.bs-collapsed .bs-nav-item { width: 40px; justify-content: center; }
   background: var(--bs-pill);
   transition: background 0.15s ease;
 }
-.bs-nav-item:hover::before { background: var(--bs-pill-hover); }
+.bs-nav-item:hover::before {
+  background: var(--bs-pill-hover);
+}
 .bs-nav-item.is-active::before {
   background: var(--bs-brand);
   box-shadow: 0 1px 3px rgba(4, 148, 244, 0.25);
 }
-.bs-nav-item.is-active { color: #fff; font-weight: 600; }
+.bs-nav-item.is-active {
+  color: #fff;
+  font-weight: 600;
+}
 .bs-nav-item .msym {
   position: relative;
   width: 40px;
@@ -443,4 +491,6 @@ body.bs-collapsed .bs-nav-item { width: 40px; justify-content: center; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-body.bs-collapsed .bs-nav-item > span:last-child { display: none; }
+body.bs-collapsed .bs-nav-item > span:last-child {
+  display: none;
+}

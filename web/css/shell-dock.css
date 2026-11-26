@@ -1,62 +1,91 @@
-/*
- * Bansify five-card shell — profile footer, right app dock, side pane,
- * 8-tab section visibility, and flat edge-to-edge Mail-style list rows.
- */
-
-.bs-panel-divider {
+/* ── left panel footer: divider, expand button, profile & theme ───────── */
+.bs-footer {
+  flex: 0 0 auto;
+}
+.bs-divider {
   height: 1px;
   background: var(--bs-border);
   margin: 0 12px;
-  flex: 0 0 auto;
 }
-body.bs-collapsed .bs-panel-divider { margin: 0 8px; }
-
-.bs-profile {
-  padding: 12px;
-  flex: 0 0 auto;
+body.bs-collapsed .bs-divider {
+  margin: 0 8px;
 }
-body.bs-collapsed .bs-profile {
-  padding: 12px 0;
+.bs-expand-wrap {
+  display: none;
+  justify-content: center;
+  padding: 8px 0 0;
+}
+body.bs-collapsed .bs-expand-wrap {
   display: flex;
+}
+.bs-expand-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
-.bs-profile-btn {
-  width: 100%;
+.bs-expand-btn:hover {
+  background: var(--bs-pill);
+}
+
+.bs-profile {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px;
+  width: 100%;
+  padding: 12px;
   border: 0;
-  border-radius: 12px;
   background: transparent;
-  color: var(--bs-ink);
   cursor: pointer;
   text-align: left;
-  font-family: var(--bs-font);
+  color: inherit;
+  transition: background 0.15s;
 }
-.bs-profile-btn:hover { background: var(--bs-pill); }
-body.bs-collapsed .bs-profile-btn { width: auto; padding: 2px; }
+.bs-profile:hover {
+  background: var(--bs-pill);
+}
+body.bs-collapsed .bs-profile {
+  justify-content: center;
+  padding: 12px 0;
+}
 .bs-avatar {
   width: 36px;
   height: 36px;
   border-radius: 999px;
   background: var(--bs-brand);
   color: #fff;
-  font-weight: 700;
-  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
   flex: 0 0 auto;
   overflow: hidden;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
-.bs-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.bs-profile-meta { flex: 1 1 auto; min-width: 0; }
+.bs-avatar img,
+.bs-dock-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bs-profile-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+body.bs-collapsed .bs-profile-text {
+  display: none;
+}
 .bs-profile-name {
   font-size: 13px;
   font-weight: 600;
-  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -64,27 +93,32 @@ body.bs-collapsed .bs-profile-btn { width: auto; padding: 2px; }
 .bs-profile-email {
   font-size: 11px;
   color: var(--bs-muted);
-  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.bs-theme-icon {
-  color: var(--bs-muted);
-  font-size: 16px;
-  flex: 0 0 auto;
-  width: 26px;
-  height: 26px;
+.bs-theme-inline {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border: 0;
   border-radius: 8px;
-  display: inline-flex;
+  background: transparent;
+  color: var(--bs-muted);
+  cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
 }
-.bs-theme-icon:hover { background: var(--bs-pill-hover); color: var(--bs-ink); }
-body.bs-collapsed .bs-profile-meta,
-body.bs-collapsed .bs-theme-icon { display: none; }
+.bs-theme-inline:hover {
+  background: var(--bs-pill-hover);
+}
+body.bs-collapsed .bs-theme-inline {
+  display: none;
+}
 
-/* ── right app dock ───────────────────────────────────────────────────── */
+/* ── right dock ───────────────────────────────────────────────────────── */
 .bs-dock {
   position: fixed;
   top: var(--bs-gap);
@@ -92,83 +126,105 @@ body.bs-collapsed .bs-theme-icon { display: none; }
   right: var(--bs-gap);
   width: var(--bs-dock);
   z-index: 60;
-  border: 1px solid var(--bs-border);
-  border-radius: var(--bs-radius);
-  background: var(--bs-card);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 0;
-  gap: 8px;
+  gap: 6px;
+  padding: 12px 0;
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius);
+  background: var(--bs-card);
   overflow-y: auto;
 }
 .bs-dock-avatar {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
+  background: var(--bs-brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  overflow: hidden;
+  flex: 0 0 auto;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 4px;
 }
-.bs-dock-line {
-  width: 24px;
+.bs-dock-divider {
+  width: 20px;
   height: 1px;
   background: var(--bs-border);
   flex: 0 0 auto;
 }
-.bs-dock-line.sm { width: 20px; }
 .bs-dock-app {
   width: 34px;
   height: 34px;
-  padding: 0;
-  border: 0;
   border-radius: 10px;
   background: var(--bs-brand);
-  color: #fff;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
   overflow: hidden;
   flex: 0 0 auto;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: filter 0.15s ease;
 }
-.bs-dock-app:hover { filter: brightness(1.08); }
-.bs-dock-app.is-open {
-  box-shadow: 0 0 0 2px var(--bs-brand);
-  transform: scale(1.05);
+.bs-dock-app:hover {
+  filter: brightness(1.1);
 }
-.bs-dock-app img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.bs-dock-app .msym { font-size: 18px; }
+.bs-dock-app img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bs-dock-app .msym {
+  color: #fff;
+  font-size: 17px;
+}
 
-/* ── sliding side-pane ────────────────────────────────────────────────── */
+/* ── in-app side pane ─────────────────────────────────────────────────── */
 .bs-pane {
   position: fixed;
-  top: calc(var(--bs-gap) * 2 + var(--bs-top));
+  top: var(--bs-gap);
   bottom: var(--bs-gap);
   right: calc(var(--bs-dock) + var(--bs-gap) * 2);
-  width: 360px;
-  z-index: 65;
+  width: 38%;
+  max-width: 560px;
+  z-index: 58;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--bs-border);
   border-radius: var(--bs-radius);
   background: var(--bs-card);
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
-.bs-pane[hidden] { display: none; }
 .bs-pane-head {
-  height: 44px;
-  padding: 0 12px;
-  border-bottom: 1px solid var(--bs-border);
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 48px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--bs-border);
+  flex: 0 0 auto;
+}
+.bs-pane-title {
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.bs-pane-head a,
-.bs-pane-head button {
+.bs-pane-btn {
+  margin-left: auto;
   width: 28px;
   height: 28px;
   border: 0;
@@ -179,303 +235,251 @@ body.bs-collapsed .bs-theme-icon { display: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none;
 }
-.bs-pane-head a:hover,
-.bs-pane-head button:hover { background: var(--bs-pill); color: var(--bs-ink); }
-.bs-pane iframe { flex: 1 1 auto; width: 100%; border: 0; background: var(--bs-content-bg); }
+.bs-pane-btn:hover {
+  background: var(--bs-pill);
+}
+.bs-pane iframe {
+  flex: 1 1 auto;
+  width: 100%;
+  border: 0;
+  background: #fff;
+}
+body.bs-has-pane #dash-root,
+body.bs-has-pane .bs-top {
+  right: calc(var(--bs-dock) + var(--bs-gap) * 3 + 38%) !important;
+}
 
-/* ── Center Content Card Body: Flat Mail-Style List Layout (Zero Inner Cards) ── */
-body.bs-shell-on .me-body {
+/* ── 8-tab shell visibility & Mail-style inner content card layout ─────── */
+body.bs-shell-on [data-shell-tab] {
+  display: none !important;
+}
+body.bs-shell-on[data-bs-tab='home'] [data-shell-tab='home'],
+body.bs-shell-on[data-bs-tab='personal'] [data-shell-tab='personal'],
+body.bs-shell-on[data-bs-tab='contact'] [data-shell-tab='contact'],
+body.bs-shell-on[data-bs-tab='security'] [data-shell-tab='security'],
+body.bs-shell-on[data-bs-tab='devices'] [data-shell-tab='devices'],
+body.bs-shell-on[data-bs-tab='activity'] [data-shell-tab='activity'],
+body.bs-shell-on[data-bs-tab='storage'] [data-shell-tab='storage'],
+body.bs-shell-on[data-bs-tab='data'] [data-shell-tab='data'] {
   display: block !important;
+}
+body.bs-shell-on[data-bs-tab='home'] .dash-header[data-shell-tab='home'] {
+  display: flex !important;
+}
+
+/* Inner scrollable body inside #dash-root */
+body.bs-shell-on .me-body {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow-y: auto !important;
-  overflow-x: hidden !important;
-  background: var(--bs-content-bg) !important;
-}
-body.bs-shell-on .me-content {
+  display: block !important;
+  grid-template-columns: none !important;
   max-width: none !important;
   width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  min-height: 0 !important;
-  background: var(--bs-content-bg) !important;
 }
-body.bs-shell-on .tab-panel > .section-header { display: none !important; }
-
-/* Remove ALL nested card borders, shadows, backgrounds, and margins */
-body.bs-shell-on .me-content .card,
-body.bs-shell-on .account-details,
-body.bs-shell-on .optional-profile {
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+body.bs-shell-on .me-content {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 20px 24px 28px !important;
+  margin: 0 !important;
+  display: block !important;
+  font-size: 13px;
+}
+body.bs-shell-on .me-section {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
   padding: 0 !important;
-  margin: 0 !important;
 }
-
-/* Section group header bar (edge-to-edge, low-contrast divider) */
-body.bs-shell-on .me-content .card > .card-title,
-body.bs-shell-on .me-content .card > .card-header-row {
-  padding: 10px 16px !important;
-  margin: 0 !important;
-  min-height: 38px !important;
-  border-bottom: 1px solid var(--bs-row-border) !important;
-  background: rgba(128, 128, 128, 0.03) !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  color: var(--bs-muted) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-body.bs-shell-on .me-content .card-header-row .card-title {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  color: var(--bs-muted) !important;
-  margin: 0 !important;
-}
-body.bs-shell-on .me-content .card-subtitle {
+body.bs-shell-on .me-section-label,
+body.bs-shell-on .me-section-title {
   display: none !important;
 }
 
-/* Welcome row at top of Home tab */
-body.bs-shell-on .dash-header {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  text-align: left !important;
-  gap: 14px !important;
-  padding: 14px 16px !important;
-  margin: 0 !important;
-  border-bottom: 1px solid var(--bs-row-border) !important;
-  background: transparent !important;
-}
-body.bs-shell-on .dash-header .avatar-xl {
-  width: 44px !important;
-  height: 44px !important;
-  font-size: 17px !important;
-  margin: 0 !important;
-  flex: 0 0 auto !important;
-}
-body.bs-shell-on .dash-header h1 {
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  margin: 0 !important;
-  color: var(--bs-ink) !important;
-}
-body.bs-shell-on .dash-header p {
-  margin: 0 0 0 auto !important;
-  font-size: 12px !important;
-}
-
-/* Every row in every tab renders as a flat, full-width Mail row */
-body.bs-shell-on .quick-grid,
-body.bs-shell-on .stat-grid {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-body.bs-shell-on .setting-row,
-body.bs-shell-on .info-row,
-body.bs-shell-on .activity-item,
-body.bs-shell-on .device,
-body.bs-shell-on .home-recommendation,
-body.bs-shell-on .quick-item,
-body.bs-shell-on .stat,
-body.bs-shell-on .photo-preview-wrap {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 14px !important;
-  width: 100% !important;
-  min-height: 60px !important;
-  padding: 11px 16px !important;
-  margin: 0 !important;
-  border: 0 !important;
-  border-top: 0 !important;
-  border-bottom: 1px solid var(--bs-row-border) !important;
-  border-radius: 0 !important;
-  background: transparent !important;
+/* Clean Mail SettingsModal-style subcards inside the content card with subtle borders */
+body.bs-shell-on .me-content .card {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 14px !important;
   box-shadow: none !important;
-  transform: none !important;
+  padding: 18px 20px !important;
+  margin: 0 0 14px !important;
 }
-body.bs-shell-on .setting-row:hover,
-body.bs-shell-on .info-row:hover,
-body.bs-shell-on .activity-item:hover,
-body.bs-shell-on .device:hover,
-body.bs-shell-on .home-recommendation:hover,
-body.bs-shell-on .quick-item:hover,
-body.bs-shell-on .stat:hover {
-  background: var(--bs-row-hover) !important;
+body.bs-shell-on .me-content .card.card-danger {
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+body.bs-shell-on .card-title {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: var(--bs-ink);
+}
+body.bs-shell-on .card-title .msym {
+  color: #0494f4;
+  font-size: 18px;
+}
+body.bs-shell-on .card-danger .card-title,
+body.bs-shell-on .card-danger .card-title .msym {
+  color: #ef4444;
+}
+body.bs-shell-on .card-subtitle {
+  font-size: 12.5px !important;
+  color: var(--bs-muted) !important;
+  margin-bottom: 12px !important;
+}
+body.bs-shell-on .setting-row {
+  min-height: 60px;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--bs-subborder);
+  border-radius: 10px;
+}
+body.bs-shell-on .setting-row:last-child {
+  border-bottom: 0;
 }
 body.bs-shell-on .current-session {
-  border: 0 !important;
-  border-bottom: 1px solid var(--bs-row-border) !important;
-  background: rgba(4, 148, 244, 0.05) !important;
+  border: 1px solid rgba(4, 148, 244, 0.28) !important;
 }
-
-/* 32x32 circular badge on the left of every row (matching Mail's #2e2e2e avatar circle) */
-body.bs-shell-on .setting-icon,
-body.bs-shell-on .activity-icon,
-body.bs-shell-on .device-icon,
-body.bs-shell-on .quick-item-head svg {
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  padding: 7px !important;
-  border-radius: 50% !important;
-  background: var(--bs-badge-bg) !important;
-  color: var(--bs-badge-ink) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 auto !important;
+body.bs-shell-on .optional-profile {
+  border-top: 0 !important;
+  margin-top: 4px;
 }
-body.bs-shell-on .setting-icon svg,
-body.bs-shell-on .activity-icon svg,
-body.bs-shell-on .device-icon svg {
-  width: 16px !important;
-  height: 16px !important;
-}
-
-/* Row typography matching Mail's 13px title + 12px muted description */
-body.bs-shell-on .setting-body,
-body.bs-shell-on .activity-body,
-body.bs-shell-on .device-body {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 2px !important;
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-}
-body.bs-shell-on .setting-label,
-body.bs-shell-on .activity-title,
-body.bs-shell-on .device-name,
-body.bs-shell-on .quick-item-title,
-body.bs-shell-on .info-label,
-body.bs-shell-on .stat-v {
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: var(--bs-ink) !important;
-  line-height: 1.35 !important;
-}
-body.bs-shell-on .setting-value,
-body.bs-shell-on .setting-hint,
-body.bs-shell-on .activity-detail,
-body.bs-shell-on .device-meta,
-body.bs-shell-on .quick-item-sub,
-body.bs-shell-on .info-value,
-body.bs-shell-on .stat-k {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  color: var(--bs-muted) !important;
-  line-height: 1.4 !important;
-}
-body.bs-shell-on .quick-item-head {
-  display: flex !important;
-  align-items: center !important;
-  gap: 14px !important;
-  margin: 0 !important;
+body.bs-shell-on .account-details {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 14px !important;
+  padding: 6px 20px 18px !important;
+  margin: 0 0 14px !important;
 }
 body.bs-shell-on .stat {
-  justify-content: space-between !important;
+  border: 1px solid var(--bs-subborder) !important;
+  background: var(--bs-card) !important;
 }
-body.bs-shell-on .stat-v { margin: 0 !important; order: 2; }
-body.bs-shell-on .stat-k { order: 1; font-size: 13px !important; color: var(--bs-ink) !important; font-weight: 500 !important; }
-
-/* Storage bar & optional profile summary as flat rows */
-body.bs-shell-on .storage-bar {
-  margin: 12px 16px 6px !important;
+body.bs-shell-on .quick-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) !important;
+  gap: 10px !important;
 }
-body.bs-shell-on #dp-storage-card > .flex {
-  padding: 0 16px 12px !important;
-  border-bottom: 1px solid var(--bs-row-border) !important;
+body.bs-shell-on .quick-item {
+  background: var(--bs-card) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
 }
-body.bs-shell-on .optional-profile > summary,
-body.bs-shell-on .account-details > summary {
-  padding: 12px 16px !important;
-  border-bottom: 1px solid var(--bs-row-border) !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: var(--bs-muted) !important;
-  list-style: none !important;
-  cursor: pointer !important;
-}
-body.bs-shell-on .optional-profile-body {
-  padding: 0 !important;
-  border: 0 !important;
-}
-
-/* Compact low-contrast buttons & inputs inside rows */
-body.bs-shell-on .me-content .btn-tonal,
-body.bs-shell-on .me-content .btn-outline,
-body.bs-shell-on .me-content .btn-ghost {
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 0 12px !important;
-  border-radius: 8px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  border: 1px solid var(--bs-border) !important;
+body.bs-shell-on .quick-item:hover {
+  border-color: rgba(4, 148, 244, 0.5) !important;
   background: var(--bs-pill) !important;
-  color: var(--bs-ink) !important;
-}
-body.bs-shell-on .me-content .btn-tonal:hover,
-body.bs-shell-on .me-content .btn-outline:hover,
-body.bs-shell-on .me-content .btn-ghost:hover {
-  background: var(--bs-pill-hover) !important;
-}
-body.bs-shell-on .activity-controls select,
-body.bs-shell-on .me-content .input {
-  border: 1px solid var(--bs-border) !important;
-  background: var(--bs-pill) !important;
-  color: var(--bs-ink) !important;
-  border-radius: 8px !important;
-  height: 30px !important;
-  padding: 0 10px !important;
-  font-size: 12px !important;
 }
 
-/* 8-tab subview visibility rules */
-body.bs-shell-on[data-bs-subtab='personal'] #pi-contact-card { display: none !important; }
-body.bs-shell-on[data-bs-subtab='contact'] #tab-personal > .card:first-of-type { display: none !important; }
-body.bs-shell-on[data-bs-subtab='security'] #sec-devices-card,
-body.bs-shell-on[data-bs-subtab='security'] #sec-activity-card { display: none !important; }
-body.bs-shell-on[data-bs-subtab='devices'] #sec-recommendations-card,
-body.bs-shell-on[data-bs-subtab='devices'] #sec-signin-card,
-body.bs-shell-on[data-bs-subtab='devices'] #sec-activity-card { display: none !important; }
-body.bs-shell-on[data-bs-subtab='activity'] #sec-recommendations-card,
-body.bs-shell-on[data-bs-subtab='activity'] #sec-signin-card,
-body.bs-shell-on[data-bs-subtab='activity'] #sec-devices-card { display: none !important; }
-body.bs-shell-on[data-bs-subtab='storage'] #dp-data-card,
-body.bs-shell-on[data-bs-subtab='storage'] #dp-prefs-card,
-body.bs-shell-on[data-bs-subtab='storage'] #dp-Legal-card,
-body.bs-shell-on[data-bs-subtab='storage'] #dp-delete-card { display: none !important; }
-body.bs-shell-on[data-bs-subtab='privacy'] #dp-storage-card { display: none !important; }
+/* ── Mail-style startup screen ────────────────────────────────────────── */
+.me-splash-tile {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--bs-brand, #0494f4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(4, 148, 244, 0.25);
+}
+.me-splash-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.me-splash-name {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.me-splash-name b {
+  color: #0494f4;
+}
+.me-splash-line {
+  width: 150px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  display: block;
+}
+html[data-theme='dark'] .me-splash-line,
+body.dark .me-splash-line {
+  background: #333333;
+}
+.me-splash-line > span {
+  display: block;
+  width: 33%;
+  height: 100%;
+  border-radius: 999px;
+  background: #0494f4;
+  animation: bs-loading 1.2s ease-in-out infinite;
+}
+@keyframes bs-loading {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+.me-splash-status {
+  font-size: 12px;
+  color: var(--bs-muted, #71717a);
+  margin: 0;
+}
+.me-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 100dvh;
+  background: var(--bs-canvas, #f5f6f7);
+}
 
-/* ── responsive mobile shell (<768px) ─────────────────────────────────── */
-@media (max-width: 767px) {
-  .bs-social,
-  .bs-dock,
+/* ── responsive tablet & mobile drawer ────────────────────────────────── */
+.bs-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 59;
+}
+body.bs-mobile-open .bs-drawer-backdrop {
+  display: block;
+}
+@media (max-width: 1023px) {
   .bs-pane,
-  .bs-collapse { display: none !important; }
-  .bs-mobile-menu { display: inline-flex; }
-  .bs-top { left: var(--bs-gap) !important; right: var(--bs-gap) !important; }
-  body.bs-shell-on #dash-root { left: var(--bs-gap) !important; right: var(--bs-gap) !important; }
-  .bs-panel {
-    width: var(--bs-panel) !important;
-    transform: translateX(calc(-100% - var(--bs-gap) * 2));
-    transition: transform 0.2s ease;
+  .bs-dock {
+    display: none;
   }
-  body.bs-mobile-open .bs-panel { transform: translateX(0); }
+  .bs-top,
+  body.bs-shell-on #dash-root {
+    right: var(--bs-gap) !important;
+  }
+}
+@media (max-width: 767px) {
+  .bs-mobile-menu {
+    display: inline-flex;
+  }
+  .bs-social,
+  .bs-card-acct {
+    display: none;
+  }
+  .bs-panel {
+    transform: translateX(-110%);
+    transition: transform 0.2s ease;
+    width: 260px !important;
+  }
+  body.bs-mobile-open .bs-panel {
+    transform: translateX(0);
+  }
+  .bs-top,
+  body.bs-collapsed .bs-top,
+  body.bs-shell-on #dash-root,
+  body.bs-shell-on.bs-collapsed #dash-root {
+    left: var(--bs-gap) !important;
+    right: var(--bs-gap) !important;
+  }
 }
