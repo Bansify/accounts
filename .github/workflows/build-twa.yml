@@ -44,12 +44,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Ensure Android SDK Platform 35 & Build-Tools 35.0.0
+      - name: Ensure Android SDK Platforms 35/36 & Build-Tools
         run: |
           export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
           yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager "platform-tools" "platforms;android-35" "platforms;android-36" "build-tools;35.0.0"
 
       - name: Prepare Release Keystore
         env:
@@ -61,10 +61,8 @@ jobs:
           if [ -n "$KEYSTORE_B64" ]; then
             echo "$KEYSTORE_B64" | tr -d ' \n\r\t' | base64 --decode > android.keystore
             KS_PASS="${KEYSTORE_PASS}"
-            K_ALIAS="${KEY_ALIAS}"
-            if [ -z "$K_ALIAS" ]; then
-              K_ALIAS=$(keytool -list -keystore android.keystore -storepass "$KS_PASS" | grep -i "PrivateKeyEntry" | head -n 1 | cut -d',' -f1 | tr -d ' ')
-            fi
+            DETECTED_ALIAS=$(keytool -list -keystore android.keystore -storepass "$KS_PASS" 2>/dev/null | grep -i "PrivateKeyEntry" | head -n 1 | cut -d',' -f1 | tr -d ' ')
+            K_ALIAS="${DETECTED_ALIAS:-${KEY_ALIAS:-bansify}}"
             K_PASS="${KEY_PASS:-$KS_PASS}"
           else
             KS_PASS="bansifyrelease123"
@@ -149,9 +147,12 @@ jobs:
               const generator = new TwaGenerator();
               await generator.createTwaProject(path.resolve("twa-build"), manifest);
 
+              let rootGradle = fs.readFileSync("twa-build/build.gradle", "utf8");
+              rootGradle = rootGradle.replace(/jcenter\(\)/g, "mavenCentral()");
+              fs.writeFileSync("twa-build/build.gradle", rootGradle);
+
               let gradle = fs.readFileSync("twa-build/app/build.gradle", "utf8");
               gradle = gradle
-                .replace(/compileSdkVersion\s+\d+/, "compileSdkVersion 35")
                 .replace(/targetSdkVersion\s+\d+/, "targetSdkVersion 35")
                 .replace(/http:\/\/127\.0\.0\.1:\d+\/manifest\.json/g, `https://${host}/manifest.json`)
                 .replace(
@@ -164,7 +165,14 @@ jobs:
           '
           cd twa-build
           chmod +x gradlew
-          ./gradlew assembleRelease bundleRelease --no-daemon
+          if ! ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace > gradle.log 2>&1; then
+            echo "### Gradle Build Error Log" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 120 gradle.log >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat gradle.log
+            exit 1
+          fi
           APK_OUT=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
           AAB_OUT=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
           cp "$APK_OUT" "../bansify-${APP_SLUG}-release.apk"
