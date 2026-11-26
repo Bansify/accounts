@@ -1,22 +1,22 @@
 /*
  * Bansify shell for the Accounts dashboard — identical five-card geometry and palette
- * to Bansify Mail (MailShell.tsx + SettingsModal.tsx):
+ * to Bansify Mail (MailShell.tsx):
  *   1. Left collapsible navigation card (8 focused account sections, 4px row gap)
  *   2. Top search pill card
  *   3. Top social links card
- *   4. Main content card with Mail-style top section header bar + inner scrollable body
+ *   4. Main content card with top section header bar + flat borderless inner layout
  *   5. Right app dock card with Universal Account Switcher trigger
  */
 :root {
   --bs-canvas: #f5f6f7;
   --bs-card: #ffffff;
-  --bs-subcard: #fafafa;
-  --bs-border: #e5e7eb;
-  --bs-subborder: #eceef1;
+  --bs-subcard: transparent;
+  --bs-border: rgba(0, 0, 0, 0.075);
+  --bs-subborder: rgba(0, 0, 0, 0.055);
   --bs-ink: #18181b;
   --bs-muted: #71717a;
-  --bs-pill: rgba(244, 244, 245, 0.85);
-  --bs-pill-hover: rgba(228, 228, 231, 0.85);
+  --bs-pill: #f4f4f5;
+  --bs-pill-hover: #e7e7e9;
   --bs-brand: #0494f4;
   --bs-brand-hover: #0382d6;
   --bs-brand-soft: rgba(4, 148, 244, 0.12);
@@ -31,23 +31,23 @@ html[data-theme='dark'],
 body.dark {
   --bs-canvas: #212121;
   --bs-card: #2a2a2a;
-  --bs-subcard: #262626;
-  --bs-border: #333333;
-  --bs-subborder: #313131;
+  --bs-subcard: transparent;
+  --bs-border: rgba(255, 255, 255, 0.055);
+  --bs-subborder: rgba(255, 255, 255, 0.045);
   --bs-ink: #f4f4f5;
   --bs-muted: #a1a1aa;
   --bs-pill: #303030;
   --bs-pill-hover: #3a3a3a;
 }
-/* Override legacy Google palette variables so every inner control matches Bansify Mail */
+/* Override legacy Google palette variables so zero bright borders ever leak through */
 html[data-theme='dark'] body.bs-shell-on,
 html[data-theme='light'] body.bs-shell-on,
 body.bs-shell-on {
   --bg: var(--bs-canvas);
   --surface: var(--bs-card);
   --bg-panel: var(--bs-pill);
-  --bg-elevated: var(--bs-subcard);
-  --bg-input: var(--bs-subcard);
+  --bg-elevated: var(--bs-card);
+  --bg-input: var(--bs-pill);
   --bg-hover: var(--bs-pill-hover);
   --chip: var(--bs-pill);
   --border: var(--bs-subborder);
@@ -57,8 +57,8 @@ body.bs-shell-on {
   --text-faint: var(--bs-muted);
   --accent: #0494f4;
   --accent-hover: #0382d6;
-  --accent-soft: rgba(4, 148, 244, 0.12);
-  --accent-border: rgba(4, 148, 244, 0.28);
+  --accent-soft: rgba(4, 148, 244, 0.1);
+  --accent-border: rgba(4, 148, 244, 0.18);
   --accent-on: #ffffff;
   background: var(--bs-canvas) !important;
   padding: 0 !important;
@@ -67,15 +67,9 @@ body.bs-shell-on {
   overflow: hidden;
   height: 100dvh;
 }
-/* Eliminate glowing/shining focus outlines on programmatic focus targets and search input */
-body.bs-shell-on #me-content:focus,
-body.bs-shell-on #me-content:focus-visible,
-body.bs-shell-on .me-section h1:focus,
-body.bs-shell-on .me-section h1:focus-visible,
-body.bs-shell-on [tabindex='-1']:focus,
-body.bs-shell-on [tabindex='-1']:focus-visible,
-body.bs-shell-on .bs-search input:focus,
-body.bs-shell-on .bs-search input:focus-visible {
+/* Eliminate all focus outlines across the shell */
+body.bs-shell-on *:focus,
+body.bs-shell-on *:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
@@ -88,13 +82,9 @@ body.bs-shell-on ::-webkit-scrollbar-track {
   background: transparent;
 }
 body.bs-shell-on ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: rgba(128, 128, 128, 0.25);
   border-radius: 4px;
   border: 0;
-}
-html[data-theme='dark'] body.bs-shell-on ::-webkit-scrollbar-thumb,
-body.bs-shell-on.dark ::-webkit-scrollbar-thumb {
-  background: #383838;
 }
 /* ── content card (fixed outer frame, inner scrollable body like Mail) ── */
 body.bs-shell-on #dash-root {
@@ -118,8 +108,8 @@ body.bs-shell-on.bs-collapsed #dash-root {
 }
 /* Mail-style content card top header bar */
 .bs-card-head {
-  height: 54px;
-  padding: 0 20px;
+  height: 52px;
+  padding: 0 24px;
   border-bottom: 1px solid var(--bs-subborder);
   display: flex;
   align-items: center;
@@ -135,10 +125,10 @@ body.bs-shell-on.bs-collapsed #dash-root {
   min-width: 0;
 }
 .bs-card-head-icon {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
-  background: rgba(4, 148, 244, 0.14);
+  background: var(--bs-pill);
   color: #0494f4;
   display: flex;
   align-items: center;
@@ -146,7 +136,7 @@ body.bs-shell-on.bs-collapsed #dash-root {
   flex: 0 0 auto;
 }
 .bs-card-head-icon .msym {
-  font-size: 19px;
+  font-size: 18px;
 }
 .bs-card-head-titles {
   min-width: 0;
@@ -175,17 +165,17 @@ body.bs-shell-on.bs-collapsed #dash-root {
   height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid var(--bs-subborder);
-  background: var(--bs-subcard);
+  border: 0;
+  background: var(--bs-pill);
   color: var(--bs-muted);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   flex: 0 0 auto;
-  transition: border-color 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 .bs-card-acct:hover {
-  border-color: #0494f4;
+  background: var(--bs-pill-hover);
   color: var(--bs-ink);
 }
 .bs-card-acct-dot {
@@ -227,10 +217,6 @@ body.bs-collapsed .bs-top {
   border-radius: 999px;
   border: 1px solid var(--bs-border);
   background: var(--bs-card);
-  transition: border-color 0.15s;
-}
-.bs-search:focus-within {
-  border-color: rgba(4, 148, 244, 0.45);
 }
 .bs-mobile-menu {
   display: none;
@@ -324,7 +310,6 @@ body.bs-collapsed .bs-top {
   color: #fff;
   text-decoration: none;
   font-size: 15px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 1px 2px rgba(0, 0, 0, 0.22);
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 .bs-social a:hover {
