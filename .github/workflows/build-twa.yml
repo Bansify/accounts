@@ -141,6 +141,7 @@ jobs:
               base.appVersion = process.env.VER_NAME || "1.0.0";
               base.appVersionName = process.env.VER_NAME || "1.0.0";
               base.appVersionCode = Number(process.env.VER_CODE || 1);
+              base.minSdkVersion = 24;
               base.signingKey = { path: "./android.keystore", alias: process.env.K_ALIAS || "bansify" };
 
               const manifest = new TwaManifest(base);
