@@ -1,34 +1,26 @@
 /*
- * Bansify Shell for Accounts (/me) — 1:1 with Bansify Mail (MailShell.tsx + EmailList.tsx).
- *
- * Five cards on a #212121 (#f5f6f7 light) canvas:
- *   1. Left navigation panel (.bs-panel) — #2a2a2a (#ffffff light), border #333333 (#e4e4e7 light)
- *   2. Top search pill (.bs-search)      — #2a2a2a (#ffffff light), border #333333 (#e4e4e7 light)
- *   3. Top social card (.bs-social)      — #2a2a2a (#ffffff light), border #333333 (#e4e4e7 light)
- *   4. Center content card (.bs-content) — #212121 (#ffffff light), border #333333 (#e4e4e7 light)
- *   5. Right app dock (.bs-dock)         — #2a2a2a (#ffffff light), border #333333 (#e4e4e7 light)
+ * Bansify shell for the Accounts dashboard — identical five-card geometry and palette
+ * to Bansify Mail (MailShell.tsx):
+ *   1. Left collapsible navigation card (8 focused account sections, 4px row gap)
+ *   2. Top search pill card
+ *   3. Top social links card
+ *   4. Main content card with top section header bar + flat borderless inner layout
+ *   5. Right app dock card with Universal Account Switcher trigger
  */
-
 :root {
   --bs-canvas: #f5f6f7;
   --bs-card: #ffffff;
   --bs-content-bg: #ffffff;
-  --bs-surface-2: #f4f4f5;
-  --bs-surface-2-hover: #e4e4e7;
-  --bs-border: #e4e4e7;
-  --bs-subborder: #f5f5f5;
-  --bs-row-hover: #fafafa;
+  --bs-subcard: #fafafa;
+  --bs-border: rgba(0, 0, 0, 0.075);
+  --bs-subborder: rgba(0, 0, 0, 0.055);
   --bs-ink: #18181b;
-  --bs-ink-2: #3f3f46;
   --bs-muted: #71717a;
-  --bs-placeholder: #a1a1aa;
-  --bs-pill: rgba(244, 244, 245, 0.8);
-  --bs-pill-hover: rgba(228, 228, 231, 0.8);
+  --bs-pill: #f4f4f5;
+  --bs-pill-hover: #e7e7e9;
   --bs-brand: #0494f4;
   --bs-brand-hover: #0382d6;
   --bs-brand-soft: rgba(4, 148, 244, 0.12);
-  --bs-tile-ring: rgba(0, 0, 0, 0.05);
-  --bs-social-ring: rgba(0, 0, 0, 0.1);
   --bs-radius: 16px;
   --bs-panel: 260px;
   --bs-rail: 64px;
@@ -36,79 +28,175 @@
   --bs-gap: 12px;
   --bs-top: 48px;
 }
-
 html[data-theme='dark'],
 body.dark {
   --bs-canvas: #212121;
   --bs-card: #2a2a2a;
   --bs-content-bg: #212121;
-  --bs-surface-2: #2a2a2a;
-  --bs-surface-2-hover: #303030;
-  --bs-border: #333333;
-  --bs-subborder: #2e2e2e;
-  --bs-row-hover: #282828;
+  --bs-subcard: #262626;
+  --bs-border: rgba(255, 255, 255, 0.055);
+  --bs-subborder: rgba(255, 255, 255, 0.045);
   --bs-ink: #f4f4f5;
-  --bs-ink-2: #d4d4d8;
   --bs-muted: #a1a1aa;
-  --bs-placeholder: #a1a1aa;
   --bs-pill: #303030;
   --bs-pill-hover: #3a3a3a;
-  --bs-brand: #0494f4;
-  --bs-brand-hover: #0382d6;
-  --bs-brand-soft: rgba(4, 148, 244, 0.15);
-  --bs-tile-ring: rgba(255, 255, 255, 0.1);
-  --bs-social-ring: rgba(255, 255, 255, 0.15);
 }
-
-/* Custom sleek scrollbar matching Bansify Mail (src/index.css) */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-html[data-theme='dark'] ::-webkit-scrollbar-thumb,
-body.dark ::-webkit-scrollbar-thumb { background: #383838; border-radius: 4px; }
-html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover,
-body.dark ::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
-
+/* Override legacy Google palette variables so zero bright borders ever leak through */
+html[data-theme='dark'] body.bs-shell-on,
+html[data-theme='light'] body.bs-shell-on,
 body.bs-shell-on {
-  background: var(--bs-canvas) !important;
-  padding: var(--bs-gap) !important;
-  color: var(--bs-ink);
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --bg: var(--bs-canvas);
+  --surface: var(--bs-content-bg);
+  --bg-panel: var(--bs-pill);
+  --bg-elevated: var(--bs-subcard);
+  --bg-input: var(--bs-subcard);
+  --bg-hover: var(--bs-pill-hover);
+  --chip: var(--bs-pill);
+  --border: var(--bs-subborder);
+  --border-strong: var(--bs-border);
+  --text: var(--bs-ink);
+  --text-muted: var(--bs-muted);
+  --text-faint: var(--bs-muted);
+  --accent: #0494f4;
+  --accent-hover: #0382d6;
+  --accent-soft: rgba(4, 148, 244, 0.1);
+  --accent-border: rgba(4, 148, 244, 0.18);
+  --accent-on: #ffffff;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  background: var(--bs-canvas) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: var(--bs-ink);
   overflow: hidden;
   height: 100dvh;
 }
-
-/* ── center content card (#212121 dark / #ffffff light like EmailList.tsx) ── */
-body.bs-shell-on .bs-content {
-  margin: calc(var(--bs-top) + var(--bs-gap)) calc(var(--bs-dock) + var(--bs-gap)) 0 calc(var(--bs-panel) + var(--bs-gap)) !important;
-  padding: 0 !important;
-  height: calc(100dvh - (var(--bs-gap) * 2) - var(--bs-top) - var(--bs-gap)) !important;
-  min-height: 0 !important;
-  max-width: none !important;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: var(--bs-content-bg) !important;
-  border: 1px solid var(--bs-border) !important;
-  border-radius: var(--bs-radius) !important;
+/* Eliminate all focus outlines across the shell */
+body.bs-shell-on *:focus,
+body.bs-shell-on *:focus-visible {
+  outline: none !important;
   box-shadow: none !important;
-  display: block !important;
 }
-body.bs-shell-on.bs-collapsed .bs-content {
-  margin-left: calc(var(--bs-rail) + var(--bs-gap)) !important;
+/* Sleek Mail-style scrollbars */
+body.bs-shell-on ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-
-/* Replace legacy dashboard chrome on desktop */
+body.bs-shell-on ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.bs-shell-on ::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.25);
+  border-radius: 4px;
+  border: 0;
+}
+/* ── content card (fixed outer frame, inner scrollable body like Mail) ── */
+body.bs-shell-on #dash-root {
+  position: fixed;
+  top: calc(var(--bs-gap) * 2 + var(--bs-top));
+  bottom: var(--bs-gap);
+  left: calc(var(--bs-panel) + var(--bs-gap) * 2);
+  right: calc(var(--bs-dock) + var(--bs-gap) * 2);
+  margin: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden !important;
+  background: var(--bs-content-bg);
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius);
+}
+body.bs-shell-on.bs-collapsed #dash-root {
+  left: calc(var(--bs-rail) + var(--bs-gap) * 2);
+}
+/* Mail-style content card top header bar */
+.bs-card-head {
+  height: 52px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--bs-subborder);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+  background: var(--bs-content-bg);
+}
+.bs-card-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.bs-card-head-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--bs-pill);
+  color: #0494f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.bs-card-head-icon .msym {
+  font-size: 18px;
+}
+.bs-card-head-titles {
+  min-width: 0;
+}
+.bs-card-head-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bs-ink);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-card-head-sub {
+  font-size: 12px;
+  color: var(--bs-muted);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-card-acct {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--bs-pill);
+  color: var(--bs-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: background 0.15s, color 0.15s;
+}
+.bs-card-acct:hover {
+  background: var(--bs-pill-hover);
+  color: var(--bs-ink);
+}
+.bs-card-acct-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0494f4;
+}
+/* Hide legacy chrome inside the shell */
 body.bs-shell-on .appbar,
 body.bs-shell-on .me-sidebar,
 body.bs-shell-on .me-appbar,
-body.bs-shell-on .me-drawer,
-body.bs-shell-on .me-scrim {
+body.bs-shell-on #dash-root > .footer,
+body.bs-shell-on .me-backdrop {
   display: none !important;
 }
-
 /* ── top row: search pill + social card ───────────────────────────────── */
 .bs-top {
   position: fixed;
@@ -118,12 +206,11 @@ body.bs-shell-on .me-scrim {
   height: var(--bs-top);
   display: flex;
   gap: var(--bs-gap);
-  z-index: 65;
+  z-index: 55;
 }
 body.bs-collapsed .bs-top {
   left: calc(var(--bs-rail) + var(--bs-gap) * 2);
 }
-
 .bs-search {
   position: relative;
   flex: 1 1 auto;
@@ -131,22 +218,29 @@ body.bs-collapsed .bs-top {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 48px;
   padding: 0 16px;
   border-radius: 999px;
   border: 1px solid var(--bs-border);
   background: var(--bs-card);
 }
-.bs-search-icon {
-  width: 16px;
-  height: 16px;
-  color: var(--bs-placeholder);
-  display: flex;
+.bs-mobile-menu {
+  display: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  padding: 0;
   flex: 0 0 auto;
 }
-.bs-search-icon svg { width: 16px; height: 16px; display: block; }
+.bs-search .msym {
+  font-size: 18px;
+  color: var(--bs-muted);
+}
 .bs-search input {
   flex: 1 1 auto;
   min-width: 0;
@@ -154,48 +248,58 @@ body.bs-collapsed .bs-top {
   outline: 0;
   background: transparent;
   color: var(--bs-ink);
-  font-family: inherit;
   font-size: 13px;
 }
-.bs-search input::placeholder { color: var(--bs-placeholder); }
-.bs-search-menu {
+.bs-search-results {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 0;
   right: 0;
-  max-height: 320px;
-  overflow-y: auto;
   background: var(--bs-card);
   border: 1px solid var(--bs-border);
   border-radius: 14px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.32);
-  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  max-height: 320px;
+  overflow-y: auto;
   z-index: 90;
+  padding: 6px;
 }
-.bs-search-item {
-  width: 100%;
+.bs-search-option {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
   border: 0;
   border-radius: 10px;
   background: transparent;
   color: var(--bs-ink);
-  font-family: inherit;
   text-align: left;
   cursor: pointer;
 }
-.bs-search-item:hover { background: var(--bs-pill); }
-.bs-search-item .msym { font-size: 18px; color: var(--bs-brand); }
-.bs-search-item-title { font-size: 13px; font-weight: 600; display: block; }
-.bs-search-item-sub { font-size: 11px; color: var(--bs-muted); display: block; }
-
+.bs-search-option:hover,
+.bs-search-option.is-selected {
+  background: var(--bs-pill);
+}
+.bs-search-option .msym {
+  color: #0494f4;
+  font-size: 19px;
+}
+.bs-search-option-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bs-ink);
+}
+.bs-search-option-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--bs-muted);
+}
 .bs-social {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 48px;
   padding: 0 12px;
   border-radius: var(--bs-radius);
   border: 1px solid var(--bs-border);
@@ -210,14 +314,18 @@ body.bs-collapsed .bs-top {
   justify-content: center;
   color: #fff;
   text-decoration: none;
-  flex: 0 0 auto;
-  box-shadow: 0 0 0 1px var(--bs-social-ring);
-  transition: filter 0.15s ease;
+  font-size: 15px;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
-.bs-social a svg { width: 16px; height: 16px; display: block; }
-.bs-social a:hover { filter: brightness(1.1); }
-
-/* ── left panel (.bs-panel) ───────────────────────────────────────────── */
+.bs-social a:hover {
+  transform: translateY(-1px) scale(1.04);
+  filter: brightness(1.08);
+}
+.bs-social a svg {
+  display: block;
+  flex: 0 0 auto;
+}
+/* ── left panel ───────────────────────────────────────────────────────── */
 .bs-panel {
   position: fixed;
   top: var(--bs-gap);
@@ -232,8 +340,9 @@ body.bs-collapsed .bs-top {
   background: var(--bs-card);
   overflow: hidden;
 }
-body.bs-collapsed .bs-panel { width: var(--bs-rail); }
-
+body.bs-collapsed .bs-panel {
+  width: var(--bs-rail);
+}
 .bs-brand {
   display: flex;
   align-items: center;
@@ -242,39 +351,47 @@ body.bs-collapsed .bs-panel { width: var(--bs-rail); }
   padding: 0 12px;
   flex: 0 0 auto;
 }
-body.bs-collapsed .bs-brand { justify-content: center; padding: 0; }
+body.bs-collapsed .bs-brand {
+  justify-content: center;
+  padding: 0;
+}
 .bs-brand-mark {
   width: 36px;
   height: 36px;
+  padding: 0;
   border-radius: 10px;
   background: var(--bs-brand);
   color: #fff;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 15px;
   flex: 0 0 auto;
   overflow: hidden;
-  box-shadow: 0 0 0 1px var(--bs-tile-ring);
+  border: 0;
+  cursor: pointer;
 }
-.bs-brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bs-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .bs-brand-name {
   font-size: 16px;
   font-weight: 900;
-  letter-spacing: -0.025em;
-  line-height: 1;
+  letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--bs-ink);
 }
-.bs-brand-name b { color: var(--bs-brand); font-weight: 900; }
+.bs-brand-name b {
+  color: var(--bs-brand);
+  font-weight: 900;
+}
 body.bs-collapsed .bs-brand-name,
-body.bs-collapsed .bs-collapse { display: none; }
+body.bs-collapsed .bs-collapse {
+  display: none;
+}
 .bs-collapse {
   margin-left: auto;
   width: 28px;
@@ -282,17 +399,16 @@ body.bs-collapsed .bs-collapse { display: none; }
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--bs-placeholder);
+  color: var(--bs-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
 }
-.bs-collapse svg { width: 16px; height: 16px; display: block; }
-.bs-collapse:hover { background: var(--bs-pill); }
-
-/* Nav rows: 40px rows with gap: 4px and 2px top/bottom pill inset (1:1 with MailShell.tsx) */
+.bs-collapse:hover {
+  background: var(--bs-pill);
+}
+/* nav rows are pills, inset 2px, with 4px gap matching MailShell.tsx */
 .bs-nav {
   flex: 1 1 auto;
   min-height: 0;
@@ -302,7 +418,10 @@ body.bs-collapsed .bs-collapse { display: none; }
   flex-direction: column;
   gap: 4px;
 }
-body.bs-collapsed .bs-nav { padding: 0; align-items: center; }
+body.bs-collapsed .bs-nav {
+  padding: 0;
+  align-items: center;
+}
 .bs-nav-item {
   position: relative;
   display: flex;
@@ -314,14 +433,15 @@ body.bs-collapsed .bs-nav { padding: 0; align-items: center; }
   border-radius: 12px;
   cursor: pointer;
   color: var(--bs-ink);
-  font-family: inherit;
   font-size: 13px;
   font-weight: 500;
   padding: 0;
   text-align: left;
-  flex: 0 0 auto;
 }
-body.bs-collapsed .bs-nav-item { width: 40px; justify-content: center; }
+body.bs-collapsed .bs-nav-item {
+  width: 40px;
+  justify-content: center;
+}
 .bs-nav-item::before {
   content: '';
   position: absolute;
@@ -333,13 +453,18 @@ body.bs-collapsed .bs-nav-item { width: 40px; justify-content: center; }
   background: var(--bs-pill);
   transition: background 0.15s ease;
 }
-.bs-nav-item:hover::before { background: var(--bs-pill-hover); }
+.bs-nav-item:hover::before {
+  background: var(--bs-pill-hover);
+}
 .bs-nav-item.is-active::before {
   background: var(--bs-brand);
-  box-shadow: 0 1px 2px rgba(4, 148, 244, 0.25);
+  box-shadow: 0 1px 3px rgba(4, 148, 244, 0.25);
 }
-.bs-nav-item.is-active { color: #fff; font-weight: 600; }
-.bs-nav-icon {
+.bs-nav-item.is-active {
+  color: #fff;
+  font-weight: 600;
+}
+.bs-nav-item .msym {
   position: relative;
   width: 40px;
   height: 40px;
@@ -347,100 +472,15 @@ body.bs-collapsed .bs-nav-item { width: 40px; justify-content: center; }
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  font-size: 18px;
 }
-.bs-nav-icon svg { width: 18px; height: 18px; display: block; }
-.bs-nav-label {
+.bs-nav-item > span:last-child {
   position: relative;
   margin-left: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-body.bs-collapsed .bs-nav-label { display: none; }
-
-/* Footer: divider + profile + theme button (1:1 with MailShell.tsx) */
-.bs-footer { flex: 0 0 auto; }
-.bs-divider { height: 1px; background: var(--bs-border); margin: 0 12px; }
-body.bs-collapsed .bs-divider { margin: 0 8px; }
-.bs-expand-wrap { display: none; justify-content: center; padding: 8px 0 0; }
-body.bs-collapsed .bs-expand-wrap { display: flex; }
-.bs-expand-btn {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--bs-placeholder);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+body.bs-collapsed .bs-nav-item > span:last-child {
+  display: none;
 }
-.bs-expand-btn svg { width: 16px; height: 16px; display: block; }
-.bs-expand-btn:hover { background: var(--bs-pill); }
-
-.bs-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  font-family: inherit;
-  text-align: left;
-  color: inherit;
-}
-.bs-profile:hover { background: var(--bs-border); }
-html:not([data-theme='dark']) .bs-profile:hover { background: #fafafa; }
-body.bs-collapsed .bs-profile { justify-content: center; padding: 12px 0; }
-.bs-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: var(--bs-brand);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex: 0 0 auto;
-  overflow: hidden;
-}
-.bs-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.bs-profile-text { min-width: 0; display: flex; flex-direction: column; }
-body.bs-collapsed .bs-profile-text { display: none; }
-.bs-profile-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--bs-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bs-profile-email {
-  font-size: 11px;
-  color: #71717a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bs-theme-inline {
-  margin-left: auto;
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--bs-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-}
-.bs-theme-inline svg { width: 16px; height: 16px; display: block; }
-.bs-theme-inline:hover { background: var(--bs-pill); }
-body.bs-collapsed .bs-theme-inline { display: none; }

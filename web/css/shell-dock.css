@@ -1,8 +1,114 @@
-/*
- * Bansify Shell — Right App Dock, In-App Pane, 8-Tab Visibility & Mail-Style Content.
- */
+/* ── left panel footer: divider, expand button, profile & theme ───────── */
+.bs-footer {
+  flex: 0 0 auto;
+}
+.bs-divider {
+  height: 1px;
+  background: var(--bs-subborder);
+  margin: 0 12px;
+}
+body.bs-collapsed .bs-divider { margin: 0 8px; }
+.bs-expand-wrap { display: none; justify-content: center; padding: 8px 0 0; }
+body.bs-collapsed .bs-expand-wrap { display: flex; }
+.bs-expand-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bs-expand-btn:hover { background: var(--bs-pill); }
 
-/* ── right dock (1:1 with MailShell.tsx lines 354-384) ────────────────── */
+.bs-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  transition: background 0.15s;
+}
+.bs-profile:hover {
+  background: var(--bs-pill);
+}
+body.bs-collapsed .bs-profile {
+  justify-content: center;
+  padding: 12px 0;
+}
+.bs-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--bs-brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+.bs-avatar img,
+.bs-dock-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bs-profile-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+body.bs-collapsed .bs-profile-text {
+  display: none;
+}
+.bs-profile-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-profile-email {
+  font-size: 11px;
+  color: var(--bs-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bs-theme-inline {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.bs-theme-inline:hover {
+  background: var(--bs-pill-hover);
+}
+body.bs-collapsed .bs-theme-inline {
+  display: none;
+}
+
+/* ── right dock ───────────────────────────────────────────────────────── */
 .bs-dock {
   position: fixed;
   top: var(--bs-gap);
@@ -23,26 +129,28 @@
 .bs-dock-avatar {
   width: 36px;
   height: 36px;
-  margin-bottom: 4px;
   border-radius: 999px;
   background: var(--bs-brand);
   color: #fff;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
   overflow: hidden;
   flex: 0 0 auto;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 4px;
 }
-.bs-dock-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.bs-dock-divider-top { width: 24px; height: 1px; margin-bottom: 4px; background: var(--bs-border); flex: 0 0 auto; }
-.bs-dock-divider { width: 20px; height: 1px; background: var(--bs-border); flex: 0 0 auto; }
+.bs-dock-divider {
+  width: 20px;
+  height: 1px;
+  background: var(--bs-subborder);
+  flex: 0 0 auto;
+}
 .bs-dock-app {
   width: 34px;
   height: 34px;
@@ -56,15 +164,23 @@
   cursor: pointer;
   overflow: hidden;
   flex: 0 0 auto;
-  box-shadow: 0 0 0 1px var(--bs-tile-ring);
   transition: filter 0.15s ease;
 }
-.bs-dock-app:hover { filter: brightness(1.1); }
-.bs-dock-app.is-active { outline: 2px solid rgba(4, 148, 244, 0.6); outline-offset: 2px; }
-.bs-dock-app img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.bs-dock-app svg { width: 17px; height: 17px; color: #fff; display: block; }
+.bs-dock-app:hover {
+  filter: brightness(1.1);
+}
+.bs-dock-app img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bs-dock-app .msym {
+  color: #fff;
+  font-size: 17px;
+}
 
-/* ── in-app pane ──────────────────────────────────────────────────────── */
+/* ── in-app side pane ─────────────────────────────────────────────────── */
 .bs-pane {
   position: fixed;
   top: var(--bs-gap);
@@ -86,265 +202,284 @@
   gap: 8px;
   height: 48px;
   padding: 0 12px;
-  border-bottom: 1px solid var(--bs-border);
+  border-bottom: 1px solid var(--bs-subborder);
   flex: 0 0 auto;
 }
-.bs-pane-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bs-pane-link { margin-left: auto; font-size: 11px; color: var(--bs-muted); text-decoration: none; }
-.bs-pane-link:hover { color: var(--bs-brand); }
+.bs-pane-title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .bs-pane-btn {
+  margin-left: auto;
   width: 28px;
   height: 28px;
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--bs-placeholder);
+  color: var(--bs-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none;
 }
-.bs-pane-btn svg { width: 16px; height: 16px; display: block; }
-.bs-pane-btn:hover { background: var(--bs-pill); }
-.bs-pane iframe { flex: 1 1 auto; width: 100%; border: 0; background: #fff; }
-body.bs-has-pane .bs-content,
+.bs-pane-btn:hover {
+  background: var(--bs-pill);
+}
+.bs-pane iframe {
+  flex: 1 1 auto;
+  width: 100%;
+  border: 0;
+  background: #fff;
+}
+body.bs-has-pane #dash-root,
 body.bs-has-pane .bs-top {
-  margin-right: calc(var(--bs-dock) + var(--bs-gap) + 38% + var(--bs-gap)) !important;
-  right: calc(var(--bs-dock) + var(--bs-gap) * 2 + 38% + var(--bs-gap));
+  right: calc(var(--bs-dock) + var(--bs-gap) * 3 + 38%) !important;
 }
 
-/* ── 8-tab subcard visibility rules ───────────────────────────────────── */
-[data-shell-tab="removed"] { display: none !important; }
-body.bs-shell-on[data-bs-tab="personal"] [data-shell-tab="contact"],
-body.bs-shell-on[data-bs-tab="contact"] [data-shell-tab="personal"] { display: none !important; }
-body.bs-shell-on[data-bs-tab="security"] [data-shell-tab="devices"],
-body.bs-shell-on[data-bs-tab="security"] [data-shell-tab="activity"],
-body.bs-shell-on[data-bs-tab="devices"] [data-shell-tab="security"],
-body.bs-shell-on[data-bs-tab="devices"] [data-shell-tab="activity"],
-body.bs-shell-on[data-bs-tab="activity"] [data-shell-tab="security"],
-body.bs-shell-on[data-bs-tab="activity"] [data-shell-tab="devices"] { display: none !important; }
-body.bs-shell-on[data-bs-tab="storage"] [data-shell-tab="data"],
-body.bs-shell-on[data-bs-tab="data"] [data-shell-tab="storage"] { display: none !important; }
+/* ── 8-tab shell visibility & Mail-style inner content card layout ─────── */
+body.bs-shell-on [data-shell-tab] {
+  display: none !important;
+}
+body.bs-shell-on[data-bs-tab='home'] [data-shell-tab='home'],
+body.bs-shell-on[data-bs-tab='personal'] [data-shell-tab='personal'],
+body.bs-shell-on[data-bs-tab='contact'] [data-shell-tab='contact'],
+body.bs-shell-on[data-bs-tab='security'] [data-shell-tab='security'],
+body.bs-shell-on[data-bs-tab='devices'] [data-shell-tab='devices'],
+body.bs-shell-on[data-bs-tab='activity'] [data-shell-tab='activity'],
+body.bs-shell-on[data-bs-tab='storage'] [data-shell-tab='storage'],
+body.bs-shell-on[data-bs-tab='data'] [data-shell-tab='data'] {
+  display: block !important;
+}
+body.bs-shell-on[data-bs-tab='home'] .dash-header[data-shell-tab='home'] {
+  display: flex !important;
+}
 
-/* ── Mail-aligned content styling inside #dash-root (#212121 dark / #fff light) ── */
-body.bs-shell-on .me-content {
+/* Inner scrollable body inside #dash-root */
+body.bs-shell-on .me-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  display: block !important;
+  grid-template-columns: none !important;
   max-width: none !important;
   width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  background: var(--bs-content-bg) !important;
 }
-body.bs-shell-on .section { padding: 0 !important; margin: 0 !important; }
+body.bs-shell-on .me-content {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 16px 24px 28px !important;
+  margin: 0 !important;
+  display: block !important;
+  font-size: 13px;
+}
+body.bs-shell-on .me-section {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+body.bs-shell-on .me-section-label,
+body.bs-shell-on .me-section-title {
+  display: none !important;
+}
 
-/* Section header bar — matches EmailList.tsx top toolbar (h-12 border-b border-[#333333]) */
-body.bs-shell-on .section-header {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 8px;
-  min-height: 48px;
-  padding: 12px 20px !important;
-  margin: 0 !important;
-  border-bottom: 1px solid var(--bs-border);
-  background: var(--bs-content-bg);
-}
-body.bs-shell-on .section-header h1 {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.01em;
-  margin: 0 !important;
-  color: var(--bs-ink);
-}
-body.bs-shell-on .section-header p { font-size: 12px !important; color: var(--bs-muted) !important; margin: 0 !important; }
-
-/* Home hero header inside #section-home */
-body.bs-shell-on .hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 24px 20px 18px !important;
-  margin: 0 !important;
-  border-bottom: 1px solid var(--bs-subborder);
-}
-body.bs-shell-on .hero-avatar-wrap { margin-bottom: 10px !important; }
-body.bs-shell-on .hero .avatar.xl {
-  width: 68px !important;
-  height: 68px !important;
-  font-size: 24px !important;
-  background: var(--bs-brand) !important;
-  color: #fff !important;
-}
-body.bs-shell-on .hero h1 {
-  font-size: 20px !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.02em;
-  margin: 0 0 6px !important;
-  color: var(--bs-ink);
-}
-body.bs-shell-on .hero > p { font-size: 12.5px !important; color: var(--bs-muted) !important; margin: 6px 0 0 !important; max-width: 520px; }
-body.bs-shell-on .email-chip {
-  background: var(--bs-surface-2) !important;
-  border: 0 !important;
-  color: var(--bs-ink) !important;
-  font-size: 12px !important;
-  padding: 5px 12px !important;
-  border-radius: 999px !important;
-}
-body.bs-shell-on .email-chip:hover { background: var(--bs-surface-2-hover) !important; }
-
-/* Home recommendations, stats, and quick-access cards (#2a2a2a dark / #f4f4f5 light pills) */
-body.bs-shell-on #home-recommendations { padding: 0 20px; }
-body.bs-shell-on .home-recommendation {
-  margin: 12px 0 0 !important;
-  padding: 12px 16px !important;
-  border-radius: 12px !important;
-  border: 0 !important;
-  background: var(--bs-brand-soft) !important;
-}
-body.bs-shell-on .stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px !important;
-  padding: 16px 20px 8px !important;
-  margin: 0 !important;
-}
-body.bs-shell-on .stat {
-  background: var(--bs-surface-2) !important;
-  border: 0 !important;
-  border-radius: 12px !important;
-  padding: 12px 14px !important;
+/* Clean Mail SettingsModal-style subcards inside the #212121 content card with ultra-low-contrast borders */
+body.bs-shell-on .me-content .card {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 14px !important;
   box-shadow: none !important;
+  padding: 18px 20px !important;
+  margin: 0 0 14px !important;
 }
-body.bs-shell-on .stat-label { font-size: 11px !important; color: var(--bs-muted) !important; }
-body.bs-shell-on .stat-value { font-size: 14px !important; font-weight: 700 !important; color: var(--bs-ink) !important; }
-body.bs-shell-on .quick-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px !important;
-  padding: 8px 20px 16px !important;
-  margin: 0 !important;
+body.bs-shell-on .me-content .card.card-danger {
+  border-color: rgba(239, 68, 68, 0.25) !important;
 }
-body.bs-shell-on .quick-item {
-  background: var(--bs-surface-2) !important;
-  border: 0 !important;
-  border-radius: 12px !important;
-  padding: 14px 16px !important;
-  box-shadow: none !important;
-  transition: background 0.15s ease !important;
-}
-body.bs-shell-on .quick-item:hover { background: var(--bs-surface-2-hover) !important; transform: none !important; }
-body.bs-shell-on .quick-icon {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 10px !important;
-  background: var(--bs-brand-soft) !important;
-  color: var(--bs-brand) !important;
-}
-body.bs-shell-on .quick-title { font-size: 13.5px !important; font-weight: 700 !important; color: var(--bs-ink) !important; }
-body.bs-shell-on .quick-desc { font-size: 12px !important; color: var(--bs-muted) !important; }
-
-/* Content cards — flat sections with full-width #2e2e2e (#f5f5f5 light) dividers like Mail */
-body.bs-shell-on .me-content .card,
 body.bs-shell-on .account-details {
-  background: transparent !important;
-  border: 0 !important;
-  border-bottom: 1px solid var(--bs-subborder) !important;
-  border-radius: 0 !important;
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 14px !important;
   box-shadow: none !important;
-  padding: 16px 20px !important;
-  margin: 0 !important;
+  padding: 6px 20px 18px !important;
+  margin: 0 0 14px !important;
 }
-body.bs-shell-on .me-content .card:last-child,
-body.bs-shell-on .account-details:last-child { border-bottom: 0 !important; }
-body.bs-shell-on .card-title { font-size: 13.5px !important; font-weight: 700 !important; color: var(--bs-ink); }
-body.bs-shell-on .card-title .msym { color: var(--bs-brand); font-size: 18px; }
+body.bs-shell-on .card-title { font-size: 14px !important; font-weight: 700 !important; color: var(--bs-ink); }
+body.bs-shell-on .card-title .msym { color: #0494f4; font-size: 18px; }
 body.bs-shell-on .card-danger .card-title,
 body.bs-shell-on .card-danger .card-title .msym { color: #ef4444; }
-body.bs-shell-on .card-subtitle { font-size: 12px !important; color: var(--bs-muted) !important; margin-bottom: 10px !important; }
-
-/* Rows inside cards — 1:1 with EmailList.tsx rows (#2e2e2e divider, #282828 hover) */
+body.bs-shell-on .card-subtitle { font-size: 12.5px !important; color: var(--bs-muted) !important; margin-bottom: 12px !important; }
+body.bs-shell-on .setting-row,
 body.bs-shell-on .info-row,
-body.bs-shell-on .sec-row,
 body.bs-shell-on .activity-item,
-body.bs-shell-on .device-card {
+body.bs-shell-on .device,
+body.bs-shell-on .home-recommendation {
+  min-height: 58px;
+  padding: 12px 10px;
   border: 0 !important;
-  border-top: 1px solid var(--bs-subborder) !important;
-  border-radius: 8px !important;
-  padding: 11px 10px !important;
-  margin: 0 -10px !important;
-  background: transparent !important;
-  transition: background 0.12s ease;
+  border-bottom: 1px solid var(--bs-subborder) !important;
+  border-radius: 10px;
 }
-body.bs-shell-on .info-row:first-of-type,
-body.bs-shell-on .sec-row:first-of-type,
-body.bs-shell-on .activity-item:first-of-type,
-body.bs-shell-on .device-card:first-of-type { border-top: 0 !important; }
-body.bs-shell-on .info-row:hover,
-body.bs-shell-on .sec-row:hover,
-body.bs-shell-on .activity-item:hover,
-body.bs-shell-on .device-card:hover { background: var(--bs-row-hover) !important; }
-body.bs-shell-on .info-key { font-size: 12px !important; color: var(--bs-muted) !important; }
-body.bs-shell-on .info-val,
-body.bs-shell-on .sec-title { font-size: 13px !important; font-weight: 600 !important; color: var(--bs-ink) !important; }
-body.bs-shell-on .sec-desc { font-size: 12px !important; color: var(--bs-muted) !important; }
-
-/* Account rows, buttons, tags & badges inside #dash-root — zero bright borders */
-body.bs-shell-on .bs-card-acct {
-  background: var(--bs-surface-2) !important;
+body.bs-shell-on .setting-row:last-child,
+body.bs-shell-on .info-row:last-child,
+body.bs-shell-on .activity-item:last-child,
+body.bs-shell-on .device:last-child {
+  border-bottom: 0 !important;
+}
+body.bs-shell-on .current-session {
   border: 0 !important;
-  border-radius: 10px !important;
-  padding: 10px 12px !important;
-  margin-top: 8px !important;
+  background: rgba(4, 148, 244, 0.08) !important;
 }
-body.bs-shell-on .bs-card-acct:hover { background: var(--bs-surface-2-hover) !important; }
-body.bs-shell-on .btn-primary,
-body.bs-shell-on .btn-filled {
-  background: var(--bs-brand) !important;
-  color: #fff !important;
+body.bs-shell-on .optional-profile {
   border: 0 !important;
-  border-radius: 10px !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
+  margin-top: 4px;
 }
-body.bs-shell-on .btn-primary:hover,
-body.bs-shell-on .btn-filled:hover { background: var(--bs-brand-hover) !important; }
+body.bs-shell-on .email-chip,
+body.bs-shell-on .tag,
 body.bs-shell-on .btn-tonal,
 body.bs-shell-on .btn-outline,
 body.bs-shell-on .btn-ghost {
-  background: var(--bs-surface-2) !important;
-  color: var(--bs-ink) !important;
   border: 0 !important;
-  border-radius: 10px !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
+  background: var(--bs-pill) !important;
+  color: var(--bs-ink) !important;
 }
 body.bs-shell-on .btn-tonal:hover,
 body.bs-shell-on .btn-outline:hover,
-body.bs-shell-on .btn-ghost:hover { background: var(--bs-surface-2-hover) !important; }
-body.bs-shell-on .tag { border: 0 !important; background: var(--bs-surface-2) !important; }
-body.bs-shell-on .tag-success { background: rgba(16, 185, 129, 0.14) !important; color: #34d399 !important; }
-body.bs-shell-on .tag-warn { background: rgba(245, 158, 11, 0.14) !important; color: #fbbf24 !important; }
-body.bs-shell-on .current-session {
-  border: 0 !important;
-  background: var(--bs-surface-2) !important;
+body.bs-shell-on .btn-ghost:hover {
+  background: var(--bs-pill-hover) !important;
+}
+body.bs-shell-on .stat {
+  border: 1px solid var(--bs-subborder) !important;
+  background: var(--bs-subcard) !important;
   border-radius: 12px !important;
-  padding: 12px 14px !important;
 }
-body.bs-shell-on .storage-card { border: 0 !important; background: var(--bs-surface-2) !important; border-radius: 12px !important; }
-body.bs-shell-on .optional-profile {
-  border: 0 !important;
-  border-top: 1px solid var(--bs-subborder) !important;
-  border-radius: 0 !important;
-  background: transparent !important;
+body.bs-shell-on .quick-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) !important;
+  gap: 10px !important;
+}
+body.bs-shell-on .quick-item {
+  background: var(--bs-subcard) !important;
+  border: 1px solid var(--bs-subborder) !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
+}
+body.bs-shell-on .quick-item:hover {
+  background: var(--bs-pill) !important;
 }
 
-@media (max-width: 1023px) { .bs-pane { display: none; } }
+/* ── Mail-style startup screen ────────────────────────────────────────── */
+.me-splash-tile {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--bs-brand, #0494f4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(4, 148, 244, 0.25);
+}
+.me-splash-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.me-splash-name {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.me-splash-name b {
+  color: #0494f4;
+}
+.me-splash-line {
+  width: 150px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  display: block;
+}
+html[data-theme='dark'] .me-splash-line,
+body.dark .me-splash-line {
+  background: #333333;
+}
+.me-splash-line > span {
+  display: block;
+  width: 33%;
+  height: 100%;
+  border-radius: 999px;
+  background: #0494f4;
+  animation: bs-loading 1.2s ease-in-out infinite;
+}
+@keyframes bs-loading {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+.me-splash-status {
+  font-size: 12px;
+  color: var(--bs-muted, #71717a);
+  margin: 0;
+}
+.me-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 100dvh;
+  background: var(--bs-canvas, #f5f6f7);
+}
 
+/* ── responsive tablet & mobile drawer ────────────────────────────────── */
+.bs-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 59;
+}
+body.bs-mobile-open .bs-drawer-backdrop {
+  display: block;
+}
+@media (max-width: 1023px) {
+  .bs-pane,
+  .bs-dock {
+    display: none;
+  }
+  .bs-top,
+  body.bs-shell-on #dash-root {
+    right: var(--bs-gap) !important;
+  }
+}
 @media (max-width: 767px) {
-  body.bs-shell-on { padding: 0 !important; overflow: auto; height: auto; }
-  .bs-panel, .bs-dock, .bs-top { display: none; }
-  body.bs-shell-on .me-appbar, body.bs-shell-on .me-drawer, body.bs-shell-on .me-scrim { display: flex !important; }
-  body.bs-shell-on .bs-content { margin: 0 !important; padding: 0 !important; height: auto !important; border: 0 !important; border-radius: 0 !important; }
+  .bs-mobile-menu {
+    display: inline-flex;
+  }
+  .bs-social,
+  .bs-card-acct {
+    display: none;
+  }
+  .bs-panel {
+    transform: translateX(-110%);
+    transition: transform 0.2s ease;
+    width: 260px !important;
+  }
+  body.bs-mobile-open .bs-panel {
+    transform: translateX(0);
+  }
+  .bs-top,
+  body.bs-collapsed .bs-top,
+  body.bs-shell-on #dash-root,
+  body.bs-shell-on.bs-collapsed #dash-root {
+    left: var(--bs-gap) !important;
+    right: var(--bs-gap) !important;
+  }
 }
