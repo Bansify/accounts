@@ -41,6 +41,8 @@ export function officialClients(domain: string) {
       redirects: ['kiwistore://oauth/callback', `https://kiwistore.${domain}/oauth/callback`, 'com.gothwad.store:/oauth/callback'], scopes: profile },
     { id: 'gothwad-tube', name: 'Bansify Tube', package: 'com.gothwad.tube',
       redirects: [`https://tube.${domain}/oauth/callback`, 'com.gothwad.tube:/oauth/callback'], scopes: profile },
+    { id: 'gothwad-files', name: 'Bansify Files', package: 'com.bansify.files',
+      redirects: [`https://files.${domain}/oauth/callback`, 'com.bansify.files:/oauth/callback'], scopes: profile },
   ];
 }
 export function firstPartySeeds(db: D1Database, domain: string) {
