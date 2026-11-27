@@ -21,7 +21,7 @@ export function getTheme() {
  *
  * Inside a Trusted Web Activity the browser watches this tag and repaints the
  * Android status bar, which is the only system bar a web page can colour. The
- * bottom navigation bar comes from twa-manifest.json and cannot be changed here.
+ * bottom navigation bar comes from the Android theme and cannot be changed here.
  */
 export function syncThemeColor(theme) {
   let meta = document.querySelector('meta[name="theme-color"]');
