@@ -1,11 +1,20 @@
 name: Build Bansify TWA APK & Play Store AAB
 
 on:
+  # Every push to main publishes a new release, the same way Bansify/accountsapp
+  # does: version code = run number, version name = 1.0.<run number>, tag =
+  # v<version name>.
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  # Manual runs stay possible: leave the inputs empty for the same automatic
+  # numbering, or pin an explicit version name/code (e.g. a Play Store upload).
   workflow_dispatch:
     inputs:
       app_slug:
         description: 'Which Bansify app to package as TWA (accounts, mail, drive, meet, pay, ai, gitplus)'
-        required: true
+        required: false
         default: 'accounts'
         type: choice
         options:
@@ -17,14 +26,14 @@ on:
           - ai
           - gitplus
       version_name:
-        description: 'App version name (e.g. 1.0.0)'
-        required: true
-        default: '1.0.0'
+        description: 'App version name (e.g. 1.0.14) - empty = auto 1.0.<run number>'
+        required: false
+        default: ''
         type: string
       version_code:
-        description: 'Play Store integer version code (e.g. 1)'
-        required: true
-        default: '1'
+        description: 'Play Store integer version code (e.g. 14) - empty = run number'
+        required: false
+        default: ''
         type: string
 
 permissions:
@@ -37,6 +46,30 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Determine version
+        id: versioning
+        run: |
+          APP_SLUG="${{ inputs.app_slug || 'accounts' }}"
+
+          if [ -n "${{ inputs.version_code }}" ]; then
+            V_CODE="${{ inputs.version_code }}"
+          else
+            V_CODE="${{ github.run_number }}"
+          fi
+
+          if [ -n "${{ inputs.version_name }}" ]; then
+            V_NAME="${{ inputs.version_name }}"
+          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            V_NAME="${GITHUB_REF_NAME#v}"
+          else
+            V_NAME="1.0.${V_CODE}"
+          fi
+
+          echo "app_slug=${APP_SLUG}" >> "$GITHUB_OUTPUT"
+          echo "v_code=${V_CODE}" >> "$GITHUB_OUTPUT"
+          echo "v_name=${V_NAME}" >> "$GITHUB_OUTPUT"
+          echo "### Bansify TWA ${APP_SLUG} v${V_NAME} (code ${V_CODE})" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -87,9 +120,9 @@ jobs:
 
       - name: Generate TWA Android Project & Build Signed APK + AAB
         env:
-          APP_SLUG: ${{ inputs.app_slug || 'accounts' }}
-          VER_NAME: ${{ inputs.version_name || '1.0.0' }}
-          VER_CODE: ${{ inputs.version_code || '1' }}
+          APP_SLUG: ${{ steps.versioning.outputs.app_slug }}
+          VER_NAME: ${{ steps.versioning.outputs.v_name }}
+          VER_CODE: ${{ steps.versioning.outputs.v_code }}
         run: |
           mkdir -p /tmp/twa-gen twa-build
           cp android.keystore twa-build/android.keystore
@@ -177,15 +210,33 @@ jobs:
           fi
           APK_OUT=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
           AAB_OUT=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
-          cp "$APK_OUT" "../bansify-${APP_SLUG}-release.apk"
-          cp "$AAB_OUT" "../bansify-${APP_SLUG}-release.aab"
-          ls -lh "../bansify-${APP_SLUG}-release.apk" "../bansify-${APP_SLUG}-release.aab"
+          mkdir -p ../release_out
+          cp "$APK_OUT" "../release_out/bansify-${APP_SLUG}-v${VER_NAME}-release.apk"
+          cp "$AAB_OUT" "../release_out/bansify-${APP_SLUG}-v${VER_NAME}-playstore.aab"
+          ls -lh ../release_out
+
+      - name: Write checksums
+        run: |
+          cd release_out
+          sha256sum bansify-* > SHA256SUMS.txt
+          cat SHA256SUMS.txt
 
       - name: Upload Signed APK & Play Store AAB Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bansify-${{ inputs.app_slug || 'accounts' }}-twa-release
-          path: |
-            bansify-*.apk
-            bansify-*.aab
+          name: bansify-${{ steps.versioning.outputs.app_slug }}-v${{ steps.versioning.outputs.v_name }}-twa-release
+          path: release_out/
           retention-days: 30
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.versioning.outputs.v_name }}
+          name: v${{ steps.versioning.outputs.v_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release_out/bansify-${{ steps.versioning.outputs.app_slug }}-v${{ steps.versioning.outputs.v_name }}-release.apk
+            release_out/bansify-${{ steps.versioning.outputs.app_slug }}-v${{ steps.versioning.outputs.v_name }}-playstore.aab
+            release_out/SHA256SUMS.txt
