@@ -1,10 +1,10 @@
 {
   "name": "Bansify Accounts",
   "short_name": "Bansify Accounts",
-  "description": "Bansify Account is India's unified digital identity for Bansify Mail, Drive, Meet, Pay, AI, and Notes — protected with passkeys and 2-Step Verification.",
+  "description": "Bansify Account is India's unified digital identity for Bansify Mail, Drive, Meet, Pay, AI, and Notes \u2014 protected with passkeys and 2-Step Verification.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#212121",
+  "background_color": "#131314",
   "theme_color": "#0494f4",
   "icons": [
     {
