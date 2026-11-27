@@ -6,21 +6,12 @@ on:
   # secrets (set once at ORGANISATION level in Bansify, so every app repo
   # inherits the same keystore and therefore the same SHA-256 fingerprint).
   # Every run publishes a GitHub Release tagged v<version name>.
+  #
+  # This workflow packages ONE app: Bansify Accounts. Copying it to another app
+  # repo means changing the single APP_SLUG below ("Determine version" step) and
+  # the package names in that repo's .well-known/assetlinks.json.
   workflow_dispatch:
     inputs:
-      app_slug:
-        description: 'Which Bansify app to package as TWA (accounts, mail, drive, meet, pay, ai, gitplus)'
-        required: false
-        default: 'accounts'
-        type: choice
-        options:
-          - accounts
-          - mail
-          - drive
-          - meet
-          - pay
-          - ai
-          - gitplus
       version_name:
         description: 'App version name, e.g. 1.0.14 (required - no auto numbering)'
         required: true
@@ -37,7 +28,7 @@ permissions:
 
 jobs:
   build-twa:
-    name: Build Signed TWA (${{ inputs.app_slug || 'accounts' }})
+    name: Build Signed TWA (accounts)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -46,7 +37,9 @@ jobs:
       - name: Determine version
         id: versioning
         run: |
-          APP_SLUG="${{ inputs.app_slug || 'accounts' }}"
+          # The only per-app line in this workflow: change it when copying the
+          # file to another app repo (mail, drive, meet, pay, ai, gitplus).
+          APP_SLUG="accounts"
           V_NAME="${{ inputs.version_name }}"
           V_CODE="${{ inputs.version_code }}"
 
