@@ -1,15 +1,12 @@
 name: Build Bansify TWA APK & Play Store AAB
 
 on:
-  # Every push to main publishes a new release, the same way Bansify/accountsapp
-  # does: version code = run number, version name = 1.0.<run number>, tag =
-  # v<version name>.
-  push:
-    branches: [ main ]
-    tags:
-      - 'v*'
-  # Manual runs stay possible: leave the inputs empty for the same automatic
-  # numbering, or pin an explicit version name/code (e.g. a Play Store upload).
+  # Manual only: this workflow never runs on a push. Start it from
+  # Actions -> "Build Bansify TWA APK & Play Store AAB" -> Run workflow
+  # (or `gh workflow run build-twa.yml -R Bansify/accounts`).
+  # Leave the version inputs empty for automatic numbering (code = run number,
+  # name = 1.0.<run number>), or pin an explicit version name/code.
+  # Every run publishes a GitHub Release tagged v<version name>.
   workflow_dispatch:
     inputs:
       app_slug:
