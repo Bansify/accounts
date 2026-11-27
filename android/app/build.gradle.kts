@@ -10,7 +10,10 @@ val appVersionName = (project.findProperty("versionName") as String?) ?: "1.0.0"
 // Filled by the workflow from the organisation secrets; absent for a local build.
 val keystorePass: String = System.getenv("KS_PASS").orEmpty()
 val keyAliasName: String = System.getenv("K_ALIAS") ?: "bansify"
-val keyPassword: String = System.getenv("K_PASS") ?: keystorePass
+// Deliberately not named "keyPassword": inside the signingConfig block that
+// name is the SigningConfig property itself, and `keyPassword = keyPassword`
+// would assign null to null.
+val keyPass: String = System.getenv("K_PASS") ?: keystorePass
 
 android {
     namespace = "com.bansify.accounts"
@@ -30,7 +33,7 @@ android {
                 storeFile = file("keystore.jks")
                 storePassword = keystorePass
                 keyAlias = keyAliasName
-                keyPassword = keyPassword
+                keyPassword = keyPass
             }
         }
     }
