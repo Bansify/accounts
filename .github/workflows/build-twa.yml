@@ -1,11 +1,10 @@
 name: Build Bansify TWA APK & Play Store AAB
 
 on:
-  # Manual only: this workflow never runs on a push. Start it from
-  # Actions -> "Build Bansify TWA APK & Play Store AAB" -> Run workflow
-  # (or `gh workflow run build-twa.yml -R Bansify/accounts`).
-  # Leave the version inputs empty for automatic numbering (code = run number,
-  # name = 1.0.<run number>), or pin an explicit version name/code.
+  # Manual only. Nothing here runs on a push, and nothing is guessed:
+  # the run needs a version name + version code typed in, and the four signing
+  # secrets (set once at ORGANISATION level in Bansify, so every app repo
+  # inherits the same keystore and therefore the same SHA-256 fingerprint).
   # Every run publishes a GitHub Release tagged v<version name>.
   workflow_dispatch:
     inputs:
@@ -23,13 +22,13 @@ on:
           - ai
           - gitplus
       version_name:
-        description: 'App version name (e.g. 1.0.14) - empty = auto 1.0.<run number>'
-        required: false
+        description: 'App version name, e.g. 1.0.14 (required - no auto numbering)'
+        required: true
         default: ''
         type: string
       version_code:
-        description: 'Play Store integer version code (e.g. 14) - empty = run number'
-        required: false
+        description: 'Play Store integer version code, e.g. 14 (required - no auto numbering)'
+        required: true
         default: ''
         type: string
 
@@ -48,19 +47,23 @@ jobs:
         id: versioning
         run: |
           APP_SLUG="${{ inputs.app_slug || 'accounts' }}"
+          V_NAME="${{ inputs.version_name }}"
+          V_CODE="${{ inputs.version_code }}"
 
-          if [ -n "${{ inputs.version_code }}" ]; then
-            V_CODE="${{ inputs.version_code }}"
-          else
-            V_CODE="${{ github.run_number }}"
+          # Both values are typed in by hand on every run. Nothing is derived
+          # from the run number: a release only exists for a version someone
+          # deliberately chose.
+          if [ -z "$V_NAME" ] || [ -z "$V_CODE" ]; then
+            echo "::error title=Version missing::version_name and version_code are both required."
+            exit 1
           fi
-
-          if [ -n "${{ inputs.version_name }}" ]; then
-            V_NAME="${{ inputs.version_name }}"
-          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            V_NAME="${GITHUB_REF_NAME#v}"
-          else
-            V_NAME="1.0.${V_CODE}"
+          if ! [[ "$V_CODE" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error title=Bad version code::version_code must be a positive integer (got '$V_CODE'). Play Store rejects anything else."
+            exit 1
+          fi
+          if ! [[ "$V_NAME" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+            echo "::error title=Bad version name::version_name must be dotted digits like 1.0.14 (got '$V_NAME')."
+            exit 1
           fi
 
           echo "app_slug=${APP_SLUG}" >> "$GITHUB_OUTPUT"
@@ -88,25 +91,29 @@ jobs:
           KEY_ALIAS: ${{ secrets.TWA_KEY_ALIAS }}
           KEY_PASS: ${{ secrets.TWA_KEY_PASSWORD }}
         run: |
-          if [ -n "$KEYSTORE_B64" ]; then
-            echo "$KEYSTORE_B64" | tr -d ' \n\r\t' | base64 --decode > android.keystore
-            KS_PASS="${KEYSTORE_PASS}"
-            DETECTED_ALIAS=$(keytool -list -keystore android.keystore -storepass "$KS_PASS" 2>/dev/null | grep -i "PrivateKeyEntry" | head -n 1 | cut -d',' -f1 | tr -d ' ' || true)
-            K_ALIAS="${DETECTED_ALIAS:-${KEY_ALIAS:-bansify}}"
-            K_PASS="${KEY_PASS:-$KS_PASS}"
-          else
-            KS_PASS="bansifyrelease123"
-            K_ALIAS="bansify"
-            K_PASS="bansifyrelease123"
-            keytool -genkeypair -v \
-              -keystore android.keystore \
-              -alias "$K_ALIAS" \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000 \
-              -storepass "$KS_PASS" \
-              -keypass "$K_PASS" \
-              -dname "CN=Bansify, OU=Mobile, O=Bansify, L=Kanpur, ST=UP, C=IN"
+          # No fallback keystore is ever generated: a throwaway key would change
+          # the signing certificate, break assetlinks.json and Play Store
+          # updates. Missing secrets must stop the run.
+          MISSING=""
+          [ -n "$KEYSTORE_B64" ]   || MISSING="$MISSING TWA_KEYSTORE_BASE64"
+          [ -n "$KEYSTORE_PASS" ]  || MISSING="$MISSING TWA_KEYSTORE_PASSWORD"
+          [ -n "$KEY_ALIAS" ]      || MISSING="$MISSING TWA_KEY_ALIAS"
+          [ -n "$KEY_PASS" ]       || MISSING="$MISSING TWA_KEY_PASSWORD"
+          if [ -n "$MISSING" ]; then
+            echo "::error title=Missing signing secrets::Set these at organisation level (Bansify -> Settings -> Secrets -> Organisation) so every app repo inherits them:$MISSING"
+            exit 1
+          fi
+
+          echo "$KEYSTORE_B64" | tr -d ' \n\r\t' | base64 --decode > android.keystore
+          KS_PASS="${KEYSTORE_PASS}"
+          K_ALIAS="${KEY_ALIAS}"
+          K_PASS="${KEY_PASS}"
+
+          # The alias must really exist in the keystore, otherwise signing fails
+          # later with a confusing message.
+          if ! keytool -list -keystore android.keystore -storepass "$KS_PASS" -alias "$K_ALIAS" > /dev/null 2>&1; then
+            echo "::error title=Wrong alias::Alias '$K_ALIAS' (TWA_KEY_ALIAS) is not present in TWA_KEYSTORE_BASE64, or TWA_KEYSTORE_PASSWORD is wrong."
+            exit 1
           fi
           echo "KS_PASS=${KS_PASS}" >> "$GITHUB_ENV"
           echo "K_ALIAS=${K_ALIAS}" >> "$GITHUB_ENV"
