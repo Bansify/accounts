@@ -12,3 +12,9 @@ cloudflare-worker/.dev.vars
 Store-OAuth-Setup.sql
 dist/
 .DS_Store
+
+# Android build outputs and the CI-only keystore
+android.keystore
+android/app/keystore.jks
+android/.gradle/
+android/**/build/

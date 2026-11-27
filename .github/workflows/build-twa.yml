@@ -70,6 +70,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
       - name: Ensure Android SDK Platforms 35/36 & Build-Tools
         run: |
           export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
@@ -115,101 +120,26 @@ jobs:
           echo "- **Alias**: \`${K_ALIAS}\`" >> "$GITHUB_STEP_SUMMARY"
           keytool -list -v -keystore android.keystore -storepass "$KS_PASS" | grep -i "SHA256:" >> "$GITHUB_STEP_SUMMARY" || true
 
-      - name: Generate TWA Android Project & Build Signed APK + AAB
+      - name: Build signed APK + AAB with Gradle
+        working-directory: android
         env:
           APP_SLUG: ${{ steps.versioning.outputs.app_slug }}
           VER_NAME: ${{ steps.versioning.outputs.v_name }}
           VER_CODE: ${{ steps.versioning.outputs.v_code }}
         run: |
-          mkdir -p /tmp/twa-gen twa-build
-          cp android.keystore twa-build/android.keystore
-          npm --prefix /tmp/twa-gen install --no-audit --no-fund @bubblewrap/core
-          NODE_PATH=/tmp/twa-gen/node_modules node -e '
-            const fs = require("fs");
-            const http = require("http");
-            const path = require("path");
-            const { TwaManifest, TwaGenerator } = require("@bubblewrap/core");
-
-            (async () => {
-              const slug = process.env.APP_SLUG || "accounts";
-              const titles = {
-                accounts: ["Bansify Accounts", "Accounts"],
-                mail: ["Bansify Mail", "Mail"],
-                drive: ["Bansify Drive", "Drive"],
-                meet: ["Bansify Meet", "Meet"],
-                pay: ["Bansify Pay", "Pay"],
-                ai: ["Bansify AI", "Bansify AI"],
-                gitplus: ["Bansify GitPlus", "GitPlus"]
-              };
-              const [fullName, shortName] = titles[slug] || ["Bansify Accounts", "Accounts"];
-              const host = `${slug}.bansify.com`;
-
-              const server = http.createServer((req, res) => {
-                if (req.url.includes("manifest.json")) {
-                  res.writeHead(200, { "Content-Type": "application/json" });
-                  res.end(fs.readFileSync("web/manifest.json"));
-                  return;
-                }
-                const file = req.url.includes("maskable")
-                  ? "web/icon-512-maskable.png"
-                  : "web/icon-512.png";
-                res.writeHead(200, { "Content-Type": "image/png" });
-                res.end(fs.readFileSync(file));
-              });
-              await new Promise((r) => server.listen(0, "127.0.0.1", r));
-              const port = server.address().port;
-
-              const base = JSON.parse(fs.readFileSync("twa-manifest.json", "utf8"));
-              base.packageId = `com.bansify.${slug}`;
-              base.host = host;
-              base.name = fullName;
-              base.launcherName = shortName;
-              base.iconUrl = `http://127.0.0.1:${port}/icon-512.png`;
-              base.maskableIconUrl = `http://127.0.0.1:${port}/icon-512-maskable.png`;
-              base.webManifestUrl = `http://127.0.0.1:${port}/manifest.json`;
-              base.fullScopeUrl = `https://${host}/`;
-              base.appVersion = process.env.VER_NAME || "1.0.0";
-              base.appVersionName = process.env.VER_NAME || "1.0.0";
-              base.appVersionCode = Number(process.env.VER_CODE || 1);
-              base.minSdkVersion = 24;
-              base.signingKey = { path: "./android.keystore", alias: process.env.K_ALIAS || "bansify" };
-
-              const manifest = new TwaManifest(base);
-              const generator = new TwaGenerator();
-              await generator.createTwaProject(path.resolve("twa-build"), manifest);
-
-              let rootGradle = fs.readFileSync("twa-build/build.gradle", "utf8");
-              rootGradle = rootGradle.replace(/jcenter\(\)/g, "mavenCentral()");
-              fs.writeFileSync("twa-build/build.gradle", rootGradle);
-
-              let gradle = fs.readFileSync("twa-build/app/build.gradle", "utf8");
-              gradle = gradle
-                .replace(/targetSdkVersion\s+\d+/, "targetSdkVersion 35")
-                .replace(/http:\/\/127\.0\.0\.1:\d+\/manifest\.json/g, `https://${host}/manifest.json`)
-                .replace(
-                  /buildTypes\s*\{\s*release\s*\{\s*minifyEnabled\s+true\s*\}\s*\}/,
-                  `signingConfigs {\n        release {\n            storeFile file("../android.keystore")\n            storePassword System.getenv("KS_PASS")\n            keyAlias System.getenv("K_ALIAS")\n            keyPassword System.getenv("K_PASS")\n            enableV1Signing true\n            enableV2Signing true\n            enableV3Signing true\n        }\n    }\n    buildTypes {\n        release {\n            minifyEnabled true\n            signingConfig signingConfigs.release\n        }\n    }`
-                );
-              fs.writeFileSync("twa-build/app/build.gradle", gradle);
-              process.exit(0);
-            })().catch((err) => {
-              console.error("::error title=Bubblewrap::" + (err && err.stack ? err.stack.replace(/\n/g, " | ") : err));
-              process.exit(1);
-            });
-          '
-          cd twa-build
-          chmod +x gradlew
-          if ! ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace > gradle.log 2>&1; then
-            ERR_SUMMARY=$(grep -E "FAILURE:|What went wrong:|^\* |Exception|Error" gradle.log | tail -n 15 | tr '\n' ' ')
-            echo "::error title=Gradle::${ERR_SUMMARY}"
-            cat gradle.log
-            exit 1
-          fi
-          APK_OUT=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          AAB_OUT=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          # Signing values (KS_PASS, K_ALIAS, K_PASS) were exported by the
+          # keystore step; the app module reads them from the environment.
+          cp ../android.keystore app/keystore.jks
+          gradle :app:assembleRelease :app:bundleRelease \
+            -PversionCode="${VER_CODE}" \
+            -PversionName="${VER_NAME}" \
+            --no-daemon --stacktrace
+          rm -f app/keystore.jks
           mkdir -p ../release_out
-          cp "$APK_OUT" "../release_out/bansify-${APP_SLUG}-v${VER_NAME}-release.apk"
-          cp "$AAB_OUT" "../release_out/bansify-${APP_SLUG}-v${VER_NAME}-playstore.aab"
+          cp app/build/outputs/apk/release/app-release.apk \
+            "../release_out/bansify-${APP_SLUG}-v${VER_NAME}-release.apk"
+          cp app/build/outputs/bundle/release/app-release.aab \
+            "../release_out/bansify-${APP_SLUG}-v${VER_NAME}-playstore.aab"
           ls -lh ../release_out
 
       - name: Write checksums
