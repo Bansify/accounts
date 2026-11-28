@@ -59,10 +59,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Informational for now: the suite needs Node 22 (`--experimental-strip-types`, node:sqlite)
-    # and could not be verified before this workflow existed. Flip continue-on-error off once a
-    # run is green, so a regression fails the build instead of being ignored.
-    continue-on-error: true
+    # A green run is the baseline now, so a regression fails the build.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
