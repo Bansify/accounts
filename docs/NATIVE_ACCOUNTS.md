@@ -206,12 +206,13 @@ a consumed refresh cannot be reused. Reconsent cannot revive a revoked binding.
 
 ## App Links and trusted-app discovery
 
-`GET /.well-known/assetlinks.json` serves the configured `ANDROID_ASSETLINKS_JSON`
-or derives the Accounts package's release fingerprints from its active first-party
-DB registration. Relation is `delegate_permission/common.handle_all_urls` and target
-namespace is `android_app`. Android output uses colon-separated uppercase hashes;
-DB/manifest hashes are lowercase without colons. Invalid overrides return 503;
-missing fingerprints return `[]`, not a fabricated association.
+`GET /.well-known/assetlinks.json` is derived from D1 — the same rows `/api/apps/trusted`
+serves — for every active first-party app that has a certificate. There is no
+`ANDROID_ASSETLINKS_JSON` override any more: it let the file advertise packages that were
+never registered, and drift from the broker's list. Relation is
+`delegate_permission/common.handle_all_urls` and target namespace is `android_app`. Android
+output uses colon-separated uppercase hashes; DB hashes are lowercase without colons.
+Missing fingerprints return `[]`, not a fabricated association.
 
 **Routing is a release prerequisite:** route the exact public Accounts-host
 `/.well-known/assetlinks.json` to this Worker, outside `/api/*`, with JSON and no
