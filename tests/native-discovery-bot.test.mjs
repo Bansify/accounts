@@ -5,13 +5,17 @@ import { authRateLimitPolicy, enforceAuthRateLimit } from '../cloudflare-worker/
 import { nativeFixture, nativeTokens, nativeRequest, nativeRefresh, accountsClient } from './helpers/native-oauth-harness.mjs';
 const fingerprint = 'a1'.repeat(32); // Synthetic certificate fingerprint, never a registration seed.
 
-test('assetlinks has exact Android relation/package and release hashes, empty when unconfigured, rejects invalid config/cert writes', async () => {
+test('assetlinks has exact Android relation/package and release hashes, empty when unconfigured, rejects invalid cert writes', async () => {
   const f = await nativeFixture();
   try {
+    // No certificate registered anywhere means no link entries at all.
     assert.deepEqual(await (await nativeRequest(f, '/.well-known/assetlinks.json')).json(), []);
+
+    // A malformed fingerprint cannot be written.
     for (const value of ['not-json', '{}', '[null]', JSON.stringify(['A'.repeat(64)]), JSON.stringify(['f'.repeat(63)])]) {
       await assert.rejects(f.env.DB.prepare('UPDATE ecosystem_apps SET android_cert_sha256 = ? WHERE id = ?').bind(value, accountsClient).run());
     }
+
     await f.env.DB.prepare('UPDATE ecosystem_apps SET android_cert_sha256 = ? WHERE id = ?').bind(JSON.stringify([fingerprint]), accountsClient).run();
     const response = await nativeRequest(f, '/.well-known/assetlinks.json');
     assert.match(response.headers.get('Content-Type'), /application\/json/);
@@ -19,12 +23,13 @@ test('assetlinks has exact Android relation/package and release hashes, empty wh
     assert.deepEqual(links, [{ relation: ['delegate_permission/common.handle_all_urls'], target: {
       namespace: 'android_app', package_name: 'com.bansify.accounts', sha256_cert_fingerprints: [fingerprint.match(/../g).join(':').toUpperCase()],
     } }]);
-    f.env.ANDROID_ASSETLINKS_JSON = JSON.stringify(links);
-    assert.deepEqual(await (await nativeRequest(f, '/.well-known/assetlinks.json')).json(), links);
-    f.env.ANDROID_ASSETLINKS_JSON = '[{"target":{"package_name":"wrong"}}]';
-    assert.equal((await nativeRequest(f, '/.well-known/assetlinks.json')).status, 503);
-    f.env.ANDROID_ASSETLINKS_JSON = 'malformed';
-    assert.equal((await nativeRequest(f, '/.well-known/assetlinks.json')).status, 503);
+
+    // D1 is the only source: a second registered app appears without any variable being set.
+    await f.env.DB.prepare('UPDATE ecosystem_apps SET android_cert_sha256 = ? WHERE id = ?').bind(JSON.stringify([fingerprint]), 'gothwad-ai').run();
+    const two = await (await nativeRequest(f, '/.well-known/assetlinks.json')).json();
+    assert.equal(two.length, 2);
+    assert.deepEqual(two.map((l) => l.target.package_name).sort(), ['com.bansify.accounts', 'com.bansify.ai']);
+    assert.ok(two.every((l) => l.target.sha256_cert_fingerprints[0] === fingerprint.match(/../g).join(':').toUpperCase()));
   } finally { f.env.DB.close(); }
 });
 
