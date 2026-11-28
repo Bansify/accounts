@@ -92,6 +92,8 @@ test('static CSP disallows inline script execution and static HTML has no inline
       else if (entry.name.endsWith('.html')) {
         const html = readFileSync(path, 'utf8');
         for (const tag of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+          // JSON-LD is data, not executable script, and CSP script-src does not apply to it.
+          if (/type=["']application\/ld\+json["']/i.test(tag[1])) continue;
           assert.match(tag[1], /\bsrc=/, path);
           assert.equal(tag[2].trim(), '', path);
         }
