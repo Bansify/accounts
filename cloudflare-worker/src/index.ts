@@ -117,7 +117,7 @@ export default {
       const limited = await enforceAuthRateLimit(request, db, env, route);
       if (limited) return withCors(limited);
 
-      if (route === '/.well-known/assetlinks.json' && request.method === 'GET') return withCors(await assetLinks(db, env));
+      if (route === '/.well-known/assetlinks.json' && request.method === 'GET') return withCors(await assetLinks(db));
       if (route === '/apps/trusted' && request.method === 'GET') return withCors(await trustedApps(db, env));
       if (route === '/auth/bot-config' && request.method === 'GET') return withCors(json({
         required: env.TURNSTILE_REQUIRED === 'true', site_key: env.TURNSTILE_SITE_KEY || '',
