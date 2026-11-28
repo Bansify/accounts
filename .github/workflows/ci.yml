@@ -1,0 +1,75 @@
+name: CI
+
+# Until now the only workflow in this repository built the TWA APK; the web bundle, the
+# Worker and the 50-odd test files never ran on a push. This runs them.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build the stylesheets and auth modules
+        run: npm run build
+      - name: Fail if the build changed tracked files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error title=Build output drifted::The committed bundles do not match the sources. Run npm run build and commit the result."
+            git status --porcelain
+            exit 1
+          fi
+
+  worker:
+    name: Worker typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Worker dependencies
+        working-directory: cloudflare-worker
+        run: npm ci
+      - name: Typecheck
+        working-directory: cloudflare-worker
+        run: npx tsc --noEmit
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Informational for now: the suite needs Node 22 (`--experimental-strip-types`, node:sqlite)
+    # and could not be verified before this workflow existed. Flip continue-on-error off once a
+    # run is green, so a regression fails the build instead of being ignored.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run the suite
+        run: npm test
