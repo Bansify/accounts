@@ -52,7 +52,8 @@ test('separate matching action pills, branded logo, and title replace old menu c
 });
 
 test('neutral dark surface and first/last/only account curvature are defined centrally', () => {
-  assert.match(ACCOUNT_MENU_CSS, /data-theme="dark"[\s\S]*--gw-surface: #212121;/);
+  // The sheet is a card: #2a2a2a on the #212121 canvas, the same pair every Bansify surface uses.
+  assert.match(ACCOUNT_MENU_CSS, /data-theme="dark"[\s\S]*--gw-surface: #2a2a2a;/);
   assert.doesNotMatch(ACCOUNT_MENU_CSS, /#1b1f26|#282c34|gw-hero|gw-chevron/);
   for (const pseudo of ['first-child', 'last-child', 'only-child']) {
     assert.ok(ACCOUNT_MENU_CSS.includes(`.gw-account-row:${pseudo}`));
